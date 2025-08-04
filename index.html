@@ -9,7 +9,7 @@
   <div id="output" style="padding: 1em; max-width: 800px; margin: auto;"></div>
 
   <script>
-    fetch('https://raw.githubusercontent.com/rbeninca/App/main/README_plano_ensino_TI.md')
+    fetch('https://rbeninca.github.io/notas/ppi/planejamento.md')
       .then(response => response.text())
       .then(markdown => {
         document.getElementById('output').innerHTML = marked.parse(markdown);
