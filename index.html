@@ -1,25 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Markdown Viewer</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <p>Minha primeira página web </p>
+  <div id="output" style="padding: 1em; max-width: 800px; margin: auto;"></div>
 
-    <ul>
-        <li>git init - cria diretório grit</li>
-        <li>git add  [nome| .] - adiciona modificações ao stage</li>
-        <li>git commit  -m "msg " - cria um commit com modificações+data+user </li>
-        <li>git config [|--local|--global] user.name "nome" - configura a string nome author</li>
-        <li>git config user.email "nom@servidor" - configura a string e-maiu do author</li>
-        <li>git status - verifica o que esta track ou untrank na workincopy e stage</li>
-        <li>git log [--oneline| --all] -lista os commits do repositório</li>
-        <li>git diff - lista as diferenças entre wk stage </li>
-        <li>git diff HEAD - lista as diferenças entres stage e HEAD </li>
-
-    </ul>
-    
+  <script>
+    fetch('https://raw.githubusercontent.com/rbeninca/App/main/README_plano_ensino_TI.md')
+      .then(response => response.text())
+      .then(markdown => {
+        document.getElementById('output').innerHTML = marked.parse(markdown);
+      });
+  </script>
 </body>
 </html>
