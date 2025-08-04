@@ -3,16 +3,16 @@
 
 | #  | Conteúdo                                                                                   | Carga Horária  |Data      | Link |
 |----|--------------------------------------------------------------------------------------------|----------------|----------|------|
-| 1  | [Plano de Ensino, Arquitetura Android,API, Estrutura Projeto,Iternacionalização](#1-aula-1)| 4h             |03/08/2025|      |
-| 2  | Eventos na interface, Activitys, ciclo de vida e  métodos de callback                      | 4h             |          |      |
-| 3  | Layouts e Organização Visual com ViewGroups                                                | 4h             |          |      |
-| 4  | Intents, Navegação entre Activities e Ciclo de Vida                                        | 4h             |          |      |
-| 5  | Listagens Avançadas                                                                        | 4h             |          |      |
-| 6  | Armazenamento Local com SharedPreferences e SQLite                                         | 4h             |          |      |
-| 7  | Permissões em Tempo de Execução e Acesso a Recursos do Sistema                             | 4h             |          |      |
-| 8  | Multimídia: Áudio, Vídeo e Câmera                                                          | 4h             |          |      |
-| 9  | Sensores e SensorManager                                                                   | 4h             |          |      |
-| 10 | Geolocalização e Mapas com LocationManager                                                 | 4h             |          |      |
+|   | [Plano de Ensino, Arquitetura Android,API, Estrutura Projeto,Iternacionalização](#1-aula-1) | 4h             |03/08/2025|      |
+|   | Eventos na interface, Activitys, ciclo de vida e  métodos de callback                       | 4h             |          |      |
+|   | Layouts e Organização Visual com ViewGroups                                                 | 4h             |          |      |
+|   | Intents, Navegação entre Activities e Ciclo de Vida                                         | 4h             |          |      |
+|   | Listagens Avançadas                                                                         | 4h             |          |      |
+|   | Armazenamento Local com SharedPreferences e SQLite                                          | 4h             |          |      |
+|   | Permissões em Tempo de Execução e Acesso a Recursos do Sistema                              | 4h             |          |      |
+|   | Multimídia: Áudio, Vídeo e Câmera                                                           | 4h             |          |      |
+|   | Sensores e SensorManager                                                                    | 4h             |          |      |
+|  | Geolocalização e Mapas com LocationManager                                                   | 4h             |          |      |
 | Total|                                                                                          | 40h            |          |      |
 
 # Planejamento das Aulas
@@ -41,10 +41,10 @@ componentes
 ### Aplicações
 * **Hello World**: Criação do primeiro aplicativo simples que exibe "Hello World" na tela.
 * **Hello World Internacionalizado**: Criação de um aplicativo que exibe "Hello World" em diferentes idiomas, utilizando recursos de internacionalização.
-* **Contador de Cliques**: Aplicativo que conta cliques na tela e exibe o número centralizado.
-* **Sorteio de Números Aleatórios**: Aplicativo que sorteia um número aleatório entre 0 e 100, exibindo o resultado na tela.
+<!--* **Contador de Cliques**: Aplicativo que conta cliques na tela e exibe o número centralizado.
+* **Sorteio de Números Aleatórios**: Aplicativo que sorteia um número aleatório entre 0 e 100, exibindo o resultado na tela.  -->
 
 ### Atividades
 * **Atividade 1**: Criar um aplicativo que exiba "Hello World" na tela e permita a internacionalização para pelo menos dois idiomas diferentes.
-* **Atividade 2**: Desenvolver um contador de cliques que exiba o número de cliques em um TextView centralizado na tela.
-* **Atividade 3**: Criar um aplicativo que sorteie um número aleatório entre 0 e 100 e exiba o resultado na tela.
+<!-- * **Atividade 2**: Desenvolver um contador de cliques que exiba o número de cliques em um TextView centralizado na tela.
+* **Atividade 3**: Criar um aplicativo que sorteie um número aleatório entre 0 e 100 e exiba o resultado na tela.  -->
