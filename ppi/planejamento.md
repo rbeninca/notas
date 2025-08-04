@@ -15,7 +15,7 @@
 | 10 | Geolocalização e Mapas com LocationManager                                                 | 4h             |          |      |
 | Total|                                                                                          | 40h            |          |      |
 
-# Plano de Ensino - Desenvolvimento Android
+# Planejamento das Aulas
 ## 1. Aula 1 
 ### Plano de Ensino, Arquitetura Android, API, Estrutura Projeto, Iternacionalização
 #### Tópicos
