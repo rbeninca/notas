@@ -1,20 +1,21 @@
-
-
-
+# Planejamento do Curso de Desenvolvimento Android
 | #  | Conteúdo                                                                                   | Carga Horária  |Data      | Link |
 |----|--------------------------------------------------------------------------------------------|----------------|----------|------|
-|   | [Plano de Ensino, Arquitetura Android,API, Estrutura Projeto,Iternacionalização](#1-aula-1) | 2h             |04/08/2025|      |
-|   | [Activitys e Ciclo de Vida](#2-aula-2) | 2h             |11/08/2025|      |
-|   | Eventos na interface, Activitys, ciclo de vida e  métodos de callback                       | 4h             |          |      |
-|   | Layouts e Organização Visual com ViewGroups                                                 | 4h             |          |      |
-|   | Intents, Navegação entre Activities e Ciclo de Vida                                         | 4h             |          |      |
-|   | Listagens Avançadas                                                                         | 4h             |          |      |
-|   | Armazenamento Local com SharedPreferences e SQLite                                          | 4h             |          |      |
-|   | Permissões em Tempo de Execução e Acesso a Recursos do Sistema                              | 4h             |          |      |
-|   | Multimídia: Áudio, Vídeo e Câmera                                                           | 4h             |          |      |
-|   | Sensores e SensorManager                                                                    | 4h             |          |      |
-|  | Geolocalização e Mapas com LocationManager                                                   | 4h             |          |      |
-| Total|                                                                                          | 40h            |          |      |
+|   | [Plano de Ensino, Arquitetura Android,API, Estrutura Projeto,Iternacionalização](#1-aula-1) | 4h             |06/08/2025|      |
+|   | [Activitys e Ciclo de Vida](#2-aula-2)                                                      | 4h             |12/08/2025|      |
+|   | Eventos na interface, Activitys, ciclo de vida e  métodos de callback                       | 4h             |   |      |
+|   | Fragmentos                                                                                  |             |          |      |
+|   | Layouts e Organização Visual com ViewGroups                                                 |             |          |      |
+|   | Intents, Navegação entre Activities e Ciclo de Vida                                         |            |          |      |
+|   | Listagens Avançadas                                                                         |             |          |      |
+|   | Armazenamento Local com SharedPreferences e SQLite                                          |             |          |      |
+|   | Permissões em Tempo de Execução e Acesso a Recursos do Sistema                              |             |          |      |
+|   | Gerenciadores do Android: SensorManager, LocationManager, etc.                              |             |          |      |
+|   | Multimídia: Áudio, Vídeo e Câmera                                                           |              |          |      |
+|   | Sensores e SensorManager                                                                    |              |          |      |
+|   | Geolocalização e Mapas com LocationManager                                                  |              |          |      |
+|   | Testes e Depuração de Aplicativos Android                                                   |              |          |      |
+| Total|                                                                                          |80  h         |          |      |
 
 # Planejamento das Aulas
 ## 1. Aula 1 
