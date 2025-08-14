@@ -14,7 +14,7 @@
 |   | [Multimídia: Áudio, Vídeo e Câmera]()                                                       | 4h             |          |      |
 |   | [Sensores e SensorManager]()                                                                | 4h             |          |      |
 |   | [Geolocalização e Mapas com LocationManager]()                                              | 4h             |          |      |
-| Total|                                                                                          | 40h            |          |      |
+| Total|                                                                                          | 80h            |          |      |
 
 # Planejamento das Aulas
 ## 1. Aula 1
@@ -71,5 +71,7 @@
 ### Aplicações
 * **Hello World**: Criação do primeiro aplicativo simples que exibe "Hello World" na tela intenacionalizado;
 * **Contador de Cliques**: Aplicativo que conta cliques na tela e exibe o número centralizado.
+* **Resumo feito a mão;
+<!--* **Sorteio de Números Aleatórios**: Aplicativo que sorteia um número aleatório entre 0 e 100, exibindo o resultado na tela. -->
 
 
