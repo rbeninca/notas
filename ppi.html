@@ -26,7 +26,7 @@
     <div id="output" class="markdown-body" style="padding: 1em; max-width: 800px; margin: auto;"></div>
 
     <script>
-        fetch('https://rbeninca.github.io/notas/ppi/planejamento.md')
+        fetch('./planejamentos/planejamento.md')
             .then(response => response.text())
             .then(markdown => {
                 document.getElementById('output').innerHTML = marked.parse(markdown);
