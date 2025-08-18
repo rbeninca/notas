@@ -5,7 +5,7 @@
 |----|--------------------------------------------------------------------------------------------|----------------|----------|------|
 |   | [Plano de Ensino, Arquitetura Android,API, Estrutura Projeto,Iternacionalização](#1-aula-1) | 2h             |04/08/2025|      |
 |   | [Activitys e Ciclo de Vida](#2-aula-2) | 2h             |11/08/2025|      |
-|   | Eventos na interface, Activitys, ciclo de vida e  métodos de callback                       | 4h             |          |      |
+|   | Eventos na interface, Activitys, ciclo de vida e  métodos de callback                       | 2h             |18/08/2025|      |
 |   | Layouts e Organização Visual com ViewGroups                                                 | 4h             |          |      |
 |   | Intents, Navegação entre Activities e Ciclo de Vida                                         | 4h             |          |      |
 |   | Listagens Avançadas                                                                         | 4h             |          |      |
@@ -54,8 +54,6 @@
 #### Tópicos
 - Associação de view declarada no XML com o código Java.
 - Eventos de clique e interação do usuário;
-- Ciclo de vida das Activities;
-- Métodos de callback e manipulação de eventos;
 ### Objetivos
 * Entender como associar views declaradas no XML com o código Java
 * Aprender a capturar e responder a eventos de clique e interação do usuário
@@ -63,14 +61,51 @@
 * Compreender como os eventos de clique e interação do usuário funcionam no Android
 * Entender o ciclo de vida das Activities e como gerenciar estados
 * Aprender a utilizar métodos de callback para manipular eventos de forma eficiente
-### Conteúdo
-* **Associação de Views**: Como associar views declaradas no XML com o código Java usando findViewById
-* **Eventos de Clique**: Como capturar e responder a eventos de clique em botões
-* **Ciclo de Vida das Activities**: Estados da Activity, métodos onCreate, onStart, onResume, onPause, onStop, onDestroy
-* **Métodos de Callback**: Utilização de métodos de callback para gerenciar eventos e estados da Activity
 ### Aplicações
 * **Contador de Cliques**: Aplicativo que conta cliques na tela e exibe o número centralizado.
-* ***
+### Atividades
+* **Atividade 1**: Criar um aplicativo que exiba um contador de cliques, onde cada clique em um botão incrementa o contador e exibe o número centralizado na tela.
+
+
+
+## 3. Aula 3
+### Ciclo de Vida das Activities 
+- Ciclo de vida das Activities;
+- Métodos de callback e manipulação de eventos;
+    - onCreate
+    - onStart
+    - onResume
+    - onPause
+    - onStop
+    - onDestroy
+### Métodos de Callback
+- Definição e importância dos métodos de callback
+- Exemplos de uso de métodos de callback no ciclo de vida das Activities
+
+### Atividades
+* **Atividade 1**: Criar um aplicativo que utilize métodos de callback para gerenciar eventos de clique em botões.
+* **Atividade 2**: Implementar um aplicativo que demonstre o ciclo de vida das Activities, utilizando os métodos de callback para gerenciar estados.
+* **Ciclo de Vida das Activities**: Aplicativo que demonstra o ciclo de vida das Activities, salvando e restaurando o estado do contador de cliques ao girar a tela ou mudar de atividade.
+* **Sorteio de Números Aleatórios**: Aplicativo que sorteia um número aleatório entre 0 e 100, exibindo o resultado na tela.
+
+
+
+## 4. Aula 4.
+### Layouts e Recursos
+#### Tópicos
+- Estruturas de layout no Android (LinearLayout, RelativeLayout, ConstraintLayout)
+- Criação de layouts XML
+- Utilização de recursos (strings, cores, dimensões)
+### Objetivos
+* Compreender as diferentes estruturas de layout disponíveis no Android
+* Aprender a criar e modificar layouts XML
+* Entender como utilizar recursos para tornar o aplicativo mais flexível e adaptável
+### Conteúdo
+* **Estruturas de Layout**: Comparação entre LinearLayout, RelativeLayout e ConstraintLayout
+* **Criação de Layouts XML**: Como criar e modificar arquivos de layout XML
+* **Utilização de Recursos**: Como utilizar recursos de strings, cores e dimensões em um aplicativo
+### Aplicações
+* **Contador de Cliques**: Aplicativo que conta cliques na tela e exibe o número centralizado.
 * **Sorteio de Números Aleatórios**: Aplicativo que sorteia um número aleatório entre 0 e 100, exibindo o resultado na tela.
 * **Ciclo de Vida das Activities**: Aplicativo que demonstra o ciclo de vida das Activities, salvando e restaurando o estado do contador de cliques ao girar a tela ou mudar de atividade.
 
@@ -78,5 +113,3 @@
 * **Atividade 1**: Criar um aplicativo que exiba um contador de cliques, onde cada clique em um botão incrementa o contador e exibe o número centralizado na tela.
 * **Atividade 2**: Implementar um aplicativo que utilize o  ciclo de vida das Activities para salvar e restaurar o estado do contador de cliques ao girar a tela ou mudar de atividade.
 * **Atividade 3**: Desenvolver um aplicativo que sorteie um número aleatório entre 0 e 100 e exiba o resultado na tela, com um botão para gerar um novo sorteio.
-
-
