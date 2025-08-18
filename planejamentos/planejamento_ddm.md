@@ -14,12 +14,17 @@
 |   | [Multimídia: Áudio, Vídeo e Câmera]()                                                       | 4h             |          |      |
 |   | [Sensores e SensorManager]()                                                                | 4h             |          |      |
 |   | [Geolocalização e Mapas com LocationManager]()                                              | 4h             |          |      |
-| Total|                                                                                          | 80h            |          |      |
-
+<!--|   | [Notificações e Alarmes com AlarmManager]()                                             | 4h             |          |      |
+|   | [Serviços em Segundo Plano e Broadcast Receivers]()                                         | 4h             |          |      |
+|   | [Integração com APIs Externas e Consumo de Web Services]()                                  | 4h             |          |      |
+|   | [Testes em Aplicativos Android: JUnit e Espresso]()                                         | 4h             |          |      |
+|   | [Publicação de Aplicativos na Google Play Store]()                                          | 4h             |          |      |
+|   | [Projeto Final: Desenvolvimento de um Aplicativo Android Completo]()                        | 8h             |          |      | -->
+| **Total**|                                                                                      | **80h**        |          |      |
 # Planejamento das Aulas
 ## 1. Aula 1
 ### Introdução ao Desenvolvimento Android
-#### Tópicos
+#### Tópicoss
 - plano de ensino
 - Introdução ao desenvolvimento Android;
 - História do Android;
