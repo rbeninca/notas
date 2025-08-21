@@ -5,7 +5,7 @@
 |----|--------------------------------------------------------------------------------------------|----------------|----------|------|
 | 1. | Apresentação do Plano de Ensino, História da WEB, internt vs web, html e HTTP               | 4h             |05/08/2025|      |
 | 2. | HTML básico, Texto, listas tabelas, CSS básico                                              | 4h             |12/08/2025|      |
-| 3. | Estilização com CSS, Regra CSS, Seletores                                         | 4h             |19/08/2025|      |
+| 3. | Estilização com CSS, Regra CSS, Seletores                                                   | 4h             |19/08/2025|      |
 | 4. | Seletores avançados, Pseudo-classes e Pseudo-elementos, Cores, fontes, border, background e unidades de medida | 4h             |26/08/2025|      |
 | 5. | ModelBox,Positions, Flexbox e Grid Layout                                                 | 4h             |26/08/2025|      |
 |  | @screenmedia, transactions e Animações                                                      | 4h             |02/09/2025|      |
