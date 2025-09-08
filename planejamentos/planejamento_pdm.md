@@ -6,12 +6,12 @@
 | 1 | [Plano de Ensino, Arquitetura Android,API, Estrutura Projeto,Iternacionalização](#1-aula-1) | 2h             |04/08/2025|      |
 | 2 | [Ambiente de desenvolvimento, Ferramenta de Design e Tratamento Click](#2-aula-2)           | 2h             |11/08/2025|      |
 | 3 | [Revisão aula 2](#3-aula-3)                                                                 | 2h             |18/08/2025|      |
-|   | [Eventos na interface, Activitys, ciclo de vida e  métodos de callback]                     | 2h             |          |      |
-|   | [Layouts e Organização Visual com ViewGroups]                                               | 4h             |          |      |
-|   | [Intents, Navegação entre Activities e Ciclo de Vida]                                       | 4h             |          |      |
-|   | [Listagens Avançadas]                                                                       | 4h             |          |      |
-|   | [Armazenamento Local com SharedPreferences e SQLite]                                        | 4h             |          |      |
-|   | Permissões em Tempo de Execução e Acesso a Recursos do Sistema                              | 4h             |          |      |
+|   | [Eventos na interface, Activitys, ciclo de vida e  métodos de callback]                     | 2h             |25/08/2025|      |
+|   | [Layouts e Organização Visual com ViewGroups]                                               | 2h             |01/09/2025|      |
+|   | [Intents, Navegação entre Activities e Ciclo de Vida]                                       | 2h             |08/09/2025|      |
+|   | [Listagens Avançadas]                                                                       | 4h             ||      |
+|   | [Armazenamento Local com SharedPreferences e SQLite]                                        | 4h             ||      |
+|   | Permissões em Tempo de Execução e Acesso a Recursos do Sistema                              | 4h             ||      |
 |   | Multimídia: Áudio, Vídeo e Câmera                                                           | 4h             |          |      |
 |   | Sensores e SensorManager                                                                    | 4h             |          |      |
 |   | Geolocalização e Mapas com LocationManager                                                   | 4h             |          |      |
