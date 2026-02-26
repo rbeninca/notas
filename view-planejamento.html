@@ -35,38 +35,42 @@
 <body>
     <div id="output" class="markdown-body">Carregando planejamento...</div>
 
-    <script>
-        // 1. Pega o parâmetro 'p' da URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const arquivoMD = urlParams.get('p');
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const arquivoMD = urlParams.get('p');
+    const output = document.getElementById('output');
 
-        if (arquivoMD) {
-            // 2. Monta o caminho: pasta 'planejamentos/' + nome do arquivo
-            const caminho = `./planejamentos/${arquivoMD}`;
+    if (arquivoMD) {
+        // Criamos o caminho absoluto baseado na URL atual para não ter erro de pasta
+        const pastaPlanejamentos = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
+        const urlFinal = `${window.location.origin}${pastaPlanejamentos}${arquivoMD}`;
 
-            fetch(caminho)
-                .then(response => {
-                    if (!response.ok) throw new Error('Arquivo não encontrado no servidor.');
-                    return response.text();
-                })
-                .then(text => {
-                    // 3. Renderiza o conteúdo
-                    document.getElementById('output').innerHTML = marked.parse(text);
-                    
-                    // Ajuste opcional: define o título da aba com o nome do arquivo
-                    document.title = `Plano: ${arquivoMD.replace('.md', '')}`;
-                })
-                .catch(error => {
-                    document.getElementById('output').innerHTML = `
-                        <h1>Erro 404</h1>
-                        <p>O arquivo <strong>${arquivoMD}</strong> não foi encontrado na pasta <code>/planejamentos/</code>.</p>
-                        <small>${error.message}</small>
-                    `;
-                });
-        } else {
-            document.getElementById('output').innerHTML = "<h1>Erro</h1><p>Nenhum arquivo foi especificado na URL. Use <code>?p=nome-do-arquivo.md</code></p>";
-        }
-    </script>
+        console.log("Tentando buscar em:", urlFinal); // Debug no F12
+
+        fetch(urlFinal)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Arquivo não encontrado (Erro ${response.status})`);
+                }
+                return response.text();
+            })
+            .then(text => {
+                output.innerHTML = marked.parse(text);
+                document.title = `Plano: ${arquivoMD}`;
+            })
+            .catch(error => {
+                output.innerHTML = `
+                    <div style="background:#fff5f5; color:#c53030; padding:20px; border-radius:8px; border:1px solid #feb2b2; font-family:sans-serif">
+                        <h3>Erro de Carregamento</h3>
+                        <p>Não foi possível encontrar o arquivo: <strong>${arquivoMD}</strong></p>
+                        <p style="font-size: 0.8em">Caminho tentado: <code style="word-break: break-all;">${urlFinal}</code></p>
+                        <button onclick="location.reload(true)" style="margin-top:10px; cursor:pointer">Tentar Recarregar (Limpar Cache)</button>
+                    </div>`;
+            });
+    } else {
+        output.innerHTML = "<h3>Aguardando parâmetro...</h3><p>Use ?p=nome-do-arquivo.md na URL.</p>";
+    }
+</script>
 </body>
 
 </html>
