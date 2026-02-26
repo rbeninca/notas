@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizador de Plano de Ensino</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+
+    <style>
+        body {
+            box-sizing: border-box;
+            padding: 2rem;
+            background-color: #fff;
+        }
+
+        .markdown-body {
+            max-width: 900px;
+            margin: auto;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.12/marked.min.js"></script>
+</head>
+
+<body>
+    <div id="output" class="markdown-body">Carregando plano de ensino...</div>
+
+    <script>
+        // 1. Captura os parâmetros da URL (ex: ?p=aula01.md)
+        const urlParams = new URLSearchParams(window.location.search);
+        const arquivo = urlParams.get('p'); // 'p' é o nome do parâmetro
+
+        // 2. Define o caminho do arquivo (usa 'planejamento.md' como padrão caso não passe nada)
+        const caminhoFinal = arquivo ? `./planejamentos/${arquivo}` : './planejamentos/planejamento.md';
+
+        // 3. Busca e renderiza o Markdown
+        fetch(caminhoFinal)
+            .then(response => {
+                if (!response.ok) throw new Error('Arquivo não encontrado');
+                return response.text();
+            })
+            .then(markdown => {
+                document.getElementById('output').innerHTML = marked.parse(markdown);
+            })
+            .catch(err => {
+                document.getElementById('output').innerHTML = `<p style="color:red">Erro: Não foi possível carregar o planejamento (${arquivo}). Verifique se o nome está correto.</p>`;
+            });
+    </script>
+</body>
+
+</html>

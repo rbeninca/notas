@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Plano de Ensino PPI</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+
+    <style>
+        body {
+            box-sizing: border-box;
+            padding: 2rem;
+        }
+
+        .markdown-body {
+            max-width: 900px;
+            margin: auto;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.12/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+    <div id="output" class="markdown-body" style="padding: 1em; max-width: 800px; margin: auto;"></div>
+
+    <script>
+        fetch('./planejamentos/planejamento_ppi-2026-1.md')
+            .then(response => response.text())
+            .then(markdown => {
+                document.getElementById('output').innerHTML = marked.parse(markdown);
+            });
+    </script>
+</body>
+
+</html>
