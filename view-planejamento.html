@@ -3,47 +3,69 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualizador de Plano de Ensino</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
 
     <style>
         body {
             box-sizing: border-box;
-            padding: 2rem;
-            background-color: #fff;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+
+        @media (max-width: 767px) {
+            body {
+                padding: 15px;
+            }
         }
 
         .markdown-body {
-            max-width: 900px;
-            margin: auto;
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.12/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
-    <div id="output" class="markdown-body">Carregando plano de ensino...</div>
+    <div id="output" class="markdown-body">Carregando planejamento...</div>
 
     <script>
-        // 1. Captura os parâmetros da URL (ex: ?p=aula01.md)
+        // 1. Pega o parâmetro 'p' da URL
         const urlParams = new URLSearchParams(window.location.search);
-        const arquivo = urlParams.get('p'); // 'p' é o nome do parâmetro
+        const arquivoMD = urlParams.get('p');
 
-        // 2. Define o caminho do arquivo (usa 'planejamento.md' como padrão caso não passe nada)
-        const caminhoFinal = arquivo ? `./planejamentos/${arquivo}` : './planejamentos/planejamento.md';
+        if (arquivoMD) {
+            // 2. Monta o caminho: pasta 'planejamentos/' + nome do arquivo
+            const caminho = `./planejamentos/${arquivoMD}`;
 
-        // 3. Busca e renderiza o Markdown
-        fetch(caminhoFinal)
-            .then(response => {
-                if (!response.ok) throw new Error('Arquivo não encontrado');
-                return response.text();
-            })
-            .then(markdown => {
-                document.getElementById('output').innerHTML = marked.parse(markdown);
-            })
-            .catch(err => {
-                document.getElementById('output').innerHTML = `<p style="color:red">Erro: Não foi possível carregar o planejamento (${arquivo}). Verifique se o nome está correto.</p>`;
-            });
+            fetch(caminho)
+                .then(response => {
+                    if (!response.ok) throw new Error('Arquivo não encontrado no servidor.');
+                    return response.text();
+                })
+                .then(text => {
+                    // 3. Renderiza o conteúdo
+                    document.getElementById('output').innerHTML = marked.parse(text);
+                    
+                    // Ajuste opcional: define o título da aba com o nome do arquivo
+                    document.title = `Plano: ${arquivoMD.replace('.md', '')}`;
+                })
+                .catch(error => {
+                    document.getElementById('output').innerHTML = `
+                        <h1>Erro 404</h1>
+                        <p>O arquivo <strong>${arquivoMD}</strong> não foi encontrado na pasta <code>/planejamentos/</code>.</p>
+                        <small>${error.message}</small>
+                    `;
+                });
+        } else {
+            document.getElementById('output').innerHTML = "<h1>Erro</h1><p>Nenhum arquivo foi especificado na URL. Use <code>?p=nome-do-arquivo.md</code></p>";
+        }
     </script>
 </body>
 
