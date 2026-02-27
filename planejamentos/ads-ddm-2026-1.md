@@ -47,22 +47,23 @@ Nota Final = (Avaliação 1) + Média das atividades práticas desenvolvidas.
 ## 2. Aula 2
 ### Estrutura e Ciclo de Vida
 #### Tópicos
-- Internacionalização de recursos (Strings.xml). 
-- Arquitetura interna do App: Apresentação dos 4 grandes componentes (Activities, Services, Broadcast Receivers, Content Providers)
-- Activity: O que é, para que serve e seus diferentes estados.
-- Ciclo de Vida da Activity: Passagem pelos métodos essenciais como onCreate, onStart, onResume, onPause, onStop e onDestroy.
-- Design de Telas: Introdução ao XML para desenvolvimento de interfaces no Android Studio.
-- Layouts Básicos: Trabalhando com a organização visual da tela (ex: LinearLayout, ConstraintLayout).
-- Aprofundamento em Activities: O que é, para que serve e seus diferentes estados.
-- Ciclo de Vida da Activity: Passagem pelos métodos essenciais como onCreate, onStart, onResume, onPause, onStop e onDestroy.
-- Internacionalização de recursos (Strings.xml).
+### Conteúdos Teóricos
 
-- Exercício Prático: Criar um log com os estados do ciclo de vida da Activity, utilizando Logcat para monitorar as transições entre os estados do ciclo de vida. da aplicação contador de cliques.
-- Exercicío Prático: Manter o estado do contador de cliques mesmo após a rotação da tela, utilizando o método onSaveInstanceState para salvar o estado atual e onRestoreInstanceState para restaurá-lo.
-- Exercício Prático: Implementar um recurso de internacionalização no aplicativo contador de cliques, criando arquivos de recursos para diferentes idiomas e permitindo que o usuário escolha o idioma da interface.
-- Exercício Prático: Criar um aplicativo de sorteio de números, onde o usuário pode clicar em um botão para gerar um número aleatório entre 1 e 100, exibindo o resultado em uma TextView. 
-- Exercício Prático: Adicionar opções de personalização no aplicativo de sorteio, permitindo que o usuário escolha o intervalo de números a serem sorteados (ex: 1-50, 1-100, etc.) e o tipo de número (inteiro).
-- Exercício Prático - Implementar um recurso de compartilhamento no aplicativo de sorteio, permitindo que o usuário compartilhe o número gerado através de um Intent de compartilhamento.
+- **Arquitetura de Aplicações Android**: Visão geral da arquitetura interna do aplicativo, abordando os quatro principais componentes da plataforma: *Activities*, *Services*, *Broadcast Receivers* e *Content Providers*.
+- **Activities no Android**: Conceitos fundamentais, finalidade e funcionamento das *Activities* no controle da interface com o usuário.
+- **Ciclo de Vida da Activity**: Estudo dos principais métodos do ciclo de vida (*onCreate*, *onStart*, *onResume*, *onPause*, *onStop* e *onDestroy*) e suas implicações no comportamento da aplicação.
+- **Desenvolvimento de Interfaces com XML**: Introdução ao uso de arquivos XML para a criação de telas no Android Studio.
+- **Layouts Básicos**: Organização visual da interface utilizando *LinearLayout* e *ConstraintLayout*.
+- **Internacionalização de Recursos**: Utilização do arquivo *strings.xml* para criação de interfaces em múltiplos idiomas.
+
+### Atividades Práticas
+
+- **Monitoramento do Ciclo de Vida**: Desenvolvimento de um aplicativo de contador de cliques com registro dos estados do ciclo de vida da *Activity*, utilizando o *Logcat* para análise das transições.
+- **Persistência de Estado da Interface**: Implementação da manutenção do estado do contador de cliques durante a rotação da tela, utilizando os métodos *onSaveInstanceState* e *onRestoreInstanceState*.
+- **Internacionalização da Aplicação**: Adaptação do aplicativo de contador de cliques para suportar múltiplos idiomas por meio de arquivos de recursos localizados.
+- **Aplicativo de Sorteio de Números**: Criação de um aplicativo capaz de gerar números aleatórios dentro de um intervalo definido e exibir o resultado na interface.
+- **Personalização do Sorteio**: Implementação de opções que permitem ao usuário definir o intervalo dos números a serem sorteados.
+- **Compartilhamento de Resultados**: Uso de *Intents* para possibilitar o compartilhamento do número sorteado com outros aplicativos instalados no dispositivo.
 
 ## 3. Aula 3
 ## 4. Aula 4
