@@ -1,159 +1,207 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Visualizador de Plano de Ensino</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
 body {
     background: #f8fafc;
-    padding: 20px;
+    padding: 32px;
 }
 
 .markdown-body {
     max-width: 980px;
     margin: auto;
     background: white;
-    padding: 40px;
+    padding: 32px;
     border-radius: 12px;
 }
 
-.calendar-card {
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,.1);
-}
+/* ===== CALENDÁRIO ===== */
 
 .day-cell {
-    aspect-ratio: 1/1;
+    aspect-ratio: 1 / 1;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    font-size: .85rem;
+    position: relative;
+    font-size: 0.875rem;
 }
 
 .day-cell.marked {
-    background: #6366f1;
+    background-color: #6366f1;
     color: white;
     font-weight: 600;
+    cursor: pointer;
 }
 
-.day-cell.today {
-    border: 2px solid #6366f1;
-    font-weight: 600;
+/* ===== TOOLTIP ===== */
+
+.day-cell[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    white-space: pre-line;
+    width: max-content;
+    max-width: 280px;
+    z-index: 50;
+    box-shadow: 0 10px 20px rgba(0,0,0,.25);
+}
+
+.day-cell[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 105%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1f2937;
 }
 </style>
 </head>
 
 <body>
 
-<div id="output" class="markdown-body">Carregando planejamento…</div>
+<div id="output" class="markdown-body">
+    Carregando planejamento...
+</div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
 const arquivoMD = params.get('p');
 const output = document.getElementById('output');
 
-/* =============================
-   1️⃣ Carrega o Markdown
-============================= */
 if (!arquivoMD) {
-    output.innerHTML = "<p>Use ?p=arquivo.md</p>";
-} else {
-    const base = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
-    const urlMD = `${window.location.origin}${base}${arquivoMD}`;
-
-    fetch(urlMD)
-        .then(r => r.text())
-        .then(md => {
-            output.innerHTML = marked.parse(md);
-            processCalendar();
-        })
-        .catch(() => {
-            output.innerHTML = "<p>Erro ao carregar o planejamento.</p>";
-        });
+    output.innerHTML = "<p>Informe o parâmetro ?p=arquivo.md</p>";
+    throw new Error("Arquivo MD não informado");
 }
 
-/* =============================
-   2️⃣ Extrai datas da tabela
-============================= */
-function extractDatesFromTable() {
-    const dates = [];
+const basePath = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
+const urlMD = `${window.location.origin}${basePath}${arquivoMD}`;
+
+fetch(urlMD)
+    .then(r => r.text())
+    .then(md => {
+        output.innerHTML = marked.parse(md);
+        processCalendar();
+    })
+    .catch(() => {
+        output.innerHTML = "<p>Erro ao carregar o planejamento.</p>";
+    });
+
+/* ================================
+   EXTRAÇÃO DOS DADOS DA TABELA
+================================ */
+
+function extractEventsFromTable() {
+    const events = {};
     const rows = output.querySelectorAll("table tr");
 
     rows.forEach(row => {
         const cells = row.querySelectorAll("td");
         if (cells.length >= 4) {
+            const aula = cells[0].innerText.trim();
+            const conteudo = cells[1].innerText.trim();
+            const carga = cells[2].innerText.trim();
             const rawDate = cells[3].innerText.trim();
+
             const match = rawDate.match(/(\d{2})\/(\d{2})\/(\d{4})/);
             if (match) {
                 const [ , d, m, y ] = match;
-                dates.push(`${y}-${m}-${d}`);
+                const iso = `${y}-${m}-${d}`;
+
+                events[iso] = {
+                    aula,
+                    conteudo,
+                    carga,
+                    rawDate
+                };
             }
         }
     });
 
-    return dates;
+    return events;
 }
 
-/* =============================
-   3️⃣ Calendário
-============================= */
-function getUniqueMonths(dates) {
-    return [...new Set(dates.map(d => d.slice(0,7)))].sort();
-}
+/* ================================
+   RENDERIZAÇÃO DO CALENDÁRIO
+================================ */
 
-function renderMonth(ym, marked) {
-    const [y,m] = ym.split('-').map(Number);
-    const firstDay = new Date(y, m-1, 1).getDay();
+function renderMonth(yearMonth, events) {
+    const [y, m] = yearMonth.split('-').map(Number);
+    const firstDay = new Date(y, m - 1, 1).getDay();
     const lastDay = new Date(y, m, 0).getDate();
-    const name = new Intl.DateTimeFormat('pt-BR',{month:'long'}).format(new Date(y,m-1,1));
+    const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long' })
+        .format(new Date(y, m - 1, 1));
 
     let html = `
-    <div class="calendar-card bg-white rounded-xl p-4 mb-6">
-      <h3 class="text-center font-semibold mb-3 capitalize">${name} ${y}</h3>
-      <div class="grid grid-cols-7 text-center text-xs mb-1">
-        <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SÁB</div>
-      </div>
-      <div class="grid grid-cols-7 gap-1 text-center">
+    <div class="bg-white rounded-xl shadow p-4">
+        <h3 class="text-center font-semibold capitalize mb-3">${monthName} ${y}</h3>
+        <div class="grid grid-cols-7 text-xs text-center mb-2">
+            <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div>
+            <div>QUI</div><div>SEX</div><div>SÁB</div>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center">
     `;
 
-    for(let i=0;i<firstDay;i++) html += `<div></div>`;
+    for (let i = 0; i < firstDay; i++) html += `<div></div>`;
 
-    for(let d=1;d<=lastDay;d++){
+    for (let d = 1; d <= lastDay; d++) {
         const date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         let cls = "day-cell";
-        if (marked.includes(date)) cls += " marked";
-        html += `<div class="${cls}">${d}</div>`;
+        let tooltip = "";
+
+        if (events[date]) {
+            cls += " marked";
+            const e = events[date];
+            tooltip = `
+Aula ${e.aula}
+${e.conteudo}
+Carga horária: ${e.carga}
+Data: ${e.rawDate}
+            `.trim();
+        }
+
+        html += `<div class="${cls}" ${tooltip ? `data-tooltip="${tooltip}"` : ""}>${d}</div>`;
     }
 
     html += `</div></div>`;
     return html;
 }
 
-/* =============================
-   4️⃣ Injeta no ponto do MD
-============================= */
+/* ================================
+   INJEÇÃO NO PONTO DO MD
+================================ */
+
 function processCalendar() {
-    const target = document.getElementById('calendario-presencial');
-    if (!target) return;
+    const container = document.getElementById("calendario-presencial");
+    if (!container) return;
 
-    const dates = extractDatesFromTable();
-    const months = getUniqueMonths(dates);
+    const events = extractEventsFromTable();
+    const months = [...new Set(Object.keys(events).map(d => d.slice(0,7)))].sort();
 
-    let calendarHTML = `
-      <h2 style="margin:2rem 0 1rem;">📅 Calendário de Encontros Presenciais</h2>
-      <div class="grid md:grid-cols-2 gap-6">
-    `;
+    let html = `<div class="grid md:grid-cols-2 gap-6 my-6">`;
+    months.forEach(m => html += renderMonth(m, events));
+    html += `</div>`;
 
-    months.forEach(m => calendarHTML += renderMonth(m, dates));
-    calendarHTML += `</div>`;
-
-    target.innerHTML = calendarHTML;
+    container.innerHTML = html;
 }
 </script>
 
