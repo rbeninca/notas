@@ -1,92 +1,74 @@
 # Plano de Ensino: Desenvolvimento Móvel (2026/1)
 
+
+
+Planejamento encontros presenciais da Unidade 
 | #  | Conteúdo | Carga Horária | Data | Link |
 |:---:|----------|:---:|:---:|:---:|
-| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente | 4h | 13/02/2026 | [Detalhes](#1-aula-1) |
-| [2.](#2-aula-2) | Ciclo de Vida da Activity e Estrutura do Projeto Android | 4h | 20/02/2026 | [Detalhes](#2-aula-2) |
-| [3.](#3-aula-3) | Views, Listeners e Projeto Contador de Cliques | 4h | 27/02/2026 | [Detalhes](#3-aula-3) |
-| [4.](#4-aula-4) | Tipos de Aplicativos (Nativo, Híbrido, Web) e Internacionalização | 4h | 06/03/2026 | [Detalhes](#4-aula-4) |
-| [5.](#5-aula-5) | Intents e Passagem de Dados entre Activities (Bundle) | 4h | 13/03/2026 | [Detalhes](#5-aula-5) |
-| [6.](#6-aula-6) | Fragments e Comunicação entre Fragmentos | 4h | 20/03/2026 | [Detalhes](#6-aula-6) |
-| [7.](#7-aula-7) | Layouts Avançados: ConstraintLayout e Design Responsivo | 4h | 27/03/2026 | [Detalhes](#7-aula-7) |
-| [8.](#8-aula-8) | Listagens Simples (ListView) e Adapters | 4h | 03/04/2026 | [Detalhes](#8-aula-8) |
-| [9.](#9-aula-9) | Listagens Avançadas com RecyclerView e CardView | 4h | 10/04/2026 | [Detalhes](#9-aula-9) |
-| [10.](#10-aula-10) | **Avaliação 1 (Prática de Interface e Navegação)** | 4h | 17/04/2026 | [Detalhes](#10-aula-10) |
-| [11.](#11-aula-11) | Gerenciadores do Android (Notifications e AlarmManager) | 4h | 24/04/2026 | [Detalhes](#11-aula-11) |
-| [12.](#12-aula-12) | Persistência de Dados Local: SharedPreferences | 4h | 01/05/2026 | [Detalhes](#12-aula-12) |
-| [13.](#13-aula-13) | Banco de Dados com SQLite | 4h | 08/05/2026 | [Detalhes](#13-aula-13) |
-| [14.](#14-aula-14) | Multimédia: Uso de Áudio, Vídeo e Câmera | 4h | 15/05/2026 | [Detalhes](#14-aula-14) |
-| [15.](#15-aula-15) | Permissões em Tempo de Execução e Recursos do Sistema | 4h | 22/05/2026 | [Detalhes](#15-aula-15) |
-| [16.](#16-aula-16) | Geolocalização, Sensores e LocationManager | 4h | 29/05/2026 | [Detalhes](#16-aula-16) |
-| [17.](#17-aula-17) | Integração com Mapas (Google Maps API) | 4h | 05/06/2026 | [Detalhes](#17-aula-17) |
-| [18.](#18-aula-18) | **Avaliação 2 (Projeto Final Mobile)** | 4h | 12/06/2026 | [Detalhes](#18-aula-18) |
-| [19.](#19-aula-19) | Recuperação Final e Devolutiva de Notas | 4h | 19/06/2026 | [Detalhes](#19-aula-19) |
-| [20.](#20-aula-20) | Conselho de Classe Final | 4h | 26/06/2026 | [Detalhes](#20-aula-20) |
+| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 03/02/2026  terça-feira |   |
+| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 24/02/2026  terça-feira |   |
+| [2.](#2-aula-2) | Activity, Ciclo de Vida da Activity,Estrutura do Projeto Android,Listeners,Internacionalização|4h | 03/03/2026  terça-feira |   |
+| [3.](#3-aula-3) | Passagem dados entre Activitys,(Bundle),Intents , Views, Views Customizadas **Avaliação 1**   |4h | 09/05/2026  sabado      |   |
+| [4.](#4-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026  terça-feira |   |
+| [5.](#5-aula-5) | Atividade Prática em sala.                                                                    |4h | 27/05/2026  quarta-feira|   |
+| [6.](#6-aula-6) | Gerenciadores do Android (Notifications e AlarmManager)                                       |4h | 28/05/2026  quinta-feira|   |
+| [7.](#7-aula-7) | Persistência de Dados Local: SharedPreferences  e SQLite                                      |4h | 03/06/2026  quarta-feira|   |
+| [8.](#8-aula-8) | Geolocalização, Sensores e LocationManager                                                    |4h | 10/06/2026  quarta-feira|   |
+| [9.](#9-aula-9) | Integração com Mapas (Google Maps API)                                                        |4h | 16/06/2026  terça-feira |   |
+| [10.](#10-aula-10) | Camera                                                                                     |4h | 17/06/2026  quarta-feira|   |
+| [11.](#11-aula-11) | Camera                                                                                     |4h | 23/06/2026  terça-feira |   |
+| [12.](#12-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026  quarta-feira|   |
 
 ---
+Avaliação 1: 10/05/2026 
+Atividades Práticas periódicas desenvolvidas ao longo do semestre. 
+Nota Final = (Avaliação 1) + Média das atividades práticas desenvolvidas. 
 
+
+---
 # Planejamento das Aulas
-
 ## 1. Aula 1
 ### Introdução e Ambiente
 #### Tópicos
 - Apresentação do Plano de Ensino da unidade curricular.
-- Arquitetura do Sistema Android (Kernel, Bibliotecas, Framework).
-- Instalação e configuração do Android Studio.
-- Estrutura básica de um projeto Android.
+- Visão geral do desenvolvimento móvel, história do android e cenário atual.
+- Arquitetura do Sistema Android ( Sistema em Camadas, Bibliotecas, Framework).
+- Tipos de Aplicativos: Diferenças entre Nativo, Híbrido e Web.
+- Ambiente de Desenvolvimento:Android Studio e configuração do emulador.
+- Configuração de emuladores para testes (AVD Manager) e ADB.
+- Estrutura básica de um projeto Android. (Manifest, Gradle, Res, XML  )
+- App Hello World: Criando e executando o primeiro aplicativo Android no emulador.
+- App Contador de Cliques: Desenvolvimento de um aplicativo simples para praticar a criação de atividades e manipulação de elementos de interface.
+- Integração com o GitHub: Configuração de repositórios para controle de versão e colaboração.
+
 
 ## 2. Aula 2
 ### Estrutura e Ciclo de Vida
 #### Tópicos
-- Ciclo de Vida da Activity (onCreate, onStart, onResume, etc.).
-- Ambientes de Execução: Emuladores e dispositivos reais.
-- Definição de Layouts básicos.
+- Internacionalização de recursos (Strings.xml). 
+- Arquitetura interna do App: Apresentação dos 4 grandes componentes (Activities, Services, Broadcast Receivers, Content Providers)
+- Activity: O que é, para que serve e seus diferentes estados.
+- Ciclo de Vida da Activity: Passagem pelos métodos essenciais como onCreate, onStart, onResume, onPause, onStop e onDestroy.
+- Design de Telas: Introdução ao XML para desenvolvimento de interfaces no Android Studio.
+- Layouts Básicos: Trabalhando com a organização visual da tela (ex: LinearLayout, ConstraintLayout).
+- Aprofundamento em Activities: O que é, para que serve e seus diferentes estados.
+- Ciclo de Vida da Activity: Passagem pelos métodos essenciais como onCreate, onStart, onResume, onPause, onStop e onDestroy.
+- Internacionalização de recursos (Strings.xml).
+
+- Exercício Prático: Criar um log com os estados do ciclo de vida da Activity, utilizando Logcat para monitorar as transições entre os estados do ciclo de vida. da aplicação contador de cliques.
+- Exercicío Prático: Manter o estado do contador de cliques mesmo após a rotação da tela, utilizando o método onSaveInstanceState para salvar o estado atual e onRestoreInstanceState para restaurá-lo.
+- Exercício Prático: Implementar um recurso de internacionalização no aplicativo contador de cliques, criando arquivos de recursos para diferentes idiomas e permitindo que o usuário escolha o idioma da interface.
+- Exercício Prático: Criar um aplicativo de sorteio de números, onde o usuário pode clicar em um botão para gerar um número aleatório entre 1 e 100, exibindo o resultado em uma TextView. 
+- Exercício Prático: Adicionar opções de personalização no aplicativo de sorteio, permitindo que o usuário escolha o intervalo de números a serem sorteados (ex: 1-50, 1-100, etc.) e o tipo de número (inteiro).
+- Exercício Prático - Implementar um recurso de compartilhamento no aplicativo de sorteio, permitindo que o usuário compartilhe o número gerado através de um Intent de compartilhamento.
 
 ## 3. Aula 3
-### Interatividade e Projeto Inicial
-#### Tópicos
-- **Projeto Contador de Cliques**:
-  - Exibir Hello World e manipulação de TextView.
-  - Listeners de clique em Botões.
-  - Lógica para gerar números aleatórios.
-
 ## 4. Aula 4
-### Tipos de Aplicações
-#### Tópicos
-- Definição de Layout e tipos de aplicações (Nativo, Híbrido e Web).
-- Internacionalização de recursos (Strings.xml).
-- Boas práticas na interface móvel.
-
 ## 5. Aula 5
-### Navegação entre Telas
-#### Tópicos
-- Uso de Intents para abrir novas Activities.
-- Uso do Bundle para passagem de dados.
-- Ciclo de vida durante a navegação.
-
+## 6. Aula 6
+## 7. Aula 7
 ## 8. Aula 8
-### Listagens Simples
-#### Tópicos
-- Exibição de dados em listas (ListView).
-- Conceito de Adapter e fontes de dados simples.
-
 ## 9. Aula 9
-### Listagens Avançadas
-#### Tópicos
-- Implementação de RecyclerView.
-- Uso de CardView para design moderno.
-- Otimização de listas longas (ViewHolder Pattern).
-
-## 13. Aula 13
-### Persistência de Dados
-#### Tópicos
-- Armazenamento local com SQLite.
-- Operações de CRUD (Inserir, Ler, Atualizar, Eliminar).
-- Diferença entre persistência em SharedPreferences e Banco de Dados.
-
-## 16. Aula 16
-### Recursos do Sistema
-#### Tópicos
-- Geolocalização com LocationManager.
-- Acesso a sensores do dispositivo.
-- Permissões em tempo de execução (Android 6.0+).
+## 10. Aula 10
+## 11. Aula 11
+## 12. Aula 12
