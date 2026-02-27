@@ -5,19 +5,19 @@
 Planejamento encontros presenciais da Unidade 
 | #  | Conteúdo | Carga Horária | Data | Link |
 |:---:|----------|:---:|:---:|:---:|
-| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 03/02/2026  terça-feira |   |
-| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 24/02/2026  terça-feira |   |
-| [2.](#2-aula-2) | Activity, Ciclo de Vida da Activity,Estrutura do Projeto Android,Listeners,Internacionalização|4h | 11/04/2026  sabado      |   |
-| [3.](#3-aula-3) | Passagem dados entre Activitys,(Bundle),Intents , Views, Views Customizadas **Avaliação 1**   |4h | 09/05/2026  sabado      |   |
-| [4.](#4-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026  terça-feira |   |
-| [5.](#5-aula-5) | Atividade Prática em sala.                                                                    |4h | 27/05/2026  quarta-feira|   |
-| [6.](#6-aula-6) | Gerenciadores do Android (Notifications e AlarmManager)                                       |4h | 28/05/2026  quinta-feira|   |
-| [7.](#7-aula-7) | Persistência de Dados Local: SharedPreferences  e SQLite                                      |4h | 03/06/2026  quarta-feira|   |
-| [8.](#8-aula-8) | Geolocalização, Sensores e LocationManager                                                    |4h | 10/06/2026  quarta-feira|   |
-| [9.](#9-aula-9) | Integração com Mapas (Google Maps API)                                                        |4h | 16/06/2026  terça-feira |   |
-| [10.](#10-aula-10) | Camera                                                                                     |4h | 17/06/2026  quarta-feira|   |
-| [11.](#11-aula-11) | Camera                                                                                     |4h | 23/06/2026  terça-feira |   |
-| [12.](#12-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026  quarta-feira|   |
+| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 03/02/2026 | terça-feira    |
+| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 24/02/2026 | terça-feira    |
+| [2.](#2-aula-2) | Activity, Ciclo de Vida da Activity,Estrutura do Projeto Android,Listeners,Internacionalização|4h | 11/04/2026 | sabado         |
+| [3.](#3-aula-3) | Passagem dados entre Activitys,(Bundle),Intents , Views, Views Customizadas **Avaliação 1**   |4h | 09/05/2026 | sabado         |
+| [4.](#4-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026 | terça-feira    |
+| [5.](#5-aula-5) | Atividade Prática em sala.                                                                    |4h | 27/05/2026 | quarta-feira   |
+| [6.](#6-aula-6) | Gerenciadores do Android (Notifications e AlarmManager)                                       |4h | 28/05/2026 | quinta-feira   |
+| [7.](#7-aula-7) | Persistência de Dados Local: SharedPreferences  e SQLite                                      |4h | 03/06/2026 | quarta-feira   |
+| [8.](#8-aula-8) | Geolocalização, Sensores e LocationManager                                                    |4h | 10/06/2026 | quarta-feira   |
+| [9.](#9-aula-9) | Integração com Mapas (Google Maps API)                                                        |4h | 16/06/2026 | terça-feira    |
+| [10.](#10-aula-10) | Camera                                                                                     |4h | 17/06/2026 | quarta-feira   |
+| [11.](#11-aula-11) | Camera                                                                                     |4h | 23/06/2026 | terça-feira    |
+| [12.](#12-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026 | quarta-feira   |
 
 ---
 Avaliação 1: 10/05/2026 
