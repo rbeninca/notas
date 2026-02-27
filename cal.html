@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário de Datas Marcadas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .calendar-card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .day-cell {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            position: relative;
+            font-size: 0.875rem;
+        }
+
+        .day-cell.marked {
+            background-color: #6366f1;
+            color: white;
+            font-weight: 600;
+        }
+
+        .day-cell.marked::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .day-cell.today {
+            border: 2px solid #6366f1;
+            color: #4338ca;
+            font-weight: 600;
+        }
+
+        .day-cell.empty {
+            cursor: default;
+        }
+
+        .month-section {
+            break-inside: avoid;
+            margin-bottom: 2rem;
+        }
+
+        /* Estilo para grid de meses se houver muitos */
+        @media (min-width: 768px) {
+            #calendarContainer {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-10 text-center">
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Meus Eventos Marcados</h1>
+            <p class="text-slate-500">Exibindo todos os meses que possuem atividades programadas.</p>
+        </header>
+
+        <!-- Container onde todos os meses serão injetados -->
+        <div id="calendarContainer">
+            <!-- Gerado via JS -->
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ARRAY DE DATAS EXEMPLO
+         * Formato: YYYY-MM-DD
+         */
+        const myEvents = [
+            '2026-02-14',
+            '2026-02-20',
+            '2026-02-28',
+            '2026-03-05',
+            '2026-03-15',
+            '2026-06-12',
+            '2026-12-25',
+            '2027-01-01'
+        ];
+
+        /**
+         * Extrai os meses únicos que contêm datas no array fornecido
+         */
+        function getUniqueMonths(dates) {
+            const months = new Set();
+            dates.forEach(dateStr => {
+                const [year, month] = dateStr.split('-');
+                months.add(`${year}-${month}`);
+            });
+            // Retorna ordenado cronologicamente
+            return Array.from(months).sort();
+        }
+
+        /**
+         * Gera o HTML de um mês específico
+         */
+        function renderMonth(yearMonthStr, markedDates) {
+            const [year, monthIndex] = yearMonthStr.split('-').map(Number);
+            const date = new Date(year, monthIndex - 1, 1);
+            
+            const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(date);
+            const firstDayOfMonth = new Date(year, monthIndex - 1, 1).getDay();
+            const lastDateOfMonth = new Date(year, monthIndex, 0).getDate();
+            const today = new Date();
+
+            let monthHtml = `
+                <div class="month-section calendar-card bg-white rounded-2xl overflow-hidden">
+                    <div class="bg-indigo-600 p-4 text-white">
+                        <h2 class="text-xl font-semibold capitalize text-center">${monthName} ${year}</h2>
+                        <div class="grid grid-cols-7 text-center text-[10px] font-medium opacity-80 mt-3">
+                            <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SÁB</div>
+                        </div>
+                    </div>
+                    <div class="p-4 grid grid-cols-7 gap-1 text-slate-600">
+            `;
+
+            // 1. Espaços vazios
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                monthHtml += `<div class="day-cell empty"></div>`;
+            }
+
+            // 2. Dias do mês
+            for (let day = 1; day <= lastDateOfMonth; day++) {
+                const fullDateStr = `${year}-${String(monthIndex).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                let classes = 'day-cell';
+                
+                if (day === today.getDate() && (monthIndex - 1) === today.getMonth() && year === today.getFullYear()) {
+                    classes += ' today';
+                }
+                if (markedDates.includes(fullDateStr)) {
+                    classes += ' marked';
+                }
+
+                monthHtml += `<div class="${classes}">${day}</div>`;
+            }
+
+            monthHtml += `</div></div>`;
+            return monthHtml;
+        }
+
+        /**
+         * Função Inicializadora
+         */
+        function initApp() {
+            const container = document.getElementById('calendarContainer');
+            const uniqueMonths = getUniqueMonths(myEvents);
+            
+            if (uniqueMonths.length === 0) {
+                container.innerHTML = '<p class="text-center text-slate-400 col-span-full">Nenhuma data marcada encontrada.</p>';
+                return;
+            }
+
+            let finalHtml = '';
+            uniqueMonths.forEach(ym => {
+                finalHtml += renderMonth(ym, myEvents);
+            });
+
+            container.innerHTML = finalHtml;
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>

@@ -24,6 +24,9 @@ Avaliação 1: 10/05/2026
 Atividades Práticas periódicas desenvolvidas ao longo do semestre. 
 Nota Final = (Avaliação 1) + Média das atividades práticas desenvolvidas. 
 
+--- 
+<div id="calendario-presencial"></div>
+
 
 ---
 # Planejamento das Aulas

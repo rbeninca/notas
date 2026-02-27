@@ -1,76 +1,161 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de Plano de Ensino</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualizador de Plano de Ensino</title>
 
-    <style>
-        body {
-            box-sizing: border-box;
-            min-width: 200px;
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 45px;
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-        @media (max-width: 767px) {
-            body {
-                padding: 15px;
-            }
-        }
+<style>
+body {
+    background: #f8fafc;
+    padding: 20px;
+}
 
-        .markdown-body {
-            box-sizing: border-box;
-            min-width: 200px;
-            max-width: 980px;
-            margin: 0 auto;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+.markdown-body {
+    max-width: 980px;
+    margin: auto;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+}
+
+.calendar-card {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,.1);
+}
+
+.day-cell {
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: .85rem;
+}
+
+.day-cell.marked {
+    background: #6366f1;
+    color: white;
+    font-weight: 600;
+}
+
+.day-cell.today {
+    border: 2px solid #6366f1;
+    font-weight: 600;
+}
+</style>
 </head>
 
 <body>
-    <div id="output" class="markdown-body">Carregando planejamento...</div>
 
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const arquivoMD = urlParams.get('p');
-    const output = document.getElementById('output');
+<div id="output" class="markdown-body">Carregando planejamento…</div>
 
-    if (arquivoMD) {
-        // Criamos o caminho absoluto baseado na URL atual para não ter erro de pasta
-        const pastaPlanejamentos = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
-        const urlFinal = `${window.location.origin}${pastaPlanejamentos}${arquivoMD}`;
+<script>
+const params = new URLSearchParams(window.location.search);
+const arquivoMD = params.get('p');
+const output = document.getElementById('output');
 
-        console.log("Tentando buscar em:", urlFinal); // Debug no F12
+/* =============================
+   1️⃣ Carrega o Markdown
+============================= */
+if (!arquivoMD) {
+    output.innerHTML = "<p>Use ?p=arquivo.md</p>";
+} else {
+    const base = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
+    const urlMD = `${window.location.origin}${base}${arquivoMD}`;
 
-        fetch(urlFinal)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Arquivo não encontrado (Erro ${response.status})`);
-                }
-                return response.text();
-            })
-            .then(text => {
-                output.innerHTML = marked.parse(text);
-                document.title = `Plano: ${arquivoMD}`;
-            })
-            .catch(error => {
-                output.innerHTML = `
-                    <div style="background:#fff5f5; color:#c53030; padding:20px; border-radius:8px; border:1px solid #feb2b2; font-family:sans-serif">
-                        <h3>Erro de Carregamento</h3>
-                        <p>Não foi possível encontrar o arquivo: <strong>${arquivoMD}</strong></p>
-                        <p style="font-size: 0.8em">Caminho tentado: <code style="word-break: break-all;">${urlFinal}</code></p>
-                        <button onclick="location.reload(true)" style="margin-top:10px; cursor:pointer">Tentar Recarregar (Limpar Cache)</button>
-                    </div>`;
-            });
-    } else {
-        output.innerHTML = "<h3>Aguardando parâmetro...</h3><p>Use ?p=nome-do-arquivo.md na URL.</p>";
+    fetch(urlMD)
+        .then(r => r.text())
+        .then(md => {
+            output.innerHTML = marked.parse(md);
+            processCalendar();
+        })
+        .catch(() => {
+            output.innerHTML = "<p>Erro ao carregar o planejamento.</p>";
+        });
+}
+
+/* =============================
+   2️⃣ Extrai datas da tabela
+============================= */
+function extractDatesFromTable() {
+    const dates = [];
+    const rows = output.querySelectorAll("table tr");
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length >= 4) {
+            const rawDate = cells[3].innerText.trim();
+            const match = rawDate.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+            if (match) {
+                const [ , d, m, y ] = match;
+                dates.push(`${y}-${m}-${d}`);
+            }
+        }
+    });
+
+    return dates;
+}
+
+/* =============================
+   3️⃣ Calendário
+============================= */
+function getUniqueMonths(dates) {
+    return [...new Set(dates.map(d => d.slice(0,7)))].sort();
+}
+
+function renderMonth(ym, marked) {
+    const [y,m] = ym.split('-').map(Number);
+    const firstDay = new Date(y, m-1, 1).getDay();
+    const lastDay = new Date(y, m, 0).getDate();
+    const name = new Intl.DateTimeFormat('pt-BR',{month:'long'}).format(new Date(y,m-1,1));
+
+    let html = `
+    <div class="calendar-card bg-white rounded-xl p-4 mb-6">
+      <h3 class="text-center font-semibold mb-3 capitalize">${name} ${y}</h3>
+      <div class="grid grid-cols-7 text-center text-xs mb-1">
+        <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SÁB</div>
+      </div>
+      <div class="grid grid-cols-7 gap-1 text-center">
+    `;
+
+    for(let i=0;i<firstDay;i++) html += `<div></div>`;
+
+    for(let d=1;d<=lastDay;d++){
+        const date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        let cls = "day-cell";
+        if (marked.includes(date)) cls += " marked";
+        html += `<div class="${cls}">${d}</div>`;
     }
-</script>
-</body>
 
+    html += `</div></div>`;
+    return html;
+}
+
+/* =============================
+   4️⃣ Injeta no ponto do MD
+============================= */
+function processCalendar() {
+    const target = document.getElementById('calendario-presencial');
+    if (!target) return;
+
+    const dates = extractDatesFromTable();
+    const months = getUniqueMonths(dates);
+
+    let calendarHTML = `
+      <h2 style="margin:2rem 0 1rem;">📅 Calendário de Encontros Presenciais</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+    `;
+
+    months.forEach(m => calendarHTML += renderMonth(m, dates));
+    calendarHTML += `</div>`;
+
+    target.innerHTML = calendarHTML;
+}
+</script>
+
+</body>
 </html>
