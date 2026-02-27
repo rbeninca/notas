@@ -19,7 +19,7 @@ Planejamento encontros presenciais da Unidade
 | [12.](#12-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026 | quarta-feira   |
 
 ---
-Avaliação 1: 09/05/2026 
+Avaliação 1 (Data a ser definida)
 Atividades Práticas periódicas desenvolvidas ao longo do semestre. 
 Nota Final = (Avaliação 1) + Média das atividades práticas desenvolvidas. 
 
