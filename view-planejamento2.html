@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualizador de Plano de Ensino</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+    padding: 0;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 32px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.header p {
+    margin: 8px 0 0 0;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+.header-icon {
+    font-size: 2.5rem;
+}
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 32px;
+}
+.content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+@media (max-width: 1200px) {
+    .content-wrapper {
+        grid-template-columns: 1fr;
+    }
+    .sidebar {
+        display: none;
+    }
+}
+.markdown-body {
+    background: white;
+    padding: 48px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+.markdown-body:hover {
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+.markdown-body h1 {
+    color: #1e293b;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 20px;
+    margin-top: 0;
+}
+.markdown-body h2 {
+    color: #334155;
+    border-left: 4px solid #667eea;
+    padding-left: 20px;
+    margin-top: 40px;
+}
+.markdown-body h3 {
+    color: #475569;
+    border-left: 3px solid #a5b4fc;
+    padding-left: 15px;
+}
+.markdown-body h4 {
+    color: #64748b;
+}
+.markdown-body a {
+    color: #667eea;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+.markdown-body a:hover {
+    color: #764ba2;
+    border-bottom-color: #764ba2;
+}
+.markdown-body table {
+    border-collapse: collapse;
+    margin: 30px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+}
+.markdown-body table thead tr {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+.markdown-body table th {
+    padding: 18px;
+    font-weight: 600;
+    text-align: left;
+    border: none;
+}
+.markdown-body table td {
+    padding: 16px 18px;
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+.markdown-body table tr:hover td {
+    background-color: #f8fafc;
+    color: #667eea;
+}
+.markdown-body table tr.highlighted-row {
+    background-color: #fef3c7 !important;
+    box-shadow: inset 0 0 0 2px #fbbf24;
+}
+.markdown-body table tr:last-child td {
+    border-bottom: none;
+}
+.markdown-body code {
+    background: #f1f5f9;
+    color: #667eea;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    border: 1px solid #e2e8f0;
+}
+.markdown-body pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 20px;
+    border-radius: 12px;
+    overflow-x: auto;
+    border-left: 4px solid #667eea;
+}
+.markdown-body pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border: none;
+}
+.markdown-body blockquote {
+    border-left: 4px solid #667eea;
+    padding-left: 20px;
+    margin-left: 0;
+    color: #64748b;
+    font-style: italic;
+}
+.markdown-body ul, .markdown-body ol {
+    margin: 20px 0;
+    padding-left: 30px;
+}
+.markdown-body li {
+    margin: 10px 0;
+    line-height: 1.8;
+}
+.calendar-section {
+    background: white;
+    padding: 48px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    margin: 40px 0;
+}
+.calendar-section h2 {
+    color: #1e293b;
+    border-left: 4px solid #667eea;
+    padding-left: 20px;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 30px;
+}
+.month-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.month-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+    transform: translateY(-5px);
+}
+.month-card h3 {
+    text-align: center;
+    color: #667eea;
+    font-size: 1.4rem;
+    margin: 0 0 20px 0;
+    border: none;
+    padding: 0;
+    text-transform: capitalize;
+}
+.month-card .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+.month-card .weekday {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    padding: 10px 0;
+}
+.month-card .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+.day-cell {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #64748b;
+    transition: all 0.2s ease;
+    cursor: default;
+}
+.day-cell.marked {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+.day-cell.marked:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+}
+.day-cell.marked.past {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    color: #94a3b8;
+    font-weight: 400;
+    box-shadow: none;
+    opacity: 0.7;
+}
+.day-cell.marked.past:hover {
+    transform: scale(1.05);
+    opacity: 0.85;
+}
+.day-cell[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: #fff;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    white-space: pre-line;
+    width: max-content;
+    max-width: 300px;
+    z-index: 50;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    font-weight: normal;
+    line-height: 1.5;
+    animation: tooltipFadeIn 0.2s ease;
+}
+.day-cell[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 122%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: #1e293b;
+    z-index: 50;
+    animation: tooltipFadeIn 0.2s ease;
+}
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+.sidebar {
+    position: sticky;
+    top: 120px;
+    height: fit-content;
+}
+.sidebar-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+}
+.sidebar-card h3 {
+    color: #667eea;
+    font-size: 1.1rem;
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    padding: 0;
+}
+.sidebar-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar-card li {
+    margin: 10px 0;
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+.sidebar-card li:last-child {
+    border-bottom: none;
+}
+.sidebar-card a {
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    display: block;
+    padding: 4px;
+}
+.sidebar-card a:hover {
+    color: #667eea;
+    padding-left: 8px;
+    border-bottom: none;
+}
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+.loader {
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.8rem;
+        gap: 10px;
+    }
+    .header-icon {
+        font-size: 1.8rem;
+    }
+    .main-container {
+        padding: 20px 16px;
+    }
+    .markdown-body {
+        padding: 24px;
+    }
+    .calendar-grid {
+        grid-template-columns: 1fr;
+    }
+    .day-cell {
+        font-size: 0.8rem;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>
+        <i class="fas fa-book-open header-icon"></i>
+        <span>Plano de Ensino</span>
+    </h1>
+    <p id="course-title">Carregando informações do curso...</p>
+</div>
+
+<div class="main-container">
+    <div class="content-wrapper">
+        <div id="output" class="markdown-body">
+            <div class="loading">
+                <div class="loader"></div>
+                <p>Carregando planejamento...</p>
+            </div>
+        </div>
+        
+        <aside class="sidebar" id="sidebar">
+        </aside>
+    </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const arquivoMD = params.get('p');
+const output = document.getElementById('output');
+const courseTitle = document.getElementById('course-title');
+const sidebar = document.getElementById('sidebar');
+
+if (arquivoMD === "teste") {
+    const demoContent = `# Plano de Ensino: Desenvolvimento Móvel (2026/1)
+
+Planejamento encontros presenciais da Unidade 
+
+| # | Conteúdo | Carga Horária | Data | Modalidade |
+|:---:|----------|:---:|:---:|:---:|
+| 1 | Plano de Ensino e Arquitetura Android | 4h | 24/02/2026 | Presencial |
+| 2 | Activity e Ciclo de Vida | 4h | 03/03/2026 | Presencial |
+| 3 | Passagem de Dados e Intents | 4h | 11/04/2026 | Presencial |
+
+<div id="calendario-presencial"></div>`;
+
+    output.innerHTML = marked.parse(demoContent);
+    setTimeout(processCalendar, 100);
+    buildSidebar();
+} else {
+    const basePath = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
+    const urlMD = `${window.location.origin}${basePath}${arquivoMD}`;
+
+    fetch(urlMD)
+        .then(r => r.text())
+        .then(md => {
+            const titleMatch = md.match(/^# (.+)$/m);
+            if (titleMatch) {
+                courseTitle.textContent = titleMatch[1];
+            }
+            
+            output.innerHTML = marked.parse(md);
+            processCalendar();
+            buildSidebar();
+        })
+        .catch(() => {
+            output.innerHTML = '<div class="loading"><p style="color: #dc2626;"><i class="fas fa-exclamation-circle"></i> Erro ao carregar o planejamento.</p></div>';
+        });
+}
+
+function extractEventsFromTable() {
+    const events = {};
+    const rows = output.querySelectorAll("table tr");
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length >= 4) {
+            const aula = cells[0].innerText.trim();
+            const conteudo = cells[1].innerText.trim();
+            const carga = cells[2].innerText.trim();
+            const rawDate = cells[3].innerText.trim();
+
+            const match = rawDate.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+            if (match) {
+                const [ , d, m, y ] = match;
+                const iso = `${y}-${m}-${d}`;
+
+                row.setAttribute('data-date', iso);
+
+                events[iso] = {
+                    aula,
+                    conteudo,
+                    carga,
+                    rawDate
+                };
+            }
+        }
+    });
+
+    return events;
+}
+
+function renderMonth(yearMonth, events) {
+    const [y, m] = yearMonth.split('-').map(Number);
+    const firstDay = new Date(y, m - 1, 1).getDay();
+    const lastDay = new Date(y, m, 0).getDate();
+    const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long' })
+        .format(new Date(y, m - 1, 1));
+
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    let html = `
+    <div class="month-card">
+        <h3>${monthName} ${y}</h3>
+        <div class="weekdays">
+            <div class="weekday">Dom</div>
+            <div class="weekday">Seg</div>
+            <div class="weekday">Ter</div>
+            <div class="weekday">Qua</div>
+            <div class="weekday">Qui</div>
+            <div class="weekday">Sex</div>
+            <div class="weekday">Sab</div>
+        </div>
+        <div class="days">
+    `;
+
+    for (let i = 0; i < firstDay; i++) html += `<div></div>`;
+
+    for (let d = 1; d <= lastDay; d++) {
+        const date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        let cls = "day-cell";
+        let tooltip = "";
+
+        if (events[date]) {
+            cls += " marked";
+            
+            if (date < todayStr) {
+                cls += " past";
+            }
+
+            const e = events[date];
+            tooltip = `
+Aula ${e.aula}
+${e.conteudo}
+${e.carga}
+${e.rawDate}
+            `.trim();
+        }
+
+        const clickEvent = events[date] ? `onclick="highlightRow('${date}')" ` : "";
+        html += `<div class="${cls}" ${clickEvent}${tooltip ? `data-tooltip="${tooltip}"` : ""}>${d}</div>`;
+    }
+
+    html += `</div></div>`;
+    return html;
+}
+
+function processCalendar() {
+    const container = document.getElementById("calendario-presencial");
+    if (!container) return;
+
+    const events = extractEventsFromTable();
+    const months = [...new Set(Object.keys(events).map(d => d.slice(0,7)))].sort();
+
+    let html = `<div class="calendar-grid">`;
+    months.forEach(m => html += renderMonth(m, events));
+    html += `</div>`;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'calendar-section';
+    wrapper.innerHTML = `<h2><i class="fas fa-calendar-alt"></i> Calendário de Aulas</h2>` + html;
+    container.parentNode.replaceChild(wrapper, container);
+}
+
+function highlightRow(date) {
+    const prev = document.querySelectorAll('.highlighted-row');
+    prev.forEach(row => row.classList.remove('highlighted-row'));
+
+    const targetRow = document.querySelector(`tr[data-date="${date}"]`);
+    
+    if (targetRow) {
+        targetRow.classList.add('highlighted-row');
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function buildSidebar() {
+    const headings = Array.from(output.querySelectorAll('h2, h3, h4')).slice(0, 12);
+    
+    if (headings.length === 0) return;
+
+    let html = `<div class="sidebar-card">
+        <h3><i class="fas fa-list"></i> Índice</h3>
+        <ul>`;
+
+    headings.forEach((heading, idx) => {
+        const text = heading.innerText.substring(0, 40);
+        const level = heading.tagName;
+        const padding = level === 'H2' ? '0px' : level === 'H3' ? '12px' : '24px';
+        
+        html += `<li style="padding-left: ${padding}"><a href="#" onclick="document.querySelectorAll('h2, h3, h4')[${idx}].scrollIntoView({behavior:'smooth'}); return false;">${text}</a></li>`;
+    });
+
+    html += `</ul></div>`;
+
+    sidebar.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
