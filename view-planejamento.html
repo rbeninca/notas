@@ -170,6 +170,47 @@ body {
   pointer-events: none;
 }
 
+/* ===== INDICATIVO "PRÓXIMA AULA" NA TABELA ===== */
+.markdown-body table tr.next-row {
+    background-color: #eef2ff !important;
+    outline: 2px solid #6366f1;
+    outline-offset: -2px;
+}
+
+.markdown-body table tr.next-row td:first-child {
+    position: relative;
+    padding-left: 44px;
+    padding-right: 210px;
+}
+
+.markdown-body table tr.next-row td:first-child::before {
+    content: "➜";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #4338ca;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.markdown-body table tr.next-row td:first-child::after {
+    content: attr(data-next-label);
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #6366f1;
+    color: #ffffff;
+    pointer-events: none;
+}
+
 /* ===== LAYOUT DINÂMICO: TABELA + CALENDÁRIO ===== */
 .planejamento-wrap {
     display: flex;
@@ -358,9 +399,18 @@ function getTodayISO() {
 function extractEventsFromTable() {
     const events = {};
     const rows = output.querySelectorAll("table tr");
+    const nextCandidates = [];
+    const todayISO = getTodayISO();
+    const todayStart = new Date(`${todayISO}T00:00:00`);
 
     rows.forEach(row => {
         const cells = row.querySelectorAll("td");
+
+        row.classList.remove("today-row", "next-row");
+        if (cells[0]) {
+            cells[0].removeAttribute("data-next-label");
+        }
+
         if (cells.length >= 4) {
             const aula = cells[0].innerText.trim();
             const conteudo = cells[1].innerText.trim();
@@ -375,10 +425,14 @@ function extractEventsFromTable() {
                 // Adiciona o atributo data-date na linha para podermos encontrá-la no clique
                 row.setAttribute('data-date', iso);
                 //marca a linha "hoje " na tabela 
-                const todayISO = getTodayISO();
                 if (iso === todayISO) {
                   row.classList.add("today-row");
                 }
+
+                                const classDate = new Date(`${iso}T00:00:00`);
+                                if (classDate > todayStart) {
+                                        nextCandidates.push({ row, classDate, cells });
+                                }
 
 
                 events[iso] = {
@@ -390,6 +444,17 @@ function extractEventsFromTable() {
             }
         }
     });
+
+    if (nextCandidates.length > 0) {
+        nextCandidates.sort((a, b) => a.classDate - b.classDate);
+        const nextClass = nextCandidates[0];
+        const diffMs = nextClass.classDate.getTime() - todayStart.getTime();
+        const diffDays = Math.max(1, Math.round(diffMs / 86400000));
+        const label = `Próxima aula - faltam ${diffDays} dia${diffDays === 1 ? '' : 's'}`;
+
+        nextClass.row.classList.add("next-row");
+        nextClass.cells[0].setAttribute("data-next-label", label);
+    }
 
     return events;
 }
