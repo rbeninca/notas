@@ -27,6 +27,10 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+/*Estilização tabela*
+
+
+
 /* ===== CALENDÁRIO ===== */
 
 .day-cell {
@@ -70,6 +74,13 @@ body {
     background-color: #fef08a !important; /* Amarelo claro (yellow-200) do Tailwind */
     transition: background-color 0.5s ease;
 }
+/* Linha da Tabela referente ao DIA DE HOJE */
+.markdown-body table tr.today-row {
+  background-color: #fef9c3 !important; /* amarelo bem claro */
+  outline: 2px solid #facc15;           /* amarelo mais forte */
+  outline-offset: -2px;
+}
+
 
 /* ===== TOOLTIP ===== */
 
@@ -101,6 +112,64 @@ body {
     border: 6px solid transparent;
     border-top-color: #1f2937;
 }
+/* Dia de hoje no calendário (mesmo sem evento) */
+.day-cell.today {
+  background-color: #fef08a; /* yellow-200 */
+  color: #92400e;            /* tom âmbar pro texto */
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(250, 204, 21, 0.35);
+}
+
+/* Se HOJE também tiver evento, mantém “cara de evento” mas com borda amarela */
+.day-cell.marked.today {
+  outline: 3px solid #facc15;
+  outline-offset: 2px;
+}
+
+.day-cell.today {
+  position: relative;
+}
+
+.day-cell.today::after {
+  content: "HOJE";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #facc15;   /* amarelo forte */
+  color: #111827;        /* quase preto */
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  pointer-events: none;
+}
+
+/* ===== INDICATIVO "HOJE" NA TABELA ===== */
+/* Coloca o "HOJE" no 1º td da linha (aula/índice) */
+.markdown-body table tr.today-row td:first-child {
+  position: relative;
+  padding-right: 64px; /* abre espaço pro selo */
+}
+
+.markdown-body table tr.today-row td:first-child::after {
+  content: "HOJE";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #facc15;
+  color: #111827;
+  pointer-events: none;
+}
+
 </style>
 </head>
 
@@ -146,7 +215,10 @@ fetch(urlMD)
         output.innerHTML = "<p>Erro ao carregar o planejamento.</p>";
     });
 }
-
+function getTodayISO() {
+  const t = new Date();
+  return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+}
 /* ================================
    EXTRAÇÃO DOS DADOS DA TABELA
 ================================ */
@@ -170,6 +242,12 @@ function extractEventsFromTable() {
 
                 // Adiciona o atributo data-date na linha para podermos encontrá-la no clique
                 row.setAttribute('data-date', iso);
+                //marca a linha "hoje " na tabela 
+                const todayISO = getTodayISO();
+                if (iso === todayISO) {
+                  row.classList.add("today-row");
+                }
+
 
                 events[iso] = {
                     aula,
@@ -197,7 +275,8 @@ function renderMonth(yearMonth, events) {
 
     // Capturando a data de HOJE no formato YYYY-MM-DD
     const today = new Date();
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    //const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const todayStr = getTodayISO();
 
     let html = `
     <div class="bg-white rounded-xl border border-gray-100 p-4">
@@ -215,6 +294,9 @@ function renderMonth(yearMonth, events) {
         const date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         let cls = "day-cell text-gray-700";
         let tooltip = "";
+        if (date === todayStr) {
+         cls += " today";
+}
 
         if (events[date]) {
             cls += " marked";
