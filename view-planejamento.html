@@ -337,7 +337,7 @@ function processCalendar() {
     const events = extractEventsFromTable();
     const months = [...new Set(Object.keys(events).map(d => d.slice(0,7)))].sort();
 
-    let html = `<div class="grid md:grid-cols-2 gap-6 my-6">`;
+    let html = `<div class="grid md:grid-cols-3 gap-6 my-6">`;
     months.forEach(m => html += renderMonth(m, events));
     html += `</div>`;
 
