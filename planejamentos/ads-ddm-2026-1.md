@@ -3,7 +3,7 @@
 
 
 Planejamento encontros presenciais da Unidade 
-| #  | Conteúdo | Carga Horária | Data | Dia semana | Local|
+| #  | Conteúdo | Carga Horária | Data | Modalidade | Local|
 |:---:|----------|:---:|:---:|:---:| :---:|
 | [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 24/02/2026  terça-feira |Presencial   | Laboratório 7|
 | [2.](#2-aula-2) | Activity, Ciclo de Vida da Activity,Estrutura do Projeto Android,Listeners,Internacionalização|4h | 03/03/2026  terça-feira |Presencial   | Laboratório 7|
