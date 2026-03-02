@@ -24,6 +24,7 @@ body {
     background: white;
     padding: 32px;
     border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 /* ===== CALENDÁRIO ===== */
@@ -36,6 +37,7 @@ body {
     border-radius: 50%;
     position: relative;
     font-size: 0.875rem;
+    transition: all 0.2s ease;
 }
 
 .day-cell.marked {
@@ -43,6 +45,24 @@ body {
     color: white;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.day-cell.marked:hover {
+    background-color: #4f46e5; /* Indigo 600 */
+    transform: scale(1.05);
+}
+
+/* Eventos Passados (Cor clarinha apagada) */
+.day-cell.marked.past {
+    background-color: #e2e8f0; /* Fundo cinza/azulado bem claro */
+    color: #64748b; /* Texto cinza médio/apagado */
+    font-weight: 400; /* Tira o negrito */
+    box-shadow: none; /* Tira a sombra para dar aspecto inativo */
+}
+
+.day-cell.marked.past:hover {
+    background-color: #cbd5e1; /* Fica um pouco mais escuro no hover */
 }
 
 /* ===== TOOLTIP ===== */
@@ -63,6 +83,7 @@ body {
     max-width: 280px;
     z-index: 50;
     box-shadow: 0 10px 20px rgba(0,0,0,.25);
+    font-weight: normal;
 }
 
 .day-cell[data-tooltip]:hover::before {
@@ -151,10 +172,14 @@ function renderMonth(yearMonth, events) {
     const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long' })
         .format(new Date(y, m - 1, 1));
 
+    // Capturando a data de HOJE no formato YYYY-MM-DD
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
     let html = `
-    <div class="bg-white rounded-xl shadow p-4">
-        <h3 class="text-center font-semibold capitalize mb-3">${monthName} ${y}</h3>
-        <div class="grid grid-cols-7 text-xs text-center mb-2">
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
+        <h3 class="text-center font-semibold capitalize mb-3 text-gray-800">${monthName} ${y}</h3>
+        <div class="grid grid-cols-7 text-xs text-center mb-2 font-medium text-gray-400">
             <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div>
             <div>QUI</div><div>SEX</div><div>SÁB</div>
         </div>
@@ -165,11 +190,18 @@ function renderMonth(yearMonth, events) {
 
     for (let d = 1; d <= lastDay; d++) {
         const date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        let cls = "day-cell";
+        let cls = "day-cell text-gray-700";
         let tooltip = "";
 
         if (events[date]) {
             cls += " marked";
+            
+            // VERIFICAÇÃO DE EVENTO PASSADO:
+            // Se a data do calendário for menor que a data de hoje
+            if (date < todayStr) {
+                cls += " past";
+            }
+
             const e = events[date];
             tooltip = `
 Aula ${e.aula}
