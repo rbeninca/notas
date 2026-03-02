@@ -69,6 +69,23 @@ body {
     background-color: #cbd5e1; /* Fica um pouco mais escuro no hover */
 }
 
+/* Indicador em forma de anel ao redor do dia quando a linha da tabela está em hover
+   Usamos ::before para não interferir com o selo "HOJE" que usa ::after */
+.day-cell.hovered::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    border-radius: 50%;
+    border: 2px solid #f59e0b; /* amarelo/âmbar */
+    box-shadow: 0 6px 18px rgba(245,158,11,0.10);
+    pointer-events: none;
+    z-index: 8;
+}
+
 /* Linha da Tabela Destacada ao clicar */
 .markdown-body table tr.highlighted-row {
     background-color: #fef08a !important; /* Amarelo claro (yellow-200) do Tailwind */
@@ -565,7 +582,8 @@ Data: ${e.rawDate}
         // Adiciona o evento de clique onclick="highlightRow('${date}')" caso seja um dia marcado
         const clickEvent = events[date] ? `onclick="highlightRow('${date}')"` : "";
 
-        html += `<div class="${cls}" ${clickEvent} ${tooltip ? `data-tooltip="${tooltip}"` : ""}>${d}</div>`;
+        // Inclui data-date para poder conectar a linha da tabela com o dia do calendário
+        html += `<div class="${cls}" data-date="${date}" ${clickEvent} ${tooltip ? `data-tooltip="${tooltip}"` : ""}>${d}</div>`;
     }
 
     html += `</div></div>`;
@@ -590,6 +608,32 @@ function processCalendar() {
     container.innerHTML = html;
     setupPlanningLayoutOnce();
     applyPlanningLayout();
+
+    // liga hover das linhas da tabela aos dias do calendário
+    attachRowHoverHandlers();
+}
+
+function attachRowHoverHandlers() {
+    const rows = output.querySelectorAll('table tr[data-date]');
+    rows.forEach(row => {
+        // remove listeners anteriores por segurança
+        row.onmouseenter = null;
+        row.onmouseleave = null;
+
+        row.addEventListener('mouseenter', () => {
+            const date = row.getAttribute('data-date');
+            if (!date) return;
+            const day = document.querySelector(`#calendario-presencial .day-cell[data-date="${date}"]`);
+            if (day) day.classList.add('hovered');
+        });
+
+        row.addEventListener('mouseleave', () => {
+            const date = row.getAttribute('data-date');
+            if (!date) return;
+            const day = document.querySelector(`#calendario-presencial .day-cell[data-date="${date}"]`);
+            if (day) day.classList.remove('hovered');
+        });
+    });
 }
 
 /* ================================
