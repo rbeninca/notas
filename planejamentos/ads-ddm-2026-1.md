@@ -5,18 +5,21 @@
 Planejamento encontros presenciais da Unidade 
 | #  | Conteúdo | Carga Horária | Data | Dia semana | Local|
 |:---:|----------|:---:|:---:|:---:| :---:|
-| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 24/02/2026 | terça-feira    | Laboratório 7|
-| [2.](#2-aula-2) | Activity, Ciclo de Vida da Activity,Estrutura do Projeto Android,Listeners,Internacionalização|4h | 11/04/2026 | sabado         | Laboratório 7|
-| [3.](#3-aula-3) | Passagem dados entre Activitys,(Bundle),Intents , Views, Views Customizadas **Avaliação 1**   |4h | 09/05/2026 | sabado         | Laboratório 7|
-| [4.](#4-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026 | terça-feira    | Laboratório 2| 
-| [5.](#5-aula-5) | Atividade Prática em sala.                                                                    |4h | 27/05/2026 | quarta-feira   |  ?|
-| [6.](#6-aula-6) | Gerenciadores do Android (Notifications e AlarmManager)                                       |4h | 28/05/2026 | quinta-feira   | Laboratório 7|
-| [7.](#7-aula-7) | Persistência de Dados Local: SharedPreferences  e SQLite                                      |4h | 03/06/2026 | quarta-feira   |  ? lab 4?|
-| [8.](#8-aula-8) | Geolocalização, Sensores e LocationManager                                                    |4h | 10/06/2026 | quarta-feira   | Laboratório 7|
-| [9.](#9-aula-9) | Integração com Mapas (Google Maps API)                                                        |4h | 16/06/2026 | terça-feira    | Laboratório 2| 
-| [10.](#10-aula-10) | Camera                                                                                     |4h | 17/06/2026 | quarta-feira   | Laboratório 7|
-| [11.](#11-aula-11) | Camera                                                                                     |4h | 23/06/2026 | terça-feira    | Laboratório 2|
-| [12.](#12-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026 | quarta-feira   | Laboratório 7|
+| [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 24/02/2026  terça-feira |Presencial   | Laboratório 7|
+| [2.](#2-aula-2) | Activity, Ciclo de Vida da Activity,Estrutura do Projeto Android,Listeners,Internacionalização|4h | 03/03/2026  terça-feira |Presencial   | Laboratório 7|
+| [3.](#2-aula-2) | Activity, Ciclo de Vida da Activity,Estrutura do Projeto Android,Listeners,Internacionalização|4h | 11/04/2026  sabado      |Presencial   | Laboratório 7|
+| [4.](#3-aula-3) | Passagem dados entre Activitys,(Bundle),Intents , Views, Views Customizadas **Avaliação 1**   |4h | 09/05/2026  sabado      |Presencial   | Laboratório 7|
+| [5.](#4-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026  terça-feira |Presencial   | Laboratório 2| 
+| [6.](#5-aula-5) | Atividade Prática em sala.                                                                    |4h | 27/05/2026  quarta-feira|Presencial   |  ?|
+| [7.](#6-aula-6) | Gerenciadores do Android (Notifications e AlarmManager)                                       |4h | 28/05/2026  quinta-feira|Presencial   | Laboratório 7|
+| [8.](#7-aula-7) | Persistência de Dados Local: SharedPreferences  e SQLite                                      |4h | 03/06/2026  quarta-feira|Presencial   |  ? lab 4?|
+| [9.](#8-aula-8) | Geolocalização, Sensores e LocationManager                                                    |4h | 10/06/2026  quarta-feira|Presencial   | Laboratório 7|
+| [10.](#9-aula-9) | Integração com Mapas (Google Maps API)                                                       |4h | 16/06/2026  terça-feira |Presencial   | Laboratório 2| 
+| [11.](#10-aula-10) | Camera                                                                                     |4h | 17/06/2026  quarta-feira|Presencial   | Laboratório 7|
+| [12.](#11-aula-11) | Camera                                                                                     |4h | 23/06/2026  terça-feira |Presencial   | Laboratório 2|
+| [13.](#12-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026  quarta-feira|Presencial   | Laboratório 7|
+
+
 
 ---
 Avaliação 1 (Data a ser definida)
