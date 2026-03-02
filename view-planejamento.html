@@ -179,8 +179,11 @@ body {
 
 .markdown-body table tr.next-row td:first-child {
     position: relative;
+    /* reduzimos o padding direito para economizar espaço horizontal */
     padding-left: 44px;
-    padding-right: 210px;
+    padding-right: 12px;
+    /* removido padding-bottom — vamos deixar o badge em fluxo normal para que
+       ele aumente a altura da própria linha e não sobreponha a seguinte */
 }
 
 .markdown-body table tr.next-row td:first-child::before {
@@ -195,20 +198,54 @@ body {
     pointer-events: none;
 }
 
+/* Badge exibido abaixo do número do índice, centralizado e com suporte a múltiplas linhas */
 .markdown-body table tr.next-row td:first-child::after {
     content: attr(data-next-label);
     position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 50%;
+    top: calc(100% + 6px); /* posiciona abaixo do conteúdo do td */
+    transform: translateX(-50%);
+    display: inline-block;
+    text-align: center;
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.02em;
-    padding: 3px 8px;
+    padding: 4px 8px;
     border-radius: 999px;
     background: #6366f1;
     color: #ffffff;
     pointer-events: none;
+    white-space: pre-line; /* permite \n no atributo para quebra de linha */
+    line-height: 1.05;
+    max-width: 140px;
+    box-sizing: border-box;
+    z-index: 5; /* garante que o badge fique sobre outras células */
+}
+
+/* Quando usamos o elemento real .next-badge, escondemos o pseudo-elemento vazio */
+.markdown-body table tr.next-row td:first-child[data-next-label=""]::after {
+    display: none;
+}
+
+/* Estilo do badge real injetado pelo JS (mais previsível que o pseudo-elemento) */
+.markdown-body table tr.next-row td:first-child .next-badge {
+    /* Badge em fluxo normal: ocupa espaço e empurra a altura da célula/linha */
+    position: static;
+    display: block;
+    margin: 6px auto 0 auto; /* centraliza e abre um pequeno espaço acima */
+    text-align: center;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #6366f1;
+    color: #ffffff;
+    pointer-events: none;
+    white-space: normal; /* permite quebra via <br> */
+    line-height: 1.05;
+    max-width: 140px;
+    box-sizing: border-box;
 }
 
 /* ===== LAYOUT DINÂMICO: TABELA + CALENDÁRIO ===== */
@@ -450,10 +487,22 @@ function extractEventsFromTable() {
         const nextClass = nextCandidates[0];
         const diffMs = nextClass.classDate.getTime() - todayStart.getTime();
         const diffDays = Math.max(1, Math.round(diffMs / 86400000));
-        const label = `Próxima aula - faltam ${diffDays} dia${diffDays === 1 ? '' : 's'}`;
+    // Monta o rótulo em HTML com <br> e injeta um elemento <span> dentro do TD
+    const labelHtml = `Próxima aula<br>faltam ${diffDays} dia${diffDays === 1 ? '' : 's'}`;
 
-        nextClass.row.classList.add("next-row");
-        nextClass.cells[0].setAttribute("data-next-label", label);
+    nextClass.row.classList.add("next-row");
+
+    // Remove atributo usado anteriormente (para esconder o ::after)
+    nextClass.cells[0].setAttribute("data-next-label", "");
+
+    // Remove badge antigo se existir
+    const existing = nextClass.cells[0].querySelector('.next-badge');
+    if (existing) existing.remove();
+
+    const span = document.createElement('span');
+    span.className = 'next-badge';
+    span.innerHTML = labelHtml;
+    nextClass.cells[0].appendChild(span);
     }
 
     return events;
