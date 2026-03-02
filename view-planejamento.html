@@ -109,11 +109,24 @@ const params = new URLSearchParams(window.location.search);
 const arquivoMD = params.get('p');
 const output = document.getElementById('output');
 
-if (!arquivoMD) {
-    output.innerHTML = "<p>Informe o parâmetro ?p=arquivo.md</p>";
-    throw new Error("Arquivo MD não informado");
-}
-
+// Configuração de ambiente para demonstração (Caso não tenha o parâmetro ?p)
+if (arquivoMD ==="teste") {
+    output.innerHTML = `
+        <h2>Instruções</h2>
+        <p>Acesse a URL passando o parâmetro <code>?p=arquivo.md</code></p>
+        <p><em>Exemplo de tabela esperada no Markdown:</em></p>
+        <table id="tabela-exemplo">
+            <tr><td>1</td><td>Apresentação da disciplina</td><td>2h</td><td>20/02/2026</td></tr>
+            <tr><td>2</td><td>Introdução aos conceitos</td><td>2h</td><td>27/02/2026</td></tr>
+            <tr><td>3</td><td>Prática de laboratório</td><td>4h</td><td>06/03/2026</td></tr>
+            <tr><td>4</td><td>Avaliação Parcial</td><td>2h</td><td>13/03/2026</td></tr>
+        </table>
+        <div id="calendario-presencial"></div>
+    `;
+    // Força o processamento do calendário na tabela de exemplo apenas para demonstração visual
+    setTimeout(processCalendar, 100); 
+} else {
+    // Fluxo normal de produção
 const basePath = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
 const urlMD = `${window.location.origin}${basePath}${arquivoMD}`;
 
@@ -126,6 +139,7 @@ fetch(urlMD)
     .catch(() => {
         output.innerHTML = "<p>Erro ao carregar o planejamento.</p>";
     });
+}
 
 /* ================================
    EXTRAÇÃO DOS DADOS DA TABELA
