@@ -191,7 +191,7 @@ body {
     position: fixed;
     top: var(--calendar-top, 16px);
     left: var(--calendar-left, auto);
-    width: 340px;
+    width: 230px;
     max-height: calc(100vh - 32px);
     overflow: auto;
     z-index: 30;
@@ -200,8 +200,21 @@ body {
 .calendar-months-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 0.75rem;
     margin: 1.5rem 0;
+}
+
+.calendar-month-card {
+    padding: 0.65rem !important;
+}
+
+.calendar-month-card h3 {
+    margin-bottom: 0.4rem !important;
+    font-size: 0.92rem;
+}
+
+.calendar-month-card .day-cell {
+    font-size: 0.78rem;
 }
 
 @media (min-width: 768px) {
@@ -273,20 +286,28 @@ function applyPlanningLayout() {
     const calendarSlot = wrap.querySelector(".planejamento-calendar");
     if (!tableSlot || !tableEl || !calendarSlot) return;
 
-    const monthWidth = 340;
-    const gapPx = 16;
+    const monthWidth = 230;
+    const gapPx = 12;
     const viewportPadding = 16;
     const outputRect = output.getBoundingClientRect();
-    const fitsOutside = (outputRect.right + gapPx + monthWidth + viewportPadding) <= window.innerWidth;
+    const outputWidth = Math.ceil(outputRect.width);
+    const totalWidth = outputWidth + gapPx + monthWidth;
+    const fitsOutside = totalWidth <= (window.innerWidth - viewportPadding * 2);
 
     if (fitsOutside) {
+        const centeredLeft = Math.max(viewportPadding, Math.floor((window.innerWidth - totalWidth) / 2));
+        output.style.marginLeft = `${centeredLeft}px`;
+        output.style.marginRight = "auto";
+
         wrap.classList.add("side-floating");
-        wrap.style.setProperty("--calendar-left", `${Math.round(outputRect.right + gapPx)}px`);
-        wrap.style.setProperty("--calendar-top", `${Math.max(16, Math.round(outputRect.top))}px`);
+        wrap.style.setProperty("--calendar-left", `${Math.round(centeredLeft + outputWidth + gapPx)}px`);
+        wrap.style.setProperty("--calendar-top", `${Math.max(16, Math.round(output.getBoundingClientRect().top))}px`);
     } else {
         wrap.classList.remove("side-floating");
         wrap.style.removeProperty("--calendar-left");
         wrap.style.removeProperty("--calendar-top");
+        output.style.marginLeft = "";
+        output.style.marginRight = "";
     }
 }
 
