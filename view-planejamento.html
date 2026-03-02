@@ -170,6 +170,57 @@ body {
   pointer-events: none;
 }
 
+/* ===== LAYOUT DINÂMICO: TABELA + CALENDÁRIO ===== */
+.planejamento-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.planejamento-table {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.planejamento-calendar {
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.planejamento-wrap.side-floating .planejamento-calendar {
+    position: fixed;
+    top: var(--calendar-top, 16px);
+    left: var(--calendar-left, auto);
+    width: 340px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    z-index: 30;
+}
+
+.calendar-months-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+@media (min-width: 768px) {
+    .calendar-months-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1200px) {
+    .calendar-months-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.planejamento-wrap.side-floating .calendar-months-grid {
+    grid-template-columns: 1fr;
+    margin: 0;
+}
+
 </style>
 </head>
 
@@ -183,6 +234,66 @@ body {
 const params = new URLSearchParams(window.location.search);
 const arquivoMD = params.get('p');
 const output = document.getElementById('output');
+let _layoutSetupDone = false;
+let _resizeTimer = null;
+
+function setupPlanningLayoutOnce() {
+    if (_layoutSetupDone) return;
+
+    const calendarHost = document.getElementById("calendario-presencial");
+    const table = output.querySelector("table");
+    if (!calendarHost || !table) return;
+
+    const wrap = document.createElement("div");
+    wrap.className = "planejamento-wrap";
+
+    const tableSlot = document.createElement("div");
+    tableSlot.className = "planejamento-table";
+
+    const calendarSlot = document.createElement("div");
+    calendarSlot.className = "planejamento-calendar";
+
+    table.parentNode.insertBefore(wrap, table);
+
+    tableSlot.appendChild(table);
+    wrap.appendChild(tableSlot);
+
+    calendarSlot.appendChild(calendarHost);
+    wrap.appendChild(calendarSlot);
+
+    _layoutSetupDone = true;
+}
+
+function applyPlanningLayout() {
+    const wrap = output.querySelector(".planejamento-wrap");
+    if (!wrap) return;
+
+    const tableSlot = wrap.querySelector(".planejamento-table");
+    const tableEl = tableSlot ? tableSlot.querySelector("table") : null;
+    const calendarSlot = wrap.querySelector(".planejamento-calendar");
+    if (!tableSlot || !tableEl || !calendarSlot) return;
+
+    const monthWidth = 340;
+    const gapPx = 16;
+    const viewportPadding = 16;
+    const outputRect = output.getBoundingClientRect();
+    const fitsOutside = (outputRect.right + gapPx + monthWidth + viewportPadding) <= window.innerWidth;
+
+    if (fitsOutside) {
+        wrap.classList.add("side-floating");
+        wrap.style.setProperty("--calendar-left", `${Math.round(outputRect.right + gapPx)}px`);
+        wrap.style.setProperty("--calendar-top", `${Math.max(16, Math.round(outputRect.top))}px`);
+    } else {
+        wrap.classList.remove("side-floating");
+        wrap.style.removeProperty("--calendar-left");
+        wrap.style.removeProperty("--calendar-top");
+    }
+}
+
+window.addEventListener("resize", () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(applyPlanningLayout, 80);
+});
 
 // Configuração de ambiente para demonstração (Caso não tenha o parâmetro ?p)
 if (arquivoMD ==="teste") {
@@ -279,7 +390,7 @@ function renderMonth(yearMonth, events) {
     const todayStr = getTodayISO();
 
     let html = `
-    <div class="bg-white rounded-xl border border-gray-100 p-4">
+    <div class="calendar-month-card bg-white rounded-xl border border-gray-100 p-4">
         <h3 class="text-center font-semibold capitalize mb-3 text-gray-800">${monthName} ${y}</h3>
         <div class="grid grid-cols-7 text-xs text-center mb-2 font-medium text-gray-400">
             <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div>
@@ -337,11 +448,13 @@ function processCalendar() {
     const events = extractEventsFromTable();
     const months = [...new Set(Object.keys(events).map(d => d.slice(0,7)))].sort();
 
-    let html = `<div class="grid md:grid-cols-3 gap-6 my-6">`;
+    let html = `<div class="calendar-months-grid">`;
     months.forEach(m => html += renderMonth(m, events));
     html += `</div>`;
 
     container.innerHTML = html;
+    setupPlanningLayoutOnce();
+    applyPlanningLayout();
 }
 
 /* ================================
