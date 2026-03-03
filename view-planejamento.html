@@ -146,8 +146,12 @@ body {
   box-shadow: 0 2px 6px rgba(250, 204, 21, 0.35);
 }
 
-/* Se HOJE também tiver evento, mantém “cara de evento” mas com borda amarela */
+/* Se HOJE também tiver evento, mantém visual de evento (roxo) e adiciona borda amarela */
 .day-cell.marked.today {
+  background-color: #6366f1; /* mantém o roxo do evento */
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
   outline: 3px solid #facc15;
   outline-offset: 2px;
 }
@@ -251,6 +255,30 @@ body {
 /* Quando usamos o elemento real .next-badge, escondemos o pseudo-elemento vazio */
 .markdown-body table tr.next-row td:first-child[data-next-label=""]::after {
     display: none;
+}
+
+/* Quando HOJE e PRÓXIMA AULA coincidem: restaura estilo amarelo e reexibe badge "HOJE" */
+.markdown-body table tr.today-row.next-row {
+  background-color: #fef9c3 !important;
+  outline: 2px solid #facc15 !important;
+  outline-offset: -2px;
+}
+
+.markdown-body table tr.today-row.next-row td:first-child[data-next-label=""]::after {
+  display: block;
+  content: "HOJE";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #facc15;
+  color: #111827;
+  pointer-events: none;
 }
 
 /* Estilo do badge real injetado pelo JS (mais previsível que o pseudo-elemento) */
@@ -493,7 +521,7 @@ function extractEventsFromTable() {
                 }
 
                                 const classDate = new Date(`${iso}T00:00:00`);
-                                if (classDate > todayStart) {
+                                if (classDate >= todayStart) {
                                         nextCandidates.push({ row, classDate, cells });
                                 }
 
@@ -512,9 +540,11 @@ function extractEventsFromTable() {
         nextCandidates.sort((a, b) => a.classDate - b.classDate);
         const nextClass = nextCandidates[0];
         const diffMs = nextClass.classDate.getTime() - todayStart.getTime();
-        const diffDays = Math.max(1, Math.round(diffMs / 86400000));
+        const diffDays = Math.round(diffMs / 86400000);
     // Monta o rótulo em HTML com <br> e injeta um elemento <span> dentro do TD
-    const labelHtml = `Próxima aula<br>faltam ${diffDays} dia${diffDays === 1 ? '' : 's'}`;
+    const labelHtml = diffDays === 0
+        ? `Próxima aula<br>é hoje!`
+        : `Próxima aula<br>faltam ${diffDays} dia${diffDays === 1 ? '' : 's'}`;
 
     nextClass.row.classList.add("next-row");
 
