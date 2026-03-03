@@ -2,326 +2,388 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de Plano de Ensino</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualizador de Plano de Ensino</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
 
-    <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --accent: #facc15;
-        }
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-        body {
-            background: #f1f5f9;
-            padding-top: 70px;
-        }
+<style>
+body {
+    background: #f8fafc;
+    padding: 32px;
+}
 
-        .header-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 100;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 10px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.markdown-body {
+    max-width: 980px;
+    margin: auto;
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
 
-        /* Layout de Colunas Lado a Lado */
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            padding: 20px;
-            max-width: 1600px;
-            margin: auto;
-        }
+/* ===== CALENDÁRIO ===== */
+.day-cell {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    position: relative;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
 
-        @media (min-width: 1024px) {
-            .main-container {
-                flex-direction: row;
-                align-items: flex-start;
-            }
-            .content-area {
-                flex: 1;
-                min-width: 0; /* Evita quebra de layout com tabelas largas */
-            }
-            .sidebar-area {
-                width: 380px;
-                position: sticky;
-                top: 90px;
-                max-height: calc(100vh - 120px);
-                overflow-y: auto;
-                padding-right: 5px;
-            }
-        }
+.day-cell.marked {
+    background-color: #6366f1;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
 
-        .markdown-body {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+.day-cell.marked:hover {
+    transform: scale(1.08);
+    background-color: #4f46e5;
+}
 
-        /* Melhoria nas tabelas */
-        .markdown-body table {
-            display: table;
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-        }
+.tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111827;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 50;
+}
 
-        /* Estilo das Células do Calendário */
-        .day-cell {
-            aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            position: relative;
-            font-size: 0.75rem;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            user-select: none;
-            cursor: default;
-        }
+.day-cell.marked:hover .tooltip {
+  opacity: 1;
+}
 
-        .day-cell.marked {
-            background-color: var(--primary);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #111827 transparent transparent transparent;
+}
 
-        .day-cell.marked:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.1);
-        }
+/* Tipos */
+.tooltip.presencial {
+  background: #4f46e5;
+}
 
-        .day-cell.marked.past {
-            background-color: #f1f5f9;
-            color: #94a3b8;
-        }
+.tooltip.ead {
+  background: #facc15;
+  color: #111827;
+  pointer-events: none;
+}
 
-        .day-cell.today {
-            border: 2px solid var(--accent);
-            font-weight: bold;
-        }
-
-        /* Destaque de Linha */
-        .markdown-body table tr.highlighted-row {
-            background-color: #fef9c3 !important;
-            outline: 2px solid var(--accent);
-        }
-
-        .today-badge {
-            background: #3b82f6;
-            color: white;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-size: 9px;
-            margin-left: 5px;
-        }
-
-        /* Tooltip minimalista para a sidebar */
-        .sidebar-area .day-cell[data-tooltip]:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 110%;
-            right: 0;
-            background: #1e293b;
-            color: #fff;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            width: 180px;
-            z-index: 110;
-            white-space: pre-line;
-        }
-
-        /* Scrollbar customizada para a sidebar */
-        .sidebar-area::-webkit-scrollbar {
-            width: 4px;
-        }
-        .sidebar-area::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-    </style>
+/* ===== Feature pedida: calendário ao lado quando COUBER (sem mudar aparência) ===== */
+.planejamento-wrap{
+  display:flex;
+  flex-direction: column; /* padrão: calendário embaixo */
+  gap: 1.5rem;           /* equivalente ao gap-6 */
+}
+.planejamento-wrap.side-by-side{
+  flex-direction: row;   /* quando couber: ao lado */
+  align-items: flex-start;
+}
+.planejamento-table{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.planejamento-calendar{
+  flex: 0 0 auto;
+  min-width: 360px;
+}
+</style>
 </head>
 
 <body>
 
-    <nav class="header-nav shadow-sm">
-        <div class="flex items-center gap-2">
-            <span class="text-indigo-600 font-bold text-lg">📅 Planner</span>
-            <span id="file-title" class="text-gray-400 text-sm hidden sm:inline border-l pl-3 ml-1"></span>
+<div id="output" class="markdown-body">
+    Carregando planejamento...
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const arquivoMD = params.get('p');
+const output = document.getElementById('output');
+
+// ================================
+//   LAYOUT RESPONSIVO POR "CABIMENTO"
+// ================================
+let _layoutSetupDone = false;
+
+function setupPlanningLayoutOnce() {
+  if (_layoutSetupDone) return;
+
+  const calendarHost = document.getElementById("calendario-presencial");
+  const table = output.querySelector("table");
+  if (!calendarHost || !table) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "planejamento-wrap";
+
+  const tableSlot = document.createElement("div");
+  tableSlot.className = "planejamento-table";
+
+  const calSlot = document.createElement("div");
+  calSlot.className = "planejamento-calendar";
+
+  table.parentNode.insertBefore(wrap, table);
+
+  tableSlot.appendChild(table);
+  wrap.appendChild(tableSlot);
+
+  calSlot.appendChild(calendarHost);
+  wrap.appendChild(calSlot);
+
+  _layoutSetupDone = true;
+  requestAnimationFrame(applyPlanningLayout);
+}
+
+function applyPlanningLayout() {
+  const wrap = output.querySelector(".planejamento-wrap");
+  if (!wrap) return;
+
+  const tableSlot = wrap.querySelector(".planejamento-table");
+  const calSlot = wrap.querySelector(".planejamento-calendar");
+  if (!tableSlot || !calSlot) return;
+
+  const wideEnough = window.innerWidth >= 1400;
+
+  const gapPx = 24; // ~ gap-6
+  const needed = tableSlot.scrollWidth + calSlot.offsetWidth + gapPx;
+  const available = output.clientWidth;
+
+  if (wideEnough && needed <= available) {
+    wrap.classList.add("side-by-side");
+  } else {
+    wrap.classList.remove("side-by-side");
+  }
+}
+
+let _resizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(applyPlanningLayout, 80);
+});
+
+// ================================
+//   UTIL
+// ================================
+function escapeHTML(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function getTodayISO() {
+  const t = new Date();
+  return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+}
+
+// ================================
+//   EXTRAÇÃO DOS DADOS DA TABELA
+// ================================
+function extractEventsFromTable() {
+    const events = {};
+    const rows = output.querySelectorAll("table tr");
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length >= 4) {
+            const aula = cells[0].innerText.trim();
+            const conteudo = cells[1].innerText.trim();
+            const carga = cells[2].innerText.trim();
+            const rawDate = cells[3].innerText.trim();
+
+            const match = rawDate.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+            if (!match) return;
+
+            const [_, dd, mm, yyyy] = match;
+            const isoDate = `${yyyy}-${mm}-${dd}`;
+
+            if (!events[isoDate]) events[isoDate] = [];
+            events[isoDate].push({ aula, conteudo, carga });
+        }
+    });
+
+    return events;
+}
+
+// ================================
+//   RENDERIZAÇÃO DO CALENDÁRIO
+// ================================
+function renderMonth(month, events) {
+    const [year, m] = month.split("-").map(Number);
+    const firstDay = new Date(year, m - 1, 1);
+    const lastDay = new Date(year, m, 0);
+    const startWeekDay = firstDay.getDay();
+    const daysInMonth = lastDay.getDate();
+
+    const todayISO = getTodayISO();
+
+    let html = `
+      <div class="p-4 border rounded-lg shadow-sm bg-white">
+        <h3 class="text-lg font-semibold mb-2">${firstDay.toLocaleString('pt-BR', { month: 'long' })} ${year}</h3>
+        <div class="grid grid-cols-7 gap-1 text-center font-semibold text-gray-700 mb-2">
+          <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
         </div>
-        <div class="flex gap-2 text-xs">
-            <span id="today-display" class="bg-gray-100 px-3 py-1.5 rounded-full text-gray-600 font-medium"></span>
+        <div class="grid grid-cols-7 gap-1 text-center">
+    `;
+
+    for (let i = 0; i < startWeekDay; i++) {
+        html += `<div></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateISO = `${year}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const hasEvent = events[dateISO];
+        const isToday = dateISO === todayISO;
+
+        let cellClass = "day-cell";
+        if (hasEvent) cellClass += " marked";
+        if (isToday) cellClass += " ring-2 ring-offset-2 ring-indigo-400";
+
+        html += `<div class="${cellClass}">`;
+        html += day;
+
+        if (hasEvent) {
+            const tooltipText = hasEvent.map(e => `${escapeHTML(e.aula)} - ${escapeHTML(e.conteudo)}`).join(" | ");
+            html += `<div class="tooltip presencial">${tooltipText}</div>`;
+        }
+
+        html += `</div>`;
+    }
+
+    html += `
         </div>
-    </nav>
+      </div>
+    `;
 
-    <main class="main-container">
-        <!-- ÁREA DO CONTEÚDO (ESQUERDA) -->
-        <div class="content-area">
-            <div id="output" class="markdown-body">
-                <div class="flex flex-col items-center justify-center py-20">
-                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-                </div>
-            </div>
-        </div>
+    return html;
+}
 
-        <!-- ÁREA DO CALENDÁRIO (DIREITA) -->
-        <aside class="sidebar-area">
-            <div id="calendario-container" class="space-y-4">
-                <!-- Injetado via JS -->
-            </div>
-        </aside>
-    </main>
+function processCalendar() {
+    const container = document.getElementById("calendario-presencial");
+    if (!container) return;
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const arquivoMD = params.get('p');
-        const output = document.getElementById('output');
-        const calContainer = document.getElementById('calendario-container');
-        const fileTitleEl = document.getElementById('file-title');
-        
-        // Exibe data de hoje no topo
-        document.getElementById('today-display').innerText = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(new Date());
+    const events = extractEventsFromTable();
+    const months = [...new Set(Object.keys(events).map(d => d.slice(0,7)))].sort();
 
-        if (!arquivoMD) {
-            output.innerHTML = `<div class="p-10 text-center text-gray-500">Aguardando parâmetro ?p=arquivo.md</div>`;
-        } else {
-            const urlMD = arquivoMD.startsWith('http') ? arquivoMD : `./planejamentos/${arquivoMD}`;
-            fileTitleEl.innerText = arquivoMD;
+    let html = `<div class="grid md:grid-cols-2 gap-6 my-6">`;
+    months.forEach(m => html += renderMonth(m, events));
+    html += `</div>`;
 
-            fetch(urlMD)
-                .then(r => r.text())
-                .then(md => {
-                    output.innerHTML = marked.parse(md);
-                    processCalendar();
-                })
-                .catch(() => {
-                    output.innerHTML = `<div class="p-10 text-red-500">Erro ao carregar planejamento.</div>`;
-                });
-        }
+    container.innerHTML = html;
 
-        function getTodayISO() {
-            const t = new Date();
-            return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
-        }
+    // Feature: posiciona calendário ao lado quando couber
+    setupPlanningLayoutOnce();
+    applyPlanningLayout();
+}
 
-        function extractEventsFromTable() {
-            const events = {};
-            const rows = output.querySelectorAll("table tr");
-            const todayISO = getTodayISO();
+// ================================
+//   CARREGAMENTO DO MARKDOWN (FIX 404)
+// ================================
+async function fetchWithFallbacks(filename){
+  // 1) tenta em ./planejamentos/
+  // 2) tenta na mesma pasta do html
+  const base = new URL(window.location.href);
+  const candidates = [
+    new URL(`planejamentos/${filename}`, base),
+    new URL(filename, base),
+  ];
 
-            rows.forEach(row => {
-                const cells = row.querySelectorAll("td");
-                if (cells.length >= 4) {
-                    const aula = cells[0].innerText.trim();
-                    const conteudo = cells[1].innerText.trim();
-                    const rawDate = cells[3].innerText.trim();
-                    const match = rawDate.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-                    
-                    if (match) {
-                        const [, d, m, y] = match;
-                        const iso = `${y}-${m}-${d}`;
-                        row.setAttribute('data-date', iso);
+  let lastErr = null;
+  for(const url of candidates){
+    try{
+      const r = await fetch(url.toString(), { cache: "no-store" });
+      if(!r.ok) throw new Error(`HTTP ${r.status} (${r.statusText}) em ${url.pathname}`);
+      return await r.text();
+    }catch(e){
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error("Falha ao carregar o arquivo.");
+}
 
-                        if (iso === todayISO) {
-                            row.classList.add("today-row");
-                            cells[0].innerHTML += `<span class="today-badge">HOJE</span>`;
-                        }
+function showHelp(){
+  output.innerHTML = `
+    <h2>Como usar</h2>
+    <p>Abra o arquivo com <code>?p=nome-do-arquivo.md</code>.</p>
+    <p>Ex.: <code>view-planejamento2.html?p=ads-ddm-2026-1.md</code></p>
 
-                        events[iso] = {
-                            aula: aula.split('.')[0].replace(/\D/g, ''),
-                            resumo: conteudo.substring(0, 60) + "...",
-                            rawDate
-                        };
-                    }
-                }
-            });
-            return events;
-        }
+    <h3>Onde colocar o .md</h3>
+    <ul>
+      <li>Preferencialmente em <code>./planejamentos/</code> (mesma pasta do HTML)</li>
+      <li>Ou na mesma pasta do HTML</li>
+    </ul>
 
-        function renderMonth(yearMonth, events) {
-            const [y, m] = yearMonth.split('-').map(Number);
-            const firstDay = new Date(y, m - 1, 1).getDay();
-            const lastDay = new Date(y, m, 0).getDate();
-            const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'short' }).format(new Date(y, m - 1, 1));
-            const todayStr = getTodayISO();
+    <h3>Exemplo de tabela</h3>
+    <table>
+      <tr><th>Aula</th><th>Conteúdo</th><th>Carga</th><th>Data</th></tr>
+      <tr><td>1</td><td>Apresentação</td><td>2h</td><td>20/02/2026</td></tr>
+      <tr><td>2</td><td>Introdução aos conceitos</td><td>2h</td><td>27/02/2026</td></tr>
+      <tr><td>3</td><td>Prática de laboratório</td><td>4h</td><td>06/03/2026</td></tr>
+      <tr><td>4</td><td>Avaliação Parcial</td><td>2h</td><td>13/03/2026</td></tr>
+    </table>
+    <div id="calendario-presencial"></div>
+  `;
+  setTimeout(processCalendar, 50);
+}
 
-            let html = `
-            <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-                <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3 flex justify-between">
-                    <span>${monthName}</span> <span>${y}</span>
-                </h4>
-                <div class="grid grid-cols-7 text-[9px] text-center mb-2 font-bold text-gray-300">
-                    <div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div>
-                </div>
-                <div class="grid grid-cols-7 gap-1 text-center">
-            `;
+async function main(){
+  if(!arquivoMD){
+    showHelp();
+    return;
+  }
 
-            for (let i = 0; i < firstDay; i++) html += `<div></div>`;
+  try{
+    const md = await fetchWithFallbacks(arquivoMD);
+    output.innerHTML = marked.parse(md);
 
-            for (let d = 1; d <= lastDay; d++) {
-                const date = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                let cls = "day-cell";
-                let attr = "";
+    // Garante que exista o container do calendário (sem mudar aparência)
+    if(!document.getElementById("calendario-presencial")){
+      output.insertAdjacentHTML("beforeend", `<div id="calendario-presencial"></div>`);
+    }
 
-                if (date === todayStr) cls += " today";
+    processCalendar();
+  }catch(err){
+    output.innerHTML = `
+      <p><b>Erro ao carregar o planejamento:</b> ${escapeHTML(err.message)}</p>
+      <p>Verifique:</p>
+      <ul>
+        <li>Se você abriu com <code>?p=arquivo.md</code></li>
+        <li>Se o arquivo existe em <code>./planejamentos/</code> ou na mesma pasta do HTML</li>
+      </ul>
+    `;
+  }
+}
 
-                if (events[date]) {
-                    cls += " marked";
-                    if (date < todayStr) cls += " past";
-                    const e = events[date];
-                    attr = `onclick="highlightRow('${date}')" data-tooltip="Aula ${e.aula}: ${e.resumo}"`;
-                }
+main();
+</script>
 
-                html += `<div class="${cls}" ${attr}>${d}</div>`;
-            }
-
-            html += `</div></div>`;
-            return html;
-        }
-
-        function processCalendar() {
-            // Busca o local original no MD para remover e mover para a lateral
-            const originalAnchor = document.getElementById("calendario-presencial");
-            if (originalAnchor) originalAnchor.style.display = 'none';
-
-            const events = extractEventsFromTable();
-            const months = [...new Set(Object.keys(events).map(d => d.slice(0, 7)))].sort();
-
-            let calHtml = `<div class="text-sm font-bold text-gray-700 mb-2 px-1">Encontros</div>`;
-            months.forEach(m => calHtml += renderMonth(m, events));
-            
-            calContainer.innerHTML = calHtml;
-        }
-
-        function highlightRow(date) {
-            document.querySelectorAll('.highlighted-row').forEach(row => row.classList.remove('highlighted-row'));
-            const targetRow = document.querySelector(`tr[data-date="${date}"]`);
-            
-            if (targetRow) {
-                targetRow.classList.add('highlighted-row');
-                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-    </script>
 </body>
 </html>

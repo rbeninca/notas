@@ -86,11 +86,20 @@ body {
     z-index: 8;
 }
 
+.markdown-body table tr {
+    transition: background-color 0.5s ease;
+}
+
 /* Linha da Tabela Destacada ao clicar */
 .markdown-body table tr.highlighted-row {
     background-color: #fef08a !important; /* Amarelo claro (yellow-200) do Tailwind */
-    transition: background-color 0.5s ease;
 }
+
+/* Efeito de hover na linha da tabela */
+.markdown-body table tr.hover-highlight {
+    background-color: #fef08a !important; /* Amarelo claro (yellow-200), mesma cor do clique */
+}
+
 /* Linha da Tabela referente ao DIA DE HOJE */
 .markdown-body table tr.today-row {
   background-color: #fef9c3 !important; /* amarelo bem claro */
@@ -621,6 +630,7 @@ function attachRowHoverHandlers() {
         row.onmouseleave = null;
 
         row.addEventListener('mouseenter', () => {
+            row.classList.add('hover-highlight');
             const date = row.getAttribute('data-date');
             if (!date) return;
             const day = document.querySelector(`#calendario-presencial .day-cell[data-date="${date}"]`);
@@ -628,6 +638,7 @@ function attachRowHoverHandlers() {
         });
 
         row.addEventListener('mouseleave', () => {
+            row.classList.remove('hover-highlight');
             const date = row.getAttribute('data-date');
             if (!date) return;
             const day = document.querySelector(`#calendario-presencial .day-cell[data-date="${date}"]`);
@@ -641,19 +652,24 @@ function attachRowHoverHandlers() {
 ================================ */
 
 function highlightRow(date) {
-    // Remove o destaque de linhas anteriormente clicadas
-    const prev = document.querySelectorAll('.highlighted-row');
-    prev.forEach(row => row.classList.remove('highlighted-row'));
-
     // Busca a linha que tem o data-date igual ao clicado
     const targetRow = document.querySelector(`tr[data-date="${date}"]`);
     
     if (targetRow) {
+        // Para evitar que múltiplos timeouts fiquem pendentes na mesma linha
+        // se o usuário clicar repetidamente, podemos limpar um timeout anterior,
+        // mas por agora, vamos manter simples: adiciona e depois remove.
+
         // Adiciona a classe de destaque
         targetRow.classList.add('highlighted-row');
         
         // Faz o scroll suave até a tabela para o usuário visualizar
         targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Define um temporizador para remover a classe após 3 segundos
+        setTimeout(() => {
+            targetRow.classList.remove('highlighted-row');
+        }, 1000);
     }
 }
 </script>
