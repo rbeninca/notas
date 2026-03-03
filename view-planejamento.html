@@ -822,6 +822,8 @@ Data: ${e.rawDate}
 ================================ */
 
 function processCalendar() {
+    updateTableTotalCH();
+
     const container = document.getElementById("calendario-presencial");
     if (!container) return;
 
@@ -838,6 +840,56 @@ function processCalendar() {
 
     // liga hover das linhas da tabela aos dias do calendário
     attachRowHoverHandlers();
+}
+
+function normalizeText(text) {
+    return (text || "")
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase();
+}
+
+function parseHours(value) {
+    const match = (value || "").toString().replace(",", ".").match(/\d+(?:\.\d+)?/);
+    if (!match) return 0;
+    const n = Number(match[0]);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function updateTableTotalCH() {
+    const tables = output.querySelectorAll("table");
+
+    tables.forEach(table => {
+        const rows = Array.from(table.querySelectorAll("tr"));
+        if (rows.length < 2) return;
+
+        const headerRow = rows[0];
+        const headerCells = Array.from(headerRow.querySelectorAll("th, td"));
+        if (!headerCells.length) return;
+
+        const chIndex = headerCells.findIndex(cell => normalizeText(cell.innerText) === "ch");
+        if (chIndex < 0) return;
+
+        const lastRow = rows[rows.length - 1];
+        const lastCells = Array.from(lastRow.querySelectorAll("td, th"));
+        if (!lastCells.length) return;
+
+        const hasTotalInLastRow = lastCells.some(cell => normalizeText(cell.innerText).includes("total"));
+        if (!hasTotalInLastRow) return;
+        if (!lastCells[chIndex]) return;
+
+        let totalHours = 0;
+        rows.slice(1, -1).forEach(row => {
+            const cells = Array.from(row.querySelectorAll("td, th"));
+            if (!cells[chIndex]) return;
+            totalHours += parseHours(cells[chIndex].innerText);
+        });
+
+        const totalIsInt = Number.isInteger(totalHours);
+        lastCells[chIndex].innerText = `${totalIsInt ? totalHours : totalHours.toFixed(1).replace(".", ",")}h`;
+    });
 }
 
 function attachRowHoverHandlers() {

@@ -1,7 +1,9 @@
 # Plano de Ensino: Desenvolvimento Móvel (2026/1)
 
-
-
+80h com 40% EAD e 60% presencial.
+EAD: 32h
+Presencial: 48h
+---------------------------------
 Planejamento encontros presenciais da Unidade 
 | #  | Conteúdo | CH| Data | Modal | Local|
 |:---:|----------|:---:|:---:|:---:| :---:|
@@ -18,6 +20,7 @@ Planejamento encontros presenciais da Unidade
 | [11.](#10-aula-10) | Camera                                                                                     |4h | 17/06/2026  quarta-feira|Pres.   | Lab. 7|
 | [12.](#11-aula-11) | Camera                                                                                     |4h | 23/06/2026  terça-feira |Pres.   | Lab. 2|
 | [13.](#12-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026  quarta-feira|Pres.   | Lab. 7|
+|Total |                                                                                             |52h|            |        |        |
 
 
 
