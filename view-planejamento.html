@@ -381,6 +381,35 @@ const arquivoMD = params.get('p');
 const output = document.getElementById('output');
 let _layoutSetupDone = false;
 let _resizeTimer = null;
+const PLANEJAMENTO_COLORS = [
+    "#6366f1", "#ec4899", "#0ea5e9", "#10b981", "#f97316", "#a855f7",
+    "#14b8a6", "#eab308", "#ef4444", "#3b82f6", "#84cc16", "#f43f5e"
+];
+
+function buildColorMapPlanejamentos(nomes) {
+    const mapa = {};
+    nomes.forEach((nome, index) => {
+        mapa[nome] = PLANEJAMENTO_COLORS[index % PLANEJAMENTO_COLORS.length];
+    });
+    return mapa;
+}
+
+function styleForDayByPlanejamento(dayEvents) {
+    const cores = [...new Set(dayEvents.map(e => e.color).filter(Boolean))];
+    if (!cores.length) return "";
+    if (cores.length === 1) {
+        return `background: ${cores[0]}; color: #fff;`;
+    }
+
+    const step = 100 / cores.length;
+    const stops = cores.map((cor, i) => {
+        const start = (step * i).toFixed(2);
+        const end = (step * (i + 1)).toFixed(2);
+        return `${cor} ${start}% ${end}%`;
+    }).join(", ");
+
+    return `background: conic-gradient(${stops}); color: #fff;`;
+}
 
 async function listarPlanejamentosSemParametro() {
     const owner = "rbeninca";
@@ -393,6 +422,10 @@ async function listarPlanejamentosSemParametro() {
         <h2>Planejamentos disponíveis</h2>
         <p>Selecione um arquivo para abrir.</p>
         <ul id="lista-planejamentos"></ul>
+        <div id="legenda-planejamentos" style="margin-top: 14px;"></div>
+        <h3 style="margin-top: 24px;">Calendário geral (${new Date().getFullYear()})</h3>
+        <p style="margin-top: 4px; color: #64748b;">Eventos de todos os planejamentos para o ano corrente.</p>
+        <div id="calendario-geral-planejamentos">Carregando calendário geral...</div>
     `;
 
     const ul = document.getElementById("lista-planejamentos");
@@ -428,10 +461,105 @@ async function listarPlanejamentosSemParametro() {
         if (!ul.children.length) {
             ul.innerHTML = "<li>Nenhum planejamento .md encontrado.</li>";
         }
+
+        await renderCalendarioGeralPlanejamentos(itens.filter(i => i.type === "file" && i.name.toLowerCase().endsWith(".md")));
     } catch (err) {
         console.error(err);
         ul.innerHTML = `<li>Falha ao carregar planejamentos: ${err.message}</li>`;
+        const calendarContainer = document.getElementById("calendario-geral-planejamentos");
+        if (calendarContainer) {
+            calendarContainer.innerHTML = `<p>Falha ao carregar calendário geral: ${err.message}</p>`;
+        }
     }
+}
+
+async function renderCalendarioGeralPlanejamentos(arquivosMd) {
+    const calendarContainer = document.getElementById("calendario-geral-planejamentos");
+    const legendContainer = document.getElementById("legenda-planejamentos");
+    if (!calendarContainer) return;
+
+    const anoAtual = new Date().getFullYear();
+    const events = {};
+    const nomesPlanejamentos = arquivosMd
+        .map(i => i.name)
+        .sort((a, b) => a.localeCompare(b, "pt-BR"));
+    const colorMap = buildColorMapPlanejamentos(nomesPlanejamentos);
+
+    const respostas = await Promise.all(
+        arquivosMd.map(async item => {
+            try {
+                if (!item.download_url) return null;
+                const resp = await fetch(item.download_url);
+                if (!resp.ok) return null;
+                const md = await resp.text();
+                return { nome: item.name, md };
+            } catch {
+                return null;
+            }
+        })
+    );
+
+    respostas
+        .filter(Boolean)
+        .forEach(({ nome, md }) => {
+            const temp = document.createElement("div");
+            temp.innerHTML = marked.parse(md);
+            const rows = temp.querySelectorAll("table tr");
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td");
+                if (cells.length < 4) return;
+
+                const aula = cells[0].innerText.trim();
+                const conteudo = cells[1].innerText.trim();
+                const carga = cells[2].innerText.trim();
+                const rawDate = cells[3].innerText.trim();
+
+                const match = rawDate.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+                if (!match) return;
+
+                const [, d, m, y] = match;
+                const yearNum = Number(y);
+                if (yearNum !== anoAtual) return;
+
+                const iso = `${y}-${m}-${d}`;
+                if (!events[iso]) events[iso] = [];
+
+                events[iso].push({
+                    planejamento: nome,
+                    color: colorMap[nome],
+                    aula,
+                    conteudo,
+                    carga,
+                    rawDate
+                });
+            });
+        });
+
+    if (legendContainer) {
+        legendContainer.innerHTML = nomesPlanejamentos.map(nome => {
+            const cor = colorMap[nome];
+            return `
+                <span style="display:inline-flex; align-items:center; gap:6px; margin:4px 10px 0 0; font-size:12px; color:#374151;">
+                    <span style="width:10px; height:10px; border-radius:999px; background:${cor}; display:inline-block;"></span>
+                    ${nome}
+                </span>
+            `;
+        }).join("");
+    }
+
+    let html = `<div class="calendar-months-grid">`;
+    for (let month = 1; month <= 12; month++) {
+        const ym = `${anoAtual}-${String(month).padStart(2, "0")}`;
+        html += renderMonth(ym, events, {
+            enableRowClick: false,
+            enablePastStyle: false,
+            getDayStyle: styleForDayByPlanejamento
+        });
+    }
+    html += `</div>`;
+
+    calendarContainer.innerHTML = html;
 }
 
 function setupPlanningLayoutOnce() {
@@ -622,7 +750,8 @@ function extractEventsFromTable() {
    RENDERIZAÇÃO DO CALENDÁRIO
 ================================ */
 
-function renderMonth(yearMonth, events) {
+function renderMonth(yearMonth, events, options = {}) {
+    const { enableRowClick = true, enablePastStyle = true, getDayStyle = null } = options;
     const [y, m] = yearMonth.split('-').map(Number);
     const firstDay = new Date(y, m - 1, 1).getDay();
     const lastDay = new Date(y, m, 0).getDate();
@@ -659,24 +788,29 @@ function renderMonth(yearMonth, events) {
             
             // VERIFICAÇÃO DE EVENTO PASSADO:
             // Se a data do calendário for menor que a data de hoje
-            if (date < todayStr) {
+            if (enablePastStyle && date < todayStr) {
                 cls += " past";
             }
 
-            const e = events[date];
-            tooltip = `
-Aula ${e.aula}
+            const dayEvents = Array.isArray(events[date]) ? events[date] : [events[date]];
+            tooltip = dayEvents.map(e => {
+                const origem = e.planejamento ? `Planejamento: ${e.planejamento}\n` : "";
+                return `
+${origem}Aula ${e.aula}
 ${e.conteudo}
 Carga horária: ${e.carga}
 Data: ${e.rawDate}
-            `.trim();
+                `.trim();
+            }).join("\n\n");
         }
 
         // Adiciona o evento de clique onclick="highlightRow('${date}')" caso seja um dia marcado
-        const clickEvent = events[date] ? `onclick="highlightRow('${date}')"` : "";
+        const clickEvent = (events[date] && enableRowClick) ? `onclick="highlightRow('${date}')"` : "";
+        const dayEvents = events[date] ? (Array.isArray(events[date]) ? events[date] : [events[date]]) : [];
+        const customStyle = (dayEvents.length && typeof getDayStyle === "function") ? getDayStyle(dayEvents) : "";
 
         // Inclui data-date para poder conectar a linha da tabela com o dia do calendário
-        html += `<div class="${cls}" data-date="${date}" ${clickEvent} ${tooltip ? `data-tooltip="${tooltip}"` : ""}>${d}</div>`;
+        html += `<div class="${cls}" style="${customStyle}" data-date="${date}" ${clickEvent} ${tooltip ? `data-tooltip="${tooltip}"` : ""}>${d}</div>`;
     }
 
     html += `</div></div>`;
