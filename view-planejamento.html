@@ -382,6 +382,58 @@ const output = document.getElementById('output');
 let _layoutSetupDone = false;
 let _resizeTimer = null;
 
+async function listarPlanejamentosSemParametro() {
+    const owner = "rbeninca";
+    const repo = "notas";
+    const path = "planejamentos";
+    const ref = "master";
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${ref}`;
+
+    output.innerHTML = `
+        <h2>Planejamentos disponíveis</h2>
+        <p>Selecione um arquivo para abrir.</p>
+        <ul id="lista-planejamentos"></ul>
+    `;
+
+    const ul = document.getElementById("lista-planejamentos");
+    if (!ul) return;
+
+    try {
+        const resp = await fetch(apiUrl, {
+            headers: {
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28"
+            }
+        });
+
+        if (!resp.ok) {
+            throw new Error(`Erro HTTP ${resp.status} ao buscar lista de planejamentos`);
+        }
+
+        const itens = await resp.json();
+        ul.innerHTML = "";
+
+        itens
+            .filter(i => i.type === "file" && i.name.toLowerCase().endsWith(".md"))
+            .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
+            .forEach(i => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.textContent = i.name;
+                a.href = `${window.location.pathname}?p=${encodeURIComponent(i.name)}`;
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+
+        if (!ul.children.length) {
+            ul.innerHTML = "<li>Nenhum planejamento .md encontrado.</li>";
+        }
+    } catch (err) {
+        console.error(err);
+        ul.innerHTML = `<li>Falha ao carregar planejamentos: ${err.message}</li>`;
+    }
+}
+
 function setupPlanningLayoutOnce() {
     if (_layoutSetupDone) return;
 
@@ -464,6 +516,8 @@ if (arquivoMD ==="teste") {
     `;
     // Força o processamento do calendário na tabela de exemplo apenas para demonstração visual
     setTimeout(processCalendar, 100); 
+} else if (!arquivoMD) {
+    listarPlanejamentosSemParametro();
 } else {
     // Fluxo normal de produção
 const basePath = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
