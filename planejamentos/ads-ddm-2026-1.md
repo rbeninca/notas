@@ -13,7 +13,7 @@ Planejamento encontros presenciais da Unidade
 | [3.](#3-aula-2) | Estrutura do Projeto Android,Listeners,Internacionalização (Sorteio, Sorteio Intervalo, IMC)|4h | 14/04/2026  terça  as 18:30h     |Pres.   | Lab. 7|
 | [3.](#3-aula-2) | Passagem dados entre Activitys,(Bundle),Intents , Views, Views Customizadas                   |4h | 28/04/2026  terça  as 18:30h     |Pres.   | Lab. 7|
 | [4.](#4-aula-3) | Hackton - Uso de Sistema de Controle de Versão (Git)                                          |4h | 07/05/2026 quinta-feira |Pres.   | Lab. 2|
-| [4.](#4-aula-3) | View Groups  e Views                                                                          |4h | 09/05/2026  sabado 13:30h      |Pres.   | Lab. 7|
+| [4.](#4-aula-3) | View Groups  e Views                                                                          |4h | 16/05/2026  sabado 13:30h      |Pres.   | Lab. 7|
 | [5.](#5-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026  terça-feira |Pres.   | Lab. 2| 
 | [6.](#6-aula-5) | Atividade Prática em sala.                                                                    |4h | 27/05/2026  quarta-feira|Pres.   |    . ?|
 | [7.](#7-aula-6) | Gerenciadores do Android (Notifications e AlarmManager)                                       |4h | 28/05/2026  quinta-feira|Pres.   | Lab. 7|
