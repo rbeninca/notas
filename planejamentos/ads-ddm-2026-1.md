@@ -17,7 +17,7 @@ Planejamento encontros presenciais da Unidade
 | [5.](#5-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026  terça-feira |Pres.   | Lab. 2| 
 | [6.](#6-aula-5) | Atividade Prática em sala.                                                                    |4h | 27/05/2026  quarta-feira|Pres.   |    . ?|
 | [7.](#7-aula-6) | Gerenciadores do Android (Notifications e AlarmManager)                                       |4h | 28/05/2026  quinta-feira|Pres.   | Lab. 7|
-| [8.](#8-aula-7) | Persistência de Dados Local: SharedPreferences  e SQLite                                      |4h | 03/06/2026  quarta-feira|Pres.   |    . ?|
+| [8.](#8-aula-7) | Persistência de Dados Local: SharedPreferences  e SQLite                                      |4h | 03/06/2026  quarta-feira|Pres.   | Lab. 2|
 | [9.](#9-aula-8) | Geolocalização, Sensores e LocationManager                                                    |4h | 10/06/2026  quarta-feira|Pres.   | Lab. 7|
 | [10.](#10-aula-9) | Integração com Mapas (Google Maps API)                                                      |4h | 16/06/2026  terça-feira |Pres.   | Lab. 2| 
 | [11.](#11-aula-10) | Camera                                                                                     |4h | 17/06/2026  quarta-feira|Pres.   | Lab. 7|
