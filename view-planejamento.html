@@ -90,6 +90,17 @@ body {
     transition: background-color 0.5s ease;
 }
 
+/* Aula cancelada (data com <del>) */
+.markdown-body table tr.cancelled-row {
+    background-color: #fff1f2 !important; /* rose-50: fundo levemente avermelhado */
+    opacity: 0.6;
+    color: #f87171; /* red-400 */
+}
+
+.markdown-body table tr.cancelled-row td {
+    color: #f87171;
+}
+
 /* Linha da Tabela Destacada ao clicar */
 .markdown-body table tr.highlighted-row {
     background-color: #fef08a !important; /* Amarelo claro (yellow-200) do Tailwind */
@@ -411,13 +422,42 @@ function styleForDayByPlanejamento(dayEvents) {
     return `background: conic-gradient(${stops}); color: #fff;`;
 }
 
-async function listarPlanejamentosSemParametro() {
+function isLocalhost() {
+    return ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
+}
+
+async function fetchPlanejamentosItens() {
+    if (isLocalhost()) {
+        const basePath = window.location.pathname.replace('view-planejamento.html', 'planejamentos/');
+        const indexUrl = `${window.location.origin}${basePath}index.json`;
+        const resp = await fetch(indexUrl);
+        if (!resp.ok) throw new Error(`index.json não encontrado (${resp.status})`);
+        const nomes = await resp.json();
+        return nomes
+            .filter(n => n.toLowerCase().endsWith(".md"))
+            .map(n => ({
+                type: "file",
+                name: n,
+                download_url: `${window.location.origin}${basePath}${encodeURIComponent(n)}`
+            }));
+    }
+
     const owner = "rbeninca";
     const repo = "notas";
     const path = "planejamentos";
     const ref = "master";
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${ref}`;
+    const resp = await fetch(apiUrl, {
+        headers: {
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28"
+        }
+    });
+    if (!resp.ok) throw new Error(`Erro HTTP ${resp.status} ao buscar lista de planejamentos`);
+    return await resp.json();
+}
 
+async function listarPlanejamentosSemParametro() {
     output.innerHTML = `
         <h2>Planejamentos disponíveis</h2>
         <p>Selecione um arquivo para abrir.</p>
@@ -432,18 +472,7 @@ async function listarPlanejamentosSemParametro() {
     if (!ul) return;
 
     try {
-        const resp = await fetch(apiUrl, {
-            headers: {
-                "Accept": "application/vnd.github+json",
-                "X-GitHub-Api-Version": "2022-11-28"
-            }
-        });
-
-        if (!resp.ok) {
-            throw new Error(`Erro HTTP ${resp.status} ao buscar lista de planejamentos`);
-        }
-
-        const itens = await resp.json();
+        const itens = await fetchPlanejamentosItens();
         ul.innerHTML = "";
 
         itens
@@ -690,23 +719,27 @@ function extractEventsFromTable() {
             const carga = cells[2].innerText.trim();
             const rawDate = cells[3].innerText.trim();
 
+            const cancelled = !!cells[3].querySelector("del");
+
+            if (cancelled) {
+                row.classList.add("cancelled-row");
+                return; // pula para próxima iteração do forEach
+            }
+
             const match = rawDate.match(/(\d{2})\/(\d{2})\/(\d{4})/);
             if (match) {
                 const [ , d, m, y ] = match;
                 const iso = `${y}-${m}-${d}`;
 
-                // Adiciona o atributo data-date na linha para podermos encontrá-la no clique
                 row.setAttribute('data-date', iso);
-                //marca a linha "hoje " na tabela 
                 if (iso === todayISO) {
                   row.classList.add("today-row");
                 }
 
-                                const classDate = new Date(`${iso}T00:00:00`);
-                                if (classDate >= todayStart) {
-                                        nextCandidates.push({ row, classDate, cells });
-                                }
-
+                const classDate = new Date(`${iso}T00:00:00`);
+                if (classDate >= todayStart) {
+                    nextCandidates.push({ row, classDate, cells });
+                }
 
                 events[iso] = {
                     aula,
