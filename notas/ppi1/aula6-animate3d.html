@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo 3D</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 800px;
+            font-family: Arial, sans-serif;
+        }
+
+        .scene {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .cube {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 6s linear infinite;
+        }
+
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            opacity: 0.85;
+        }
+
+        .front {
+            background-color: red;
+            transform: translateZ(100px);
+        }
+
+        .back {
+            background-color: green;
+            transform: rotateY(180deg) translateZ(100px);
+        }
+
+        .right {
+            background-color: blue;
+            transform: rotateY(90deg) translateZ(100px);
+        }
+
+        .left {
+            background-color: orange;
+            transform: rotateY(-90deg) translateZ(100px);
+        }
+
+        .top {
+            background-color: purple;
+            transform: rotateX(90deg) translateZ(100px);
+        }
+
+        .bottom {
+            background-color: brown;
+            transform: rotateX(-90deg) translateZ(100px);
+        }
+
+        @keyframes rotateCube {
+            from {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+
+            to {
+                transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="cube">
+            <div class="face front">Frente</div>
+            <div class="face back">Fundo</div>
+            <div class="face right">Direita</div>
+            <div class="face left">Esquerda</div>
+            <div class="face top">Topo</div>
+            <div class="face bottom">Base</div>
+        </div>
+    </div>
+
+</body>
+</html>

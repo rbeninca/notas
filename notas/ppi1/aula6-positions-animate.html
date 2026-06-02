@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html{
+            height: 100vh;
+            width: 100%;
+            
+        }
+        body{transform-style: preserve-3d;
+            perspective: 1000px;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            height: 500px;
+            width: 500px;
+            border: 10px solid rgb(115, 104, 106);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            /* transform: translate(-50%, -50%) rotate3d(10, 0, 0, 50deg); */
+            animation:movimento3D 5s linear infinite;
+            transform-origin: 50% 50%;
+            transform-style: preserve-3d
+            
+            
+        }
+        @keyframes rotacaoX {
+            from {
+                transform: translate(-50%, -50%) rotateX(0deg);
+            }
+            to {
+                transform: translate(-50%, -50%) rotateX(360deg);
+            }
+            
+        }
+        @keyframes rotacaoY {
+            from {
+                transform: translate(-50%, -50%) rotateY(0deg);
+            }
+            to {
+                transform: translate(-50%, -50%) rotateY(360deg);
+            }
+            
+        }
+        @keyframes rotacaoZ {
+            from {
+                transform: translate(-50%, -50%) rotateZ(0deg);
+            }
+            to {
+                transform: translate(-50%, -50%) rotateZ(360deg);
+            }
+            
+        }
+        @keyframes movimento3D {
+            from {
+                transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg) ;
+
+            }
+            to {
+                transform: translate(-50%,-50%)  rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+            }
+            
+        }
+        .box{
+            position: absolute;
+            height: 100px;
+            width: 100px;
+            background-color: pink;
+            text-align: center;
+            line-height: 100px;
+            animation: movimento3D 10s linear infinite;
+        
+        }
+        #box1{
+            top: 0;
+            left: 0;
+            background-color: red;
+            
+        }
+        #box2{
+            top: 0;
+            right: 0;
+            background-color: green;
+        }
+        #box3{
+            bottom: 0;
+            left: 0;
+            background-color: blue;
+        }
+        #box4{
+            bottom: 0;
+            right: 0;
+            background-color: yellow;
+        }
+        #box5{
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: gray;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Positions</h1>
+    </div>
+    <div class="container">
+        <div class="box" id="box1">box - 1 </div>
+        <div class="box" id="box2">box - 2 </div>
+        <div class="box" id="box3">box - 3 </div>
+        <div class="box" id="box4">box - 4 </div>
+        <div class="box" id="box5">box - 5 </div>
+    </div>
+</body>
+</html>

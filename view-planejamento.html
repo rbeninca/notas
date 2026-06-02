@@ -313,6 +313,33 @@ body {
     box-sizing: border-box;
 }
 
+/* ===== BOTÃO VIDEOCONFERÊNCIA ===== */
+.vc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #10b981;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    vertical-align: middle;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(16,185,129,0.25);
+    transition: background 0.15s;
+}
+.vc-btn:hover {
+    background: #059669;
+    color: #fff;
+    text-decoration: none;
+}
+.vc-btn svg {
+    flex-shrink: 0;
+}
+
 /* ===== LAYOUT DINÂMICO: TABELA + CALENDÁRIO ===== */
 .planejamento-wrap {
     display: flex;
@@ -856,6 +883,7 @@ Data: ${e.rawDate}
 
 function processCalendar() {
     updateTableTotalCH();
+    injectVCButtons();
 
     const container = document.getElementById("calendario-presencial");
     if (!container) return;
@@ -922,6 +950,44 @@ function updateTableTotalCH() {
 
         const totalIsInt = Number.isInteger(totalHours);
         lastCells[chIndex].innerText = `${totalIsInt ? totalHours : totalHours.toFixed(1).replace(".", ",")}h`;
+    });
+}
+
+function makeVCButton(url) {
+    const a = document.createElement('a');
+    a.className = 'vc-btn';
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14"/><rect x="3" y="8" width="12" height="8" rx="2"/></svg> Entrar`;
+    return a;
+}
+
+function injectVCButtons() {
+    const rows = output.querySelectorAll("table tr");
+
+    rows.forEach(row => {
+        row.querySelectorAll("td").forEach(cell => {
+            // Links já renderizados pelo marked como <a href="...">
+            cell.querySelectorAll('a[href]').forEach(link => {
+                const href = link.getAttribute('href');
+                if (!href || !/^https?:\/\//.test(href)) return;
+                if (cell.querySelector(`a.vc-btn[href="${href}"]`)) return;
+
+                const btn = makeVCButton(href);
+                link.after(btn);
+            });
+
+            // URLs cruas no texto (não convertidas em link)
+            cell.childNodes.forEach(node => {
+                if (node.nodeType !== Node.TEXT_NODE) return;
+                const match = node.textContent.match(/(https?:\/\/[^\s]+)/);
+                if (!match) return;
+                const url = match[1].replace(/[)>\].,;]+$/, "");
+                const btn = makeVCButton(url);
+                node.parentNode.insertBefore(btn, node.nextSibling);
+            });
+        });
     });
 }
 

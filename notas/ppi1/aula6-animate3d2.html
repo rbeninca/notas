@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo 3D com Plano XYZ</title>
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 900px;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .scene {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            transform-style: preserve-3d;
+        }
+
+        .world {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-style: preserve-3d;
+            animation: rotateWorld 10s linear infinite;
+        }
+
+        @keyframes rotateWorld {
+            from {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+
+            to {
+                transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+
+        /* ========================= */
+        /* PLANOS DE GRADE 3D        */
+        /* ========================= */
+
+        .grid {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            left: -250px;
+            top: -250px;
+            opacity: 0.35;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+
+            background-image:
+                linear-gradient(rgba(255,255,255,0.25) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.25) 1px, transparent 1px);
+
+            background-size: 50px 50px;
+        }
+
+        /* Plano XY: fica "de frente" originalmente */
+        .grid-xy {
+            transform: translateZ(0);
+        }
+
+        /* Plano XZ: gira em torno do eixo X */
+        .grid-xz {
+            transform: rotateX(90deg);
+        }
+
+        /* Plano YZ: gira em torno do eixo Y */
+        .grid-yz {
+            transform: rotateY(90deg);
+        }
+
+        /* ========================= */
+        /* EIXOS X, Y, Z             */
+        /* ========================= */
+
+        .axis {
+            position: absolute;
+            width: 600px;
+            height: 4px;
+            left: -300px;
+            top: -2px;
+            transform-origin: 300px 2px;
+        }
+
+        .axis span {
+            position: absolute;
+            right: -30px;
+            top: -12px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .axis-x {
+            background-color: red;
+            transform: rotateZ(0deg);
+        }
+
+        .axis-y {
+            background-color: limegreen;
+            transform: rotateZ(90deg);
+        }
+
+        .axis-z {
+            background-color: dodgerblue;
+            transform: rotateY(90deg);
+        }
+
+        /* ========================= */
+        /* CUBO 3D                   */
+        /* ========================= */
+
+        .cube {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            left: -60px;
+            top: -60px;
+            transform-style: preserve-3d;
+        }
+
+        .face {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            font-size: 20px;
+            opacity: 0.85;
+        }
+
+        .front {
+            background-color: red;
+            transform: translateZ(60px);
+        }
+
+        .back {
+            background-color: green;
+            transform: rotateY(180deg) translateZ(60px);
+        }
+
+        .right {
+            background-color: blue;
+            transform: rotateY(90deg) translateZ(60px);
+        }
+
+        .left {
+            background-color: orange;
+            transform: rotateY(-90deg) translateZ(60px);
+        }
+
+        .top {
+            background-color: purple;
+            transform: rotateX(90deg) translateZ(60px);
+        }
+
+        .bottom {
+            background-color: brown;
+            transform: rotateX(-90deg) translateZ(60px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="world">
+
+            <!-- Planos de referência -->
+            <div class="grid grid-xy"></div>
+            <div class="grid grid-xz"></div>
+            <div class="grid grid-yz"></div>
+
+            <!-- Eixos -->
+            <div class="axis axis-x">
+                <span>X</span>
+            </div>
+
+            <div class="axis axis-y">
+                <span>Y</span>
+            </div>
+
+            <div class="axis axis-z">
+                <span>Z</span>
+            </div>
+
+            <!-- Cubo -->
+            <div class="cube">
+                <div class="face front">Frente</div>
+                <div class="face back">Fundo</div>
+                <div class="face right">Direita</div>
+                <div class="face left">Esquerda</div>
+                <div class="face top">Topo</div>
+                <div class="face bottom">Base</div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
