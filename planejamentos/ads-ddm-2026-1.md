@@ -15,10 +15,10 @@ Planejamento encontros presenciais da Unidade
 | [4.](#4-aula-3) | Hackton - Uso de Sistema de Controle de Versão (Git)                                          |4h | 07/05/2026 quinta-feira |Pres.   | Lab. 2|
 | [4.](#4-aula-3) | View Groups  e Views                                                                          |4h | 16/05/2026  sabado 13:30h|Pres.   | Lab. 7|
 | [5.](#5-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026  terça-feira |Pres.   | Lab. 2| 
-| [.](#6-aula-5) | Atividade Prática em sala.                                                                    |4h |                         |Pres.   |    . ?|
-| [6.](#7-aula-6) | Gerenciadores do Android (Notifications e AlarmManager)                                       |4h | 28/05/2026  quinta-feira|Pres.   | Lab. 7|
+| [6.](#6-aula-5) | Atividade Prática em sala.                                                                    |4h |                         |Pres.   |    . ?|
+| [6.](#7-aula-6) |       Atividade Prática em sala.                                                              |4h | 28/05/2026  quinta-feira|Pres.   | Lab. 7|
 | [7.](#8-aula-7) |  <mark>  Atendimento dúvidas, ajuda <mark>                                                    |3h | 03/06/2026  quarta-feira|Pres.   | Online https://meet.google.com/mmb-ezbo-twe|
-| [8.](#9-aula-8) | Persistência de Dados Local: SharedPreferences  e SQLite                                      |4h | 10/06/2026  quarta-feira|Pres.   | Lab. 7|
+| [8.](#9-aula-8) | Persistência de Dados Local: SharedPreferences  e SQLite      Listagens Adapters            |4h | 10/06/2026  quarta-feira|Pres.   | Lab. 7|
 | [9.](#10-aula-9) |  Geolocalização, Sensores e LocationManager                                                 |4h | 16/06/2026  terça-feira |Pres.   | Lab. 2| 
 | [10.](#11-aula-10) | Integração com Mapas (Google Maps API)                                                     |4h | 17/06/2026  quarta-feira|Pres.   | Lab. 7|
 | [11.](#12-aula-11) | Camera                                                                                     |4h | 23/06/2026  terça-feira |Pres.   | Lab. 2|
