@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root
+        body,
+        html {
+            height: 100vh;
+            width: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .descricao {
+            width: 80%;
+            margin: auto;
+        }
+
+        .linha {
+            width: 100%;
+            height: 110px;
+            border: 1px solid black;
+            position: relative;
+            /*no scroll*/
+        }
+
+        .rocket {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            bottom: 0cqb;
+            left: 0cqb;
+            animation: moverERodar 2s infinite;
+        }
+
+
+        .box {
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            text-align: center;
+            border: 1px solid black;
+            background-color: red;
+            position: absolute;
+            animation: moverERodar 2s infinite;
+
+        }
+
+        @keyframes move {
+            0% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(100vw);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes rodar {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes moverERodar {
+            0% {
+                transform: translateX(0) rotate(0deg);
+                background-color: rgb(255, 0, 0);
+                border-radius: 0%;
+            }
+
+            50% {
+                transform: translateX(calc(99.90vw - 100px)) rotate(180deg);
+                background-color: rgb(0, 255, 0);
+                border-radius: 100%;
+
+            }
+
+            100% {
+                transform: translateX(0)  rotate(-360deg);
+                background-color: rgb(0, 0, 255);
+                border-radius: 0%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="descricao">
+        <h1>Animcação animate em CSS</h1>
+        <p>A animação em CSS é uma técnica que permite criar movimentos e transições suaves em elementos HTML. Ela é
+            amplamente utilizada para melhorar a experiência do usuário, tornando as interfaces mais dinâmicas e
+            atraentes. A animação em CSS pode ser aplicada a diversos elementos, como texto, imagens, botões e outros
+            componentes da página. Existem várias propriedades e técnicas para criar animações em CSS, incluindo
+            keyframes, transições e transformações. Com a animação em CSS, é possível criar efeitos visuais
+            impressionantes, como desvanecimentos, rotações, escalas e muito mais, sem a necessidade de usar JavaScript
+            ou outras linguagens de programação.</p>
+        <p>Exemplo: </p>
+        <pre>
+        .box{
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            animation: move 2s infinite;
+            
+        }
+        @keyframes move {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(100px); }
+            100% { transform: translateX(0); }
+        }
+        </pre>
+    </div>
+
+    <div class="container-exemplo">
+        <div class="linha">
+            <div class="box">BOX</div>
+        </div>
+        <div class="linha">
+            <div class="box">BOX</div>
+        </div>
+    </div>
+</body>
+
+
+</html>

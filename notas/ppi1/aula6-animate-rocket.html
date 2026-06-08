@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+.container-exemplo {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    overflow: hidden;
+    background: linear-gradient(#020111, #000);
+}
+
+.rocket {
+    position: absolute;
+    font-size: 70px;
+    left: 50%;
+    top: 75%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    animation: lancamentoOrbita 10s infinite linear;
+    z-index: 3;
+}
+
+.earth {
+    position: absolute;
+    left: 50%;
+    bottom: -120px;
+    transform: translateX(-50%);
+    font-size: 350px;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.moon {
+    position: absolute;
+    left: 80%;
+    top: 25%;
+    transform: translate(-50%, -50%);
+    font-size: 160px;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+@keyframes lancamentoOrbita {
+    /* foguete parado na Terra */
+    0% {
+        left: 50%;
+        top: 75%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    /* lançamento */
+    20% {
+        left: 55%;
+        top: 55%;
+        transform: translate(-50%, -50%) rotate(-35deg);
+    }
+
+    40% {
+        left: 65%;
+        top: 35%;
+        transform: translate(-50%, -50%) rotate(-20deg);
+    }
+
+    /* chega perto da Lua */
+    50% {
+        left: 80%;
+        top: 25%;
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    /* começa a órbita lunar */
+    62.5% {
+        left: 87%;
+        top: 25%;
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    75% {
+        left: 80%;
+        top: 13%;
+        transform: translate(-50%, -50%) rotate(180deg);
+    }
+
+    87.5% {
+        left: 73%;
+        top: 25%;
+        transform: translate(-50%, -50%) rotate(270deg);
+    }
+
+    100% {
+        left: 80%;
+        top: 37%;
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+    </style>
+</head>
+
+<body>
+    <div class="descricao">
+        <h1>Animcação animate em CSS</h1>
+        <p>A animação em CSS é uma técnica que permite criar movimentos e transições suaves em elementos HTML. Ela é
+            amplamente utilizada para melhorar a experiência do usuário, tornando as interfaces mais dinâmicas e
+            atraentes. A animação em CSS pode ser aplicada a diversos elementos, como texto, imagens, botões e outros
+            componentes da página. Existem várias propriedades e técnicas para criar animações em CSS, incluindo
+            keyframes, transições e transformações. Com a animação em CSS, é possível criar efeitos visuais
+            impressionantes, como desvanecimentos, rotações, escalas e muito mais, sem a necessidade de usar JavaScript
+            ou outras linguagens de programação.</p>
+        <p>Exemplo: </p>
+        <pre>
+        .box{
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            animation: move 2s infinite;
+            
+        }
+        @keyframes move {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(100px); }
+            100% { transform: translateX(0); }
+        }
+        </pre>
+    </div>
+
+    <div class="container-exemplo">
+        <div class="moon">🌕</div>
+        <div class="earth">🌎</div>
+        <div class="rocket">🚀</div>
+    </div>
+</body>
+
+
+</html>

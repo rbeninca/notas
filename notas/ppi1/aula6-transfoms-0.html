@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root{
+            font-size: 2rem;
+            --cor1: pink;
+            --cor2: rgb(115, 104, 106,0.5);
+            --cor3: blue;
+            --tamanho-cena: 500px;
+            --tamanho-face:calc(var(--tamanho-cena)/2) ;            
+
+        }
+        body{
+            height: 100vh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            perspective: 1000px;
+            
+        }
+        .container {
+            height: var(--tamanho-cena);
+            width: var(--tamanho-cena);
+            background-color: var(--cor2);
+            border: 10px solid var(--cor2);
+            position: fixed;
+            transform-style: preserve-3d;
+            transform: rotate3d(1, 1, 1, -60deg);
+            
+        }
+
+        .face {
+            height: var(--tamanho-face);
+            width: var(--tamanho-face);
+            background-color: var(--cor1);
+            text-align: center;
+            line-height: var(--tamanho-face);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%) rotate3d(1, 1, 1, 45deg);
+            
+        }
+    </style>
+</head>
+<body>
+    <h1>Tranformações  tranforms</h1>
+
+    <div class="container">
+        <div class="face">face</div>
+    </div>
+    
+    
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cena, Face e Cubo em 3D</title>
+
+    <style>
+        :root {
+            --tamanho-cubo-externo: 260px;
+            --metade-cubo-externo: calc(var(--tamanho-cubo-externo) / 2);
+
+            --tamanho-cubo-interno: 72px;
+            --metade-cubo-interno: calc(var(--tamanho-cubo-interno) / 2);
+
+            --cor-frente: rgba(255, 0, 0, 0.72);
+            --cor-tras: rgba(0, 128, 0, 0.72);
+            --cor-direita: rgba(0, 0, 255, 0.72);
+            --cor-esquerda: rgba(255, 165, 0, 0.72);
+            --cor-cima: rgba(128, 0, 128, 0.72);
+            --cor-baixo: rgba(139, 69, 19, 0.72);
+
+            --cor-face-interna: rgba(255, 255, 255, 0.9);
+            --cor-fundo: #f0f0f0;
+            --cor-borda: #222;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-escuro: #000000;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: white;
+        }
+
+        h1 {
+            margin-top: 24px;
+        }
+
+        p {
+            max-width: 780px;
+            margin: 10px auto;
+            line-height: 1.5;
+        }
+
+        /*
+            O palco é a cena principal.
+            Ele dá perspectiva ao cubo externo.
+        */
+        .palco {
+            width: 560px;
+            height: 560px;
+            margin: 36px auto;
+            border: 2px solid var(--cor-borda);
+            background-color: var(--cor-fundo);
+
+            perspective: 900px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /*
+            Todo cubo precisa preservar o espaço 3D dos filhos.
+            Essa classe é usada no cubo externo e nos cubos internos.
+        */
+        .cubo {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            animation: rotateCube 10s linear infinite;
+
+        }
+        .cubo:hover {
+            animation-play-state: paused;
+        }
+        /*mouse sai do  .cubo {
+            
+        }*/
+        .cubo:active .face-externo {
+            animation: explodeCube 1s forwards;
+        }
+
+        /*
+            Cubo maior.
+        */
+        .cubo-externo {
+            width: var(--tamanho-cubo-externo);
+            height: var(--tamanho-cubo-externo);
+
+            transform: rotateX(-22deg) rotateY(34deg);
+        }
+
+        /*
+            Ao passar o mouse no palco, o cubo maior gira.
+        */
+        .palco:hover .cubo-externo {
+            transform: rotateX(-22deg) rotateY(394deg);
+        }
+
+        /*
+            Toda face do cubo externo:
+            - é uma face do cubo maior;
+            - também funciona como uma pequena cena;
+            - contém um cubo menor.
+        */
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--cor-borda);
+            box-sizing: border-box;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: var(--cor-texto-claro);
+            font-weight: bold;
+
+            /*
+                A face também vira uma cena 3D para o cubo interno.
+            */
+            perspective: 500px;
+            transform-style: preserve-3d;
+            overflow: visible;
+
+            backface-visibility: visible;
+        }
+
+        /*
+            Posição das faces do cubo externo.
+            Cada face anda metade do tamanho do cubo no eixo Z.
+        */
+        .face-frente {
+            background-color: var(--cor-frente);
+            transform: translateZ(var(--metade-cubo-externo));
+        }
+
+        .face-tras {
+            background-color: var(--cor-tras);
+            transform: rotateY(180deg) translateZ(var(--metade-cubo-externo));
+        }
+
+        .face-direita {
+            background-color: var(--cor-direita);
+            transform: rotateY(90deg) translateZ(var(--metade-cubo-externo));
+        }
+
+        .face-esquerda {
+            background-color: var(--cor-esquerda);
+            transform: rotateY(-90deg) translateZ(var(--metade-cubo-externo));
+        }
+
+        .face-cima {
+            background-color: var(--cor-cima);
+            transform: rotateX(90deg) translateZ(var(--metade-cubo-externo));
+        }
+
+        .face-baixo {
+            background-color: var(--cor-baixo);
+            transform: rotateX(-90deg) translateZ(var(--metade-cubo-externo));
+        }
+
+        /*
+            Texto de identificação da face.
+        */
+        .rotulo-face {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        /*
+            Cubo menor que fica dentro de cada face.
+        */
+        .cubo-interno {
+            width: var(--tamanho-cubo-interno);
+            height: var(--tamanho-cubo-interno);
+
+            transform: rotateX(-25deg) rotateY(35deg);
+        }
+
+        /*
+            Ao passar o mouse sobre uma face, apenas o cubo interno
+            daquela face gira.
+        */
+        .face:hover .cubo-interno {
+            transform: rotateX(335deg) rotateY(395deg);
+        }
+
+        /*
+            Faces dos cubos internos.
+        */
+        .face-interna {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #000;
+            box-sizing: border-box;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: var(--cor-texto-escuro);
+            font-size: 12px;
+            font-weight: bold;
+            background-color: var(--cor-face-interna);
+
+            backface-visibility: visible;
+        }
+
+        /*
+            Posição das faces de cada cubo interno.
+        */
+        .face-interna-frente {
+            transform: translateZ(var(--metade-cubo-interno));
+            background-color: var(--cor-frente);
+        }
+
+        .face-interna-tras {
+            transform: rotateY(180deg) translateZ(var(--metade-cubo-interno));
+            background-color: var(--cor-tras);
+        }
+
+        .face-interna-direita {
+            transform: rotateY(90deg) translateZ(var(--metade-cubo-interno));
+            background-color: var(--cor-direita);
+        }
+
+        .face-interna-esquerda {
+            transform: rotateY(-90deg) translateZ(var(--metade-cubo-interno));
+            background-color: var(--cor-esquerda);
+        }
+
+        .face-interna-cima {
+            transform: rotateX(90deg) translateZ(var(--metade-cubo-interno));
+            background-color: var(--cor-cima);
+        }
+
+        .face-interna-baixo {
+            transform: rotateX(-90deg) translateZ(var(--metade-cubo-interno));
+            background-color: var(--cor-baixo);
+        }
+
+        @keyframes rotateCube {
+            from {
+                transform: rotateX(-25deg) rotateY(35deg) rotateZ(0deg);
+            }
+            to {
+                transform: rotateX(335deg) rotateY(395deg) rotateZ(360deg);
+            }
+        }
+        @keyframes explodeCube {
+            from {
+                transform: rotateX(-25deg) rotateY(35deg) rotateZ(0deg);
+            }
+            to {
+                transform: rotateX(335deg) rotateY(395deg) rotateZ(360deg) translateZ(200px);
+            }
+        }       
+    </style>
+</head>
+
+<body>
+    <h1>Cena, Face e Cubo em 3D</h1>
+
+    <p>
+        Neste exemplo, cada face do cubo maior também funciona como uma pequena cena 3D.
+        Dentro de cada face existe um cubo menor.
+    </p>
+
+    <p>
+        Passe o mouse sobre a área cinza para girar o cubo maior.
+        Passe o mouse sobre uma face para girar o cubo menor daquela face.
+    </p>
+
+    <div class="palco">
+        <div class="cubo cubo-externo">
+
+            <div class="face face-frente">
+                <div class="rotulo-face">Frente</div>
+
+                <div class="cubo cubo-interno">
+                    <div class="face-interna face-interna-frente">Frente</div>
+                    <div class="face-interna face-interna-tras">Trás</div>
+                    <div class="face-interna face-interna-direita">Dir.</div>
+                    <div class="face-interna face-interna-esquerda">Esq.</div>
+                    <div class="face-interna face-interna-cima">Cima</div>
+                    <div class="face-interna face-interna-baixo">Baixo</div>
+                </div>
+            </div>
+
+            <div class="face face-tras">
+                <div class="rotulo-face">Trás</div>
+
+                <div class="cubo cubo-interno">
+                    <div class="face-interna face-interna-frente">Frente</div>
+                    <div class="face-interna face-interna-tras">Trás</div>
+                    <div class="face-interna face-interna-direita">Dir.</div>
+                    <div class="face-interna face-interna-esquerda">Esq.</div>
+                    <div class="face-interna face-interna-cima">Cima</div>
+                    <div class="face-interna face-interna-baixo">Baixo</div>
+                </div>
+            </div>
+
+            <div class="face face-direita">
+                <div class="rotulo-face">Direita</div>
+
+                <div class="cubo cubo-interno">
+                    <div class="face-interna face-interna-frente">Frente</div>
+                    <div class="face-interna face-interna-tras">Trás</div>
+                    <div class="face-interna face-interna-direita">Dir.</div>
+                    <div class="face-interna face-interna-esquerda">Esq.</div>
+                    <div class="face-interna face-interna-cima">Cima</div>
+                    <div class="face-interna face-interna-baixo">Baixo</div>
+                </div>
+            </div>
+
+            <div class="face face-esquerda">
+                <div class="rotulo-face">Esquerda</div>
+
+                <div class="cubo cubo-interno">
+                    <div class="face-interna face-interna-frente">Frente</div>
+                    <div class="face-interna face-interna-tras">Trás</div>
+                    <div class="face-interna face-interna-direita">Dir.</div>
+                    <div class="face-interna face-interna-esquerda">Esq.</div>
+                    <div class="face-interna face-interna-cima">Cima</div>
+                    <div class="face-interna face-interna-baixo">Baixo</div>
+                </div>
+            </div>
+
+            <div class="face face-cima">
+                <div class="rotulo-face">Cima</div>
+
+                <div class="cubo cubo-interno">
+                    <div class="face-interna face-interna-frente">Frente</div>
+                    <div class="face-interna face-interna-tras">Trás</div>
+                    <div class="face-interna face-interna-direita">Dir.</div>
+                    <div class="face-interna face-interna-esquerda">Esq.</div>
+                    <div class="face-interna face-interna-cima">Cima</div>
+                    <div class="face-interna face-interna-baixo">Baixo</div>
+                </div>
+            </div>
+
+            <div class="face face-baixo">
+                <div class="rotulo-face">Baixo</div>
+
+                <div class="cubo cubo-interno">
+                    <div class="face-interna face-interna-frente">Frente</div>
+                    <div class="face-interna face-interna-tras">Trás</div>
+                    <div class="face-interna face-interna-direita">Dir.</div>
+                    <div class="face-interna face-interna-esquerda">Esq.</div>
+                    <div class="face-interna face-interna-cima">Cima</div>
+                    <div class="face-interna face-interna-baixo">Baixo</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
