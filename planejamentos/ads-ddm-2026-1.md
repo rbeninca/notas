@@ -10,19 +10,19 @@ Planejamento encontros presenciais da Unidade
 | [1.](#1-aula-1) | Plano de Ensino, Arquitetura Android e Instalação do Ambiente                                 |4h | 24/02/2026  terça-feira |Pres.   | Lab. 7|
 | [2.](#2-aula-2) | Activity, Ciclo de Vida da Activity  (Hello world!) (Hello Internacionalizado!) |4h | 03/03/2026  terça-feira |Pres.   | Lab. 7|
 | [3.](#3-aula-2) | Estrutura do Projeto Android,Listeners,Internacionalização (Sorteio, Sorteio Intervalo, IMC)|4h | 11/04/2026  sabado as 13:10h     |Pres.   | Lab. 7|
-| [3.](#3-aula-2) | Estrutura do Projeto Android,Listeners,Internacionalização (Sorteio, Sorteio Intervalo, IMC)|4h | 14/04/2026  terça  as 18:30h     |Pres.   | Lab. 7|
-| [3.](#3-aula-2) | Passagem dados entre Activitys,(Bundle),Intents , Views, Views Customizadas                   |4h | 28/04/2026  terça  as 18:30h     |Pres.   | Lab. 7|
-| [4.](#4-aula-3) | Hackton - Uso de Sistema de Controle de Versão (Git)                                          |4h | 07/05/2026 quinta-feira |Pres.   | Lab. 2|
-| [4.](#4-aula-3) | View Groups  e Views                                                                          |4h | 16/05/2026  sabado 13:30h|Pres.   | Lab. 7|
-| [5.](#5-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026  terça-feira |Pres.   | Lab. 2| 
-| [6.](#6-aula-5) | Atividade Prática em sala.                                                                    |4h |                         |Pres.   |    . ?|
-| [6.](#7-aula-6) |       Atividade Prática em sala.                                                              |4h | 28/05/2026  quinta-feira|Pres.   | Lab. 7|
-| [7.](#8-aula-7) |  <mark>  Atendimento dúvidas, ajuda <mark>                                                    |3h | 03/06/2026  quarta-feira|Pres.   | Online https://meet.google.com/mmb-ezbo-twe|
-| [8.](#9-aula-8) | Persistência de Dados Local: SharedPreferences  e SQLite      Listagens Adapters            |4h | 10/06/2026  quarta-feira|Pres.   | Lab. 7|
-| [9.](#10-aula-9) |  Geolocalização, Sensores e LocationManager                                                 |4h | 16/06/2026  terça-feira |Pres.   | Lab. 2| 
-| [10.](#11-aula-10) | Integração com Mapas (Google Maps API)                                                     |4h | 17/06/2026  quarta-feira|Pres.   | Lab. 7|
-| [11.](#12-aula-11) | Camera                                                                                     |4h | 23/06/2026  terça-feira |Pres.   | Lab. 2|
-| [12.](#13-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026  quarta-feira|Pres.   | Lab. 7|
+| [4.](#3-aula-2) | Estrutura do Projeto Android,Listeners,Internacionalização (Sorteio, Sorteio Intervalo, IMC)|4h | 14/04/2026  terça  as 18:30h     |Pres.   | Lab. 7|
+| [5.](#3-aula-2) | Passagem dados entre Activitys,(Bundle),Intents , Views, Views Customizadas                   |4h | 28/04/2026  terça  as 18:30h     |Pres.   | Lab. 7|
+| [6.](#4-aula-3) | Hackton - Uso de Sistema de Controle de Versão (Git)                                          |4h | 07/05/2026 quinta-feira |Pres.   | Lab. 2|
+| [7.](#4-aula-3) | View Groups  e Views                                                                          |4h | 16/05/2026  sabado 13:30h|Pres.   | Lab. 7|
+| [8.](#5-aula-4) | Fragmentos e Comunicação entre Fragmentos,Listagens Adapters                                  |4h | 26/05/2026  terça-feira |Pres.   | Lab. 2| 
+| [9.](#6-aula-5) | Atividade Prática em sala.                                                                    |4h |                        |Pres.   |    . ?|
+| [10.](#7-aula-6) |       Atividade Prática em sala.                                                              |4h | 28/05/2026  quinta-feira|Pres.   | Lab. 7|
+| [11.](#8-aula-7) |  <mark>  Atendimento dúvidas, ajuda <mark>                                                    |3h | 03/06/2026  quarta-feira|Pres.   | Online https://meet.google.com/mmb-ezbo-twe|
+| [12.](#9-aula-8) | Persistência de Dados Local: SharedPreferences  e SQLite      Listagens Adapters            |4h | 10/06/2026  quarta-feira|Pres.   | Lab. 7|
+| [13.](#10-aula-9) |  Geolocalização, Sensores e LocationManager                                                 |4h | 16/06/2026  terça-feira |Pres.   | Lab. 2| 
+| [14.](#11-aula-10) | Integração com Mapas (Google Maps API)                                                     |4h | 17/06/2026  quarta-feira|Pres.   | Lab. 7|
+| [15.](#12-aula-11) | Camera                                                                                     |4h | 23/06/2026  terça-feira |Pres.   | Lab. 2|
+| [16.](#13-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026  quarta-feira|Pres.   | Lab. 7|
 |Total |                                                                                                          |52h|            |        |        |
 
 
