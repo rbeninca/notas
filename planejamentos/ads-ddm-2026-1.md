@@ -22,7 +22,6 @@ Planejamento encontros presenciais da Unidade
 | [13.](#10-aula-9) |  Geolocalização, Sensores e LocationManager                                                 |4h | 16/06/2026  terça-feira |Pres.   | Lab. 2| 
 | [14.](#11-aula-10) | Integração com Mapas (Google Maps API)                                                     |4h | 17/06/2026  quarta-feira|Pres.   | Lab. 7|
 | [15.](#12-aula-11) | Camera                                                                                     |4h | 23/06/2026  terça-feira |Pres.   | Lab. 2|
-| [16.](#13-aula-12) | Avaliação final Apresentação Trabalhos                                                     |4h | 24/06/2026  quarta-feira|Pres.   | Lab. 7|
 |Total |                                                                                                          |52h|            |        |        |
 
 
