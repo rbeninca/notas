@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oficina: Descaracterização de TV Box TX9 Pro — Android → Armbian</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <!-- Highlight.js para realce de codigo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --ifsc-green: #2e7d32;
+            --ifsc-dark:  #1b5e20;
+            --accent-red: #c0392b;
+            --accent-gold: #f39c12;
+            --accent-blue: #2980b9;
+            --grid-color: #f0f0f0;
+        }
+        .reveal h1, .reveal h2 { color: var(--ifsc-green); font-weight: 800; text-transform: uppercase; }
+        .reveal h2 { border-bottom: 3px solid var(--ifsc-green); display: inline-block; padding-bottom: 5px; margin-bottom: 18px; }
+        .reveal h3 { color: var(--ifsc-dark); }
+        .reveal section { text-align: left; padding: 18px; }
+        .reveal section p { margin: 8px 0; }
+        .reveal section ul, .reveal section ol { margin: 8px 0; }
+
+        .reveal section.compact { font-size: 0.80em; }
+        .reveal section.compact li { margin: 5px 0; }
+
+        /* Bloco de codigo de terminal */
+        .reveal pre { width: 100%; box-shadow: 0 3px 12px rgba(0,0,0,0.18); font-size: 0.62em; margin: 10px 0; }
+        .reveal pre code { padding: 14px 16px; max-height: 460px; border-radius: 6px; }
+
+        .formula-box {
+            background: #f3faf4;
+            padding: 12px 16px;
+            border-left: 6px solid var(--ifsc-green);
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 0.88em;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        }
+        .warn-box {
+            background: #fdf3f2;
+            border-left: 6px solid var(--accent-red);
+            padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em;
+        }
+        .tip-box {
+            background: #fff8e8;
+            border-left: 6px solid var(--accent-gold);
+            padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em;
+        }
+
+        .highlight { color: var(--ifsc-green); font-weight: bold; }
+        .small-text { font-size: 0.72em; color: #666; }
+
+        table.tbl { width: 100%; font-size: 0.62em; border-collapse: collapse; margin-top: 10px; }
+        table.tbl th { background: var(--ifsc-green); color: white; padding: 8px; }
+        table.tbl td { border: 1px solid #ddd; padding: 6px 8px; }
+        table.tbl tr:nth-child(even) td { background: #f6faf6; }
+
+        .two-col { display: flex; align-items: flex-start; gap: 36px; }
+        .two-col .col-text { flex: 1.2; }
+        .two-col .col-img { flex: 1; text-align: center; }
+        .two-col .col-img img { max-width: 100%; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+        .two-col figcaption { font-size: 0.6em; color: #888; margin-top: 8px; }
+
+        .icon-list { list-style: none; margin-left: 0; }
+        .icon-list li { margin: 12px 0; padding-left: 4px; }
+        .icon-list .ic { color: var(--ifsc-green); margin-right: 8px; font-weight: 700; }
+
+        /* Timeline horizontal */
+        .timeline { position: relative; display: flex; justify-content: space-between; margin: 26px 0 14px; }
+        .timeline::before { content: ""; position: absolute; top: 12px; left: 4%; right: 4%; height: 3px; background: #cfe3cf; z-index: 0; }
+        .timeline .stage { position: relative; z-index: 1; flex: 1; text-align: center; padding: 0 6px; }
+        .timeline .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--ifsc-green); border: 4px solid #fff; box-shadow: 0 0 0 2px var(--ifsc-green); margin: 0 auto 12px; }
+        .timeline .stage h4 { color: #1a3b1a; font-size: 0.92em; font-weight: 700; margin: 0 0 6px; }
+        .timeline .stage p { font-size: 0.68em; color: #555; margin: 0; line-height: 1.3em; }
+
+        /* Etapa numerada (badge) */
+        .step-badge { display:inline-block; background: var(--ifsc-green); color:#fff; border-radius:50%;
+            width: 34px; height: 34px; line-height: 34px; text-align:center; font-weight:800; margin-right:10px; }
+
+        /* Botao PDF */
+        #btnPdf { position: fixed; top: 16px; right: 16px; z-index: 1000; background: var(--ifsc-green);
+            color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: background 0.2s, transform 0.1s; }
+        #btnPdf:hover { background: var(--ifsc-dark); }
+        #btnPdf:active { transform: scale(0.96); }
+        @media print { #btnPdf { display: none !important; } }
+
+        .reveal .slide-number { background: var(--ifsc-green); color: #fff; font-size: 16px; padding: 4px 10px; border-radius: 4px; }
+        .pill { display:inline-block; background:#e8f5e9; color: var(--ifsc-dark); border-radius: 12px; padding: 2px 10px; font-size: 0.7em; font-weight:700; margin: 2px; }
+    </style>
+</head>
+<body>
+
+<button id="btnPdf" title="Gerar PDF da apresentação" aria-label="Gerar PDF">📄 PDF</button>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- ===================== 1. CAPA ===================== -->
+        <section style="text-align: center;">
+            <h1 style="font-size: 2.0em;">Oficina TV Box TX9 Pro</h1>
+            <h2 style="border:none; color:#555; text-transform:none;">Descaracterização: do Android ao Armbian Linux</h2>
+            <p style="font-size:1.05em;">Passo a passo, comando a comando — conexão, extração e análise do DTB</p>
+            <div style="margin-top: 60px;">
+                <p><span class="pill">Receita Federal</span> <span class="pill">IFSC</span> <span class="pill">Amlogic S905W</span></p>
+                <p style="margin-top:24px;"><strong>Apresentador:</strong> Romulo de Aguiar Beninca</p>
+                <p class="small-text">Repositório do projeto: github.com/rbeninca/tvbox</p>
+            </div>
+        </section>
+
+        <!-- ===================== 2. ROTEIRO DA OFICINA ===================== -->
+        <section class="compact">
+            <h2>Roteiro da Oficina</h2>
+            <div class="timeline">
+                <div class="stage"><div class="dot"></div><h4>1. O Projeto</h4><p>Origem dos dispositivos e objetivo da descaracterização.</p></div>
+                <div class="stage"><div class="dot"></div><h4>2. Conexão</h4><p>ADB: habilitar e conectar na TV Box.</p></div>
+                <div class="stage"><div class="dot"></div><h4>3. Reconhecimento</h4><p>Identificar SoC, Wi-Fi, partições e fazer backup mínimo.</p></div>
+                <div class="stage"><div class="dot"></div><h4>4. Extração DTB</h4><p>Baixar e descompilar o Device Tree.</p></div>
+                <div class="stage"><div class="dot"></div><h4>5. Boot Linux</h4><p>Preparar o SD, validar o boot e só então migrar para a eMMC.</p></div>
+            </div>
+            <p style="text-align:center; margin-top:20px;">Ao final, cada participante terá <span class="highlight">extraído o DTB do próprio dispositivo</span>, salvo os backups mínimos e preparado o boot do Armbian.</p>
+            <div class="tip-box">
+                <strong>Pré-requisitos:</strong> notebook Linux (ou WSL/macOS), cabo de rede + cabo USB-A/USB-A ou OTG, cartão microSD ≥ 8 GB, TV Box TX9 Pro.
+            </div>
+        </section>
+
+        <!-- ===================== 3. APRESENTAÇÃO DO PROJETO ===================== -->
+        <section class="compact">
+            <h2>O Projeto — Contexto</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <ul class="icon-list">
+                        <li><span class="ic">▸</span><strong>Origem:</strong> TV Boxes apreendidos e destinados pela <strong>Receita Federal</strong> ao IFSC.</li>
+                        <li><span class="ic">▸</span><strong>Problema:</strong> firmware Android com processos root em segundo plano, sistema montado em <code>rw</code> e possíveis <em>backdoors</em>.</li>
+                        <li><span class="ic">▸</span><strong>Objetivo:</strong> trocar o Android por <strong>Armbian (Linux)</strong> mantendo o hardware funcional (display, Wi-Fi, IR).</li>
+                        <li><span class="ic">▸</span><strong>Resultado:</strong> dispositivo seguro, controlável e reaproveitado como nó Linux / mini-servidor.</li>
+                    </ul>
+                </div>
+                <div class="col-img">
+                    <figure>
+                        <img src="./imgs/placa_tx9.png" alt="Placa do TX9 Pro" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                        <div style="display:none; padding:40px; border:2px dashed #bbb; border-radius:10px; color:#999;">[ Foto da placa do TX9 Pro ]</div>
+                        <figcaption>Placa do TX9 Pro — SoC Amlogic S905W, display FD6551/FD650 e Wi-Fi SSV6051.</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== 4. POR QUE DESCARACTERIZAR ===================== -->
+        <section class="compact">
+            <h2>Por que descaracterizar?</h2>
+            <table class="tbl">
+                <tr><th>Risco no Android original</th><th>Como o Armbian resolve</th></tr>
+                <tr><td>Processos root desconhecidos em background</td><td>Sistema limpo, controle total do que executa</td></tr>
+                <tr><td>Sistema de arquivos montado em leitura/escrita (<code>rw</code>)</td><td>Montagem controlada e endurecimento (hardening)</td></tr>
+                <tr><td>Versão mascarada (reporta Android 10, é 7.1.2 / kernel 3.14)</td><td>Kernel moderno 6.x mantido pela comunidade</td></tr>
+                <tr><td>Difícil reverter ao estado original / sem updates</td><td>eMMC reescrita; difícil retorno ao firmware de fábrica</td></tr>
+            </table>
+            <div class="warn-box" style="margin-top:18px;">
+                <strong>Por que não só instalar um app sobre o Android?</strong> Uma camada de compatibilidade <em>não</em> elimina as vulnerabilidades nem o software malicioso do firmware original. A descaracterização precisa ir até o kernel.
+            </div>
+        </section>
+
+        <!-- ===================== 5. VISÃO GERAL DO FLUXO TÉCNICO ===================== -->
+        <section class="compact">
+            <h2>Visão Geral do Fluxo Técnico</h2>
+            <div class="formula-box" style="font-size:0.95em;">
+                <strong>Android (origem)</strong> &nbsp;⟶&nbsp; conectar via ADB &nbsp;⟶&nbsp; reconhecer hardware &nbsp;⟶&nbsp;
+                <strong>extrair DTB</strong> &nbsp;⟶&nbsp; descompilar (.dtb → .dts) &nbsp;⟶&nbsp; mapear pinos/endereços &nbsp;⟶&nbsp;
+                escolher imagem Armbian + DTB &nbsp;⟶&nbsp; <strong>boot via SD</strong> &nbsp;⟶&nbsp; migração para eMMC.
+            </div>
+            <p>O <span class="highlight">DTB (Device Tree Blob)</span> é o "mapa" que diz ao kernel <em>onde</em> e <em>como</em> cada componente de hardware está ligado — endereços de memória, pinos GPIO e interrupções.</p>
+            <p>Sem o DTB correto, o Linux pode até bootar, mas <strong>perde display, Wi-Fi e IR</strong>. Por isso a oficina foca em extraí-lo e entendê-lo.</p>
+        </section>
+
+        <!-- ===================== 6. ETAPA 1 — CONECTAR VIA ADB ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">1</span>Conectar na TV Box (ADB)</h2>
+            <p>O <strong>ADB (Android Debug Bridge)</strong> é a ponte para enviar comandos ao Android da TV Box. Como o aparelho já vem com <strong>root liberado</strong>, conseguimos ler partições diretamente.</p>
+            <p><strong>1.1 — Instalar o ADB no notebook (Debian/Ubuntu):</strong></p>
+            <pre><code class="language-bash" data-trim>sudo apt update
+sudo apt install -y android-tools-adb android-tools-fastboot</code></pre>
+            <p><strong>1.2 — Habilitar a depuração na TV Box:</strong> Configurações → Sobre → tocar 7× em <em>"Versão de compilação"</em> → volta em <em>Opções do desenvolvedor</em> → ativar <strong>Depuração USB</strong> (e <em>ADB via rede</em>, se disponível).</p>
+            <div class="tip-box">Se a caixa não tiver tela/controle acessível, normalmente a porta de <strong>ADB over network</strong> (5555) já vem aberta — pule para o passo 1.4.</div>
+        </section>
+
+        <!-- ===================== 7. ETAPA 1 (cont.) — CONECTAR ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">1</span>Conectar — comandos</h2>
+            <p><strong>1.3 — Conexão por cabo USB:</strong></p>
+            <pre><code class="language-bash" data-trim>adb devices -l
+adb shell id
+adb shell su -c "id"</code></pre>
+            <p><strong>1.4 — Conexão por rede (ADB over TCP/IP):</strong></p>
+            <pre><code class="language-bash" data-trim># descubra o IP da TV Box no seu roteador (ex.: 192.168.1.50)
+adb connect 192.168.1.50:5555
+adb devices                       # agora aparece o IP:5555
+adb shell                          # abre um shell dentro do Android</code></pre>
+            <div class="warn-box">Nem todo shell do Android responde bem a <code>whoami</code>. Prefira <code>id</code> e, se preciso, rode os comandos críticos com <code>su -c "..."</code>.</div>
+        </section>
+
+        <!-- ===================== 8. ETAPA 2 — RECONHECIMENTO DO HARDWARE ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">2</span>Reconhecer o hardware</h2>
+            <p>Antes de trocar o sistema, precisamos saber <strong>exatamente o que existe dentro</strong> da caixa. Cada comando responde uma pergunta:</p>
+            <pre><code class="language-bash" data-trim># Qual o SoC / CPU? (esperado: Amlogic S905W, Cortex-A53, kernel 3.14.29)
+adb shell cat /proc/cpuinfo
+
+# Qual a plataforma? (ro.board.platform: gxl  ->  familia S905W/X)
+adb shell getprop | grep -iE 'product.model|board.platform|hardware'
+
+# Qual a versao REAL? (mascara: diz Android 10, mas...)
+adb shell getprop ro.build.version.release   # -> 10  (falso)
+adb shell uname -a                            # -> kernel 3.14.29
+adb shell getprop ro.build.fingerprint        # -> 7.1.2/NHG47L (Android real)</code></pre>
+            <p class="small-text">Conclusão: kernel 3.14 é incompatível com Android 10 — o aparelho roda <strong>Android 7.1.2</strong> mascarado.</p>
+        </section>
+
+        <!-- ===================== 9. ETAPA 2 (cont.) — GPU, WIFI ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">2</span>GPU, Wi-Fi e processos</h2>
+            <pre><code class="language-bash" data-trim># Processos com privilegio (ir_remote, vfd_display, etc.)
+adb shell ps -A
+adb shell mount        # revela sistema montado como "rw" (inseguro)
+
+# GPU: modulo "mali" carregado? (S905W -> Mali-450 MP)
+adb shell lsmod | grep -i mali
+adb shell su -c "dmesg | grep -i mali"
+
+# Wi-Fi: qual o chip? (procuramos ssv/rtl/wlan)
+adb shell su -c "dmesg | grep -iE 'wifi|wlan0|ssv|rtl'"
+adb shell lsmod | grep -i ssv      # -> modulo ssv6051 (chip SSV6051/6200)</code></pre>
+            <table class="tbl">
+                <tr><th>Componente</th><th>Identificação</th></tr>
+                <tr><td>SoC / GPU</td><td>Amlogic S905W (GXL) · Mali-450 MP</td></tr>
+                <tr><td>Wi-Fi</td><td>South Silicon Valley SSV6051 / SSV6200 (driver proprietário)</td></tr>
+                <tr><td>Display frontal</td><td>FD650 / FD6551 (bit-bang via GPIO)</td></tr>
+                <tr><td>IR</td><td>Receptor em GPIOAO_7 (driver meson-ir)</td></tr>
+            </table>
+        </section>
+
+        <!-- ===================== 10. ETAPA 2 (cont.) — PARTIÇÕES ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">2</span>Mapear as partições da eMMC</h2>
+            <p>Para extrair imagens com segurança, listamos os blocos da memória interna (eMMC):</p>
+            <pre><code class="language-bash" data-trim># Lista as particoes nomeadas (boot, recovery, dtb, logo, reserved...)
+adb shell su -c "ls -R /dev/block/platform/d0074000.emmc/"
+
+# Em alguns firmwares tambem ha links simbolicos mais amigaveis
+adb shell su -c "ls -l /dev/block/by-name 2>/dev/null || true"
+
+# Em muitos dispositivos ha tambem o atalho /dev/dtb e /dev/block/dtb</code></pre>
+            <table class="tbl">
+                <tr><th>Partição</th><th>Conteúdo</th><th>Uso na oficina</th></tr>
+                <tr><td><code>boot</code></td><td>kernel 3.14 + ramdisk Android</td><td>backup de segurança</td></tr>
+                <tr><td><code>dtb</code></td><td><strong>Device Tree Blob</strong></td><td>★ o que vamos extrair</td></tr>
+                <tr><td><code>recovery</code></td><td>recuperação stock</td><td>backup</td></tr>
+                <tr><td><code>logo</code></td><td>splash de boot</td><td>opcional</td></tr>
+            </table>
+            <div class="tip-box">Nos dumps do projeto, a eMMC real ficou na faixa de <strong>7,3 a 7,6 GB</strong>. Se o Android anunciar 32/64 GB, trate isso como propaganda do firmware, não como capacidade real.</div>
+        </section>
+
+        <!-- ===================== 10b. ETAPA 2 — BACKUP MINIMO ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">2</span>Backup mínimo antes de alterar a eMMC</h2>
+            <p>Antes de qualquer boot Linux destrutivo, salve pelo menos <code>boot</code>, <code>dtb</code>, <code>recovery</code> e <code>logo</code>:</p>
+            <pre><code class="language-bash" data-trim>mkdir -p backup-tx9
+
+adb shell su -c "dd if=/dev/block/boot of=/sdcard/boot.img"
+adb shell su -c "dd if=/dev/block/recovery of=/sdcard/recovery.img"
+adb shell su -c "dd if=/dev/block/logo of=/sdcard/logo.img"
+adb shell su -c 'if [ -e /dev/block/dtb ]; then dd if=/dev/block/dtb of=/sdcard/android_tx9.dtb; else dd if=/dev/dtb of=/sdcard/android_tx9.dtb; fi'
+
+adb pull /sdcard/boot.img backup-tx9/
+adb pull /sdcard/recovery.img backup-tx9/
+adb pull /sdcard/logo.img backup-tx9/
+adb pull /sdcard/android_tx9.dtb backup-tx9/</code></pre>
+            <div class="warn-box">Sem esse backup, o <code>armbian-install</code> e os ajustes de boot na eMMC tornam bem mais difícil voltar ao firmware original.</div>
+        </section>
+
+        <!-- ===================== 11. ETAPA 3 — O QUE É O DTB ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">3</span>O que é o DTB?</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p><strong>Device Tree Blob</strong> = binário que descreve a árvore de hardware: quais chips existem, em que endereço de memória, em quais pinos GPIO e interrupções.</p>
+                    <ul>
+                        <li><code>.dtb</code> — binário, entregue pelo bootloader ao kernel.</li>
+                        <li><code>.dts</code> — texto legível, obtido descompilando o <code>.dtb</code>.</li>
+                    </ul>
+                    <p>No TX9, o <code>.dts</code> revelou o nó real do display (<code>fd655_dev</code>) e os pinos <code>clk_pin</code>/<code>dat_pin</code>. A partir daí correlacionamos isso com <code>GPIOH_7</code>/<code>GPIOH_9</code> e com os bits 27/29 nos registradores do SoC.</p>
+                </div>
+                <div class="col-text">
+                    <div class="formula-box small-text" style="font-family:monospace;">
+fd655_dev {<br>
+&nbsp;&nbsp;compatible = "amlogic,fd655_dev";<br>
+&nbsp;&nbsp;clk_pin = &lt;0x27 0x17 0x00&gt;;<br>
+&nbsp;&nbsp;dat_pin = &lt;0x27 0x19 0x00&gt;;<br>
+};<br><br>
+wifi {<br>
+&nbsp;&nbsp;compatible = "amlogic, aml_wifi";<br>
+&nbsp;&nbsp;interrupt_pin = &lt;0x27 0x56 0x00&gt;;<br>
+&nbsp;&nbsp;power_on_pin = &lt;0x27 0x55 0x00&gt;;<br>
+};
+                    </div>
+                    <p class="small-text">Trechos reais do <code>.dts</code> do TX9. O nome <code>SSV6051</code> veio do cruzamento com <code>dmesg</code> e <code>lsmod</code>, nao do nó do DTS.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== 12. ETAPA 3 — EXTRAIR O DTB ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">3</span>Extrair o DTB — passo a passo</h2>
+            <p><strong>3.1 — Tentativas que NÃO funcionaram</strong> (e por quê):</p>
+            <pre><code class="language-bash" data-trim># Buscar assinatura do DTB (d00dfeed) dentro do boot.img -> nao concatenado
+adb shell su -c "grep -c $'\xd0\x0d\xfe\xed' /dev/block/boot"   # 0
+# Ler /sys/firmware/fdt  -> kernel 3.14 nega acesso</code></pre>
+            <p><strong>3.2 — Método que funcionou:</strong> ler direto o dispositivo de bloco do DTB:</p>
+            <pre><code class="language-bash" data-trim># Copia o DTB que o bootloader entrega ao kernel para o cartao/sdcard
+adb shell su -c 'if [ -e /dev/block/dtb ]; then dd if=/dev/block/dtb of=/sdcard/android_tx9.dtb; else dd if=/dev/dtb of=/sdcard/android_tx9.dtb; fi'
+
+# Traz o arquivo para o notebook
+adb pull /sdcard/android_tx9.dtb .
+
+# Confere a assinatura magica (deve comecar com d0 0d fe ed)
+xxd android_tx9.dtb | head -n 1</code></pre>
+            <div class="tip-box">Em alguns firmwares o caminho é <code>/dev/dtb</code> em vez de <code>/dev/block/dtb</code>. Teste os dois.</div>
+        </section>
+
+        <!-- ===================== 13. ETAPA 3 — DESCOMPILAR ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">3</span>Descompilar e ler o DTB</h2>
+            <p><strong>3.3 — Instalar o compilador de device tree (<code>dtc</code>):</strong></p>
+            <pre><code class="language-bash" data-trim>sudo apt install -y device-tree-compiler</code></pre>
+            <p><strong>3.4 — Converter binário (.dtb) em texto (.dts):</strong></p>
+            <pre><code class="language-bash" data-trim># -I dtb (entrada binaria)  -O dts (saida texto)
+dtc -I dtb -O dts android_tx9.dtb -o extracted.dts
+
+# Agora da para LER o hardware:
+grep -iE 'fd655|aml_wifi|remote|GPIOAO_7|clk_pin|dat_pin' extracted.dts | head -n 40</code></pre>
+            <p><strong>3.5 — Extrair as partes úteis</strong> (os nós de cada periférico) para guiar a configuração do Armbian:</p>
+            <pre><code class="language-bash" data-trim># Isola o no do Wi-Fi, do display e do IR em arquivos separados
+sed -n '/wifi {/,/};/p'      extracted.dts > wifi.dts
+sed -n '/fd655_dev {/,/};/p' extracted.dts > display.dts
+sed -n '/rc@c8100580 {/,/};/p' extracted.dts > ir.dts</code></pre>
+        </section>
+
+        <!-- ===================== 14. RESUMO DAS PINAGENS ===================== -->
+        <section class="compact">
+            <h2>O que o DTB revelou</h2>
+            <table class="tbl">
+                <tr><th>Componente</th><th>Achado no DTS</th><th>Correlação</th><th>Observação</th></tr>
+                <tr><td>Display FD6551</td><td><code>clk_pin=&lt;0x27 0x17 0x00&gt;</code><br><code>dat_pin=&lt;0x27 0x19 0x00&gt;</code></td><td><code>GPIOH_7</code>/<code>GPIOH_9</code> → bits 27/29</td><td>protocolo bit-bang via <code>/dev/mem</code></td></tr>
+                <tr><td>Wi-Fi</td><td>nó <code>wifi</code> com <code>power_on_pin</code> e <code>interrupt_pin</code></td><td><code>dmesg</code> + <code>lsmod</code> → <code>SSV6051/6200</code></td><td>o DTS sozinho nao nomeia o chipset</td></tr>
+                <tr><td>IR</td><td><code>GPIOAO_7</code> + nó <code>rc@c8100580</code></td><td><code>meson-ir</code> + <code>customcode 0x4040</code></td><td>funciona sem modificação física</td></tr>
+            </table>
+            <p style="margin-top:16px;">Esses achados são o elo entre o Android original e o Armbian: preservamos a topologia de hardware e depois reconstruimos o suporte com DTB base, overlays e serviços.</p>
+            <div class="formula-box small-text">
+                <strong>Arquivos gerados nesta etapa:</strong> <code>boot.img</code>, <code>android_tx9.dtb</code>, <code>extracted.dts</code>, <code>recovery.img</code>, <code>logo.img</code> — guardados em <code>backup-tx9/</code> ou <code>tx9_pro_dump_android/</code>.
+            </div>
+        </section>
+
+        <!-- ===================== 15. ETAPA 4 — BUSCAR A IMAGEM ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">4</span>Buscar a imagem do Armbian</h2>
+            <p>Para o S905W há muitas imagens genéricas, mas elas não trazem o mapeamento completo do TX9. Usamos a build da <strong>comunidade Armbian</strong> e ajustamos o boot base.</p>
+            <ul class="small-text">
+                <li><strong>Espelho oficial:</strong> fi.mirror.armbian.de/cache/artifacts/aml-s9xx-box/archive/</li>
+                <li><strong>Releases da comunidade:</strong> github.com/armbian/community/releases</li>
+                <li><strong>Página da placa:</strong> armbian.com/boards/aml-s9xx-box</li>
+            </ul>
+            <p><strong>Imagem usada como base nos testes do projeto (21 de abril de 2026):</strong></p>
+            <pre><code class="language-text" data-trim>Armbian_community_26.2.0-trunk.703_Aml-s9xx-box_noble_current_6.18.21_xfce_desktop.img.xz</code></pre>
+            <p class="small-text">Boot inicial documentado com DTB base <code>meson-gxl-s905w-p281.dtb</code>. Depois o sistema do projeto foi atualizado para <code>6.18.23-current-meson64</code> e os periféricos foram ajustados a partir do DTB extraído do Android.</p>
+        </section>
+
+        <!-- ===================== 16. ETAPA 5 — GRAVAR E BOOTAR ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">5</span>Gravar no SD e bootar</h2>
+            <p><strong>5.1 — Descompactar e gravar no cartão microSD:</strong></p>
+            <pre><code class="language-bash" data-trim># Identifique o cartao (CUIDADO: /dev/sdX errado apaga seu HD!)
+lsblk
+
+# Grava a imagem (substitua sdX pelo seu cartao)
+xz -dc Armbian_community_*_xfce_desktop.img.xz | sudo dd of=/dev/sdX bs=4M status=progress conv=fsync</code></pre>
+            <p><strong>5.2 — Ajustar a partição de boot</strong> para a base <code>p281</code> usada no projeto:</p>
+            <pre><code class="language-bash" data-trim>sudo mkdir -p /mnt/boot
+sudo mount /dev/sdX1 /mnt/boot
+
+# troca o DTB padrao da imagem pelo base estavel do S905W
+sudo sed -i 's/meson-gxl-s905x-p212.dtb/meson-gxl-s905w-p281.dtb/' /mnt/boot/extlinux/extlinux.conf
+
+# compatibilidade com boot antigo de boxes Amlogic
+sudo cp /mnt/boot/u-boot-s905x-s912 /mnt/boot/u-boot.ext
+sudo cp /mnt/boot/dtb/amlogic/meson-gxl-s905w-p281.dtb /mnt/boot/dtb.img
+sync</code></pre>
+            <div class="tip-box">Algumas imagens usam <code>/boot/armbianEnv.txt</code> em vez de <code>extlinux/extlinux.conf</code>. No material testado do projeto, o fluxo reproduzível ficou em <code>extlinux.conf</code> + <code>u-boot.ext</code> + <code>dtb.img</code>.</div>
+            <p class="small-text">5.3 — Insira o SD, ligue a TV Box (botão <em>toothpick</em> no conector AV) e valide o boot do Armbian antes de tocar na eMMC.</p>
+        </section>
+
+        <!-- ===================== 16b. PRIMEIRO BOOT / VALIDAR BASE ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">5</span>Primeiro boot — validar a base Linux</h2>
+            <p>Com o SD inserido, faça o assistente inicial do Armbian e valide a base antes de instalar qualquer coisa:</p>
+            <pre><code class="language-bash" data-trim>uname -r
+findmnt /
+lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT,LABEL
+grep -nEi 'fdt|FDT|fdtfile' /boot/extlinux/extlinux.conf /boot/armbianEnv.txt 2>/dev/null
+ip -br a</code></pre>
+            <div class="tip-box">Antes da eMMC, confirme pelo menos: boot pelo SD, Ethernet funcional, acesso SSH e DTB base ajustado para <code>p281</code>.</div>
+        </section>
+
+        <!-- ===================== 16c. PRIMEIRO BOOT / EXECUTAR KIT ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">5</span>Primeiro boot — rodar o kit certo</h2>
+            <p>O repositório separa duas funções: um script de <strong>pós-instalação da caixa</strong> e outro de <strong>manutenção do Wi-Fi</strong>.</p>
+            <pre><code class="language-bash" data-trim># 1. va para a pasta em que voce copiou o kit
+cd /caminho/do/TX9_PRO_SETUP_KIT
+sudo chmod +x install_tx9.sh
+sudo ./install_tx9.sh
+
+# 2. so use o rebuild_wifi_v3.sh quando houver update de kernel
+#    ou quando o modulo ssv6051.ko precisar ser recompilado
+sudo bash /root/ssv6051-driver/rebuild_wifi_v3.sh</code></pre>
+            <div class="warn-box"><code>install_tx9.sh</code> nao e a mesma coisa que <code>rebuild_wifi_v3.sh</code>: o primeiro prepara a caixa; o segundo recompila apenas o driver Wi-Fi.</div>
+        </section>
+
+        <!-- ===================== 16d. armbian-install (eMMC) ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">5</span>Migrar para a eMMC — <code>armbian-install</code></h2>
+            <p>Esta etapa grava o Armbian na <strong>memória interna</strong>, substituindo o Android de vez. Faça-a só <strong>depois de validar</strong> o sistema rodando pelo SD (SSH, Ethernet, serviços).</p>
+            <pre><code class="language-bash" data-trim># ferramenta nativa do Armbian, executada como root
+sudo armbian-install</code></pre>
+            <p>No menu interativo, selecione:</p>
+            <pre><code class="language-text" data-trim>[ Armbian install to internal media ]
+  1 - Boot from eMMC - system on eMMC     <-- escolher 1 (sistema todo na eMMC)
+
+[ Select filesystem type ]
+  1 - ext4                                <-- escolher 1 (mais estavel)</code></pre>
+            <p class="small-text">O <code>armbian-install</code> copia o sistema do SD para a eMMC e prepara a estrutura de boot. Em muitos TX9 isso basta; em outros, ainda precisamos validar o bootloader da eMMC.</p>
+            <div class="warn-box">Operação <strong>destrutiva</strong>: apaga a eMMC (e o Android). Garanta que os backups de <code>boot</code> e <code>dtb</code> originais já foram salvos.</div>
+        </section>
+
+        <!-- ===================== 16e. EMMC BOOT SETUP ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">5</span>Validar o boot da eMMC</h2>
+            <p>No fluxo do projeto, o <code>emmc_boot_setup.sh</code> entra <strong>depois</strong> do <code>armbian-install</code> para conferir e corrigir o boot da memória interna:</p>
+            <pre><code class="language-bash" data-trim># ainda bootado pelo SD, com a eMMC ja preenchida
+sudo bash emmc_boot_setup.sh
+
+# depois do reboot sem SD
+lsblk
+findmnt /
+cat /proc/cmdline | grep -o 'root=[^ ]*'</code></pre>
+            <p class="small-text">O script checa <code>extlinux.conf</code>, <code>root=LABEL=ROOT_EMMC</code>, <code>PARTITION_CONFIG=0x48</code> e a gravação do <code>u-boot</code> na eMMC.</p>
+            <div class="warn-box">Se a TV Box ainda iniciar apenas com o cartão inserido, este costuma ser o passo que está faltando.</div>
+        </section>
+
+        <!-- ===================== 17. RESULTADO / DEPOIS ===================== -->
+        <section class="compact">
+            <h2>O que vem depois (visão geral)</h2>
+            <div class="timeline">
+                <div class="stage"><div class="dot"></div><h4>Boot eMMC</h4><p><code>armbian-install</code> + <code>emmc_boot_setup.sh</code> consolidam o boot interno.</p></div>
+                <div class="stage"><div class="dot"></div><h4>Driver Wi-Fi</h4><p>Compilar <code>ssv6051.ko</code> p/ kernel 6.x (version magic).</p></div>
+                <div class="stage"><div class="dot"></div><h4>Display</h4><p>Serviço Python bit-bang p/ FD6551.</p></div>
+                <div class="stage"><div class="dot"></div><h4>IR + Docker</h4><p>meson-ir + contêineres no dispositivo.</p></div>
+            </div>
+            <p>Estas etapas estão detalhadas no <strong>relatório técnico</strong> do projeto e fogem ao escopo prático desta oficina — o foco de hoje foi <span class="highlight">conectar, reconhecer, extrair o DTB e preparar o boot base</span>.</p>
+            <table class="tbl">
+                <tr><th>Interface</th><th>Throughput médio</th><th>Estabilidade</th></tr>
+                <tr><td>Ethernet</td><td>~91–94 Mbps</td><td>Alta (recomendada)</td></tr>
+                <tr><td>Wi-Fi SSV6051</td><td>~7 Mbps</td><td>Baixa (gargalo)</td></tr>
+            </table>
+        </section>
+
+        <!-- ===================== WIFI A — O PROBLEMA ===================== -->
+        <section class="compact">
+            <h2>Driver Wi-Fi SSV6051 — o problema</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <ul class="icon-list">
+                        <li><span class="ic">▸</span>O Wi-Fi usa o chip <strong>SSV6051/6200</strong>, <strong>sem suporte mainline</strong> no Linux moderno.</li>
+                        <li><span class="ic">▸</span>Os drivers existentes são <strong>legados</strong> (kernel série 3.x); o Armbian usa kernel <strong>6.x meson64</strong>.</li>
+                        <li><span class="ic">▸</span>Não basta copiar o <code>.ko</code> do Android: é preciso <strong>recompilar out-of-tree</strong> contra os headers do kernel atual.</li>
+                        <li><span class="ic">▸</span>Foi por isso que outros projetos de migração do TX9 <strong>perderam o Wi-Fi</strong>.</li>
+                    </ul>
+                </div>
+                <div class="col-text">
+                    <div class="warn-box">
+                        <strong>Os 3 obstáculos resolvidos:</strong>
+                        <ol style="margin:6px 0 0;">
+                            <li><strong>version magic</strong> — assinatura de versão do módulo não batia com o kernel ativo;</li>
+                            <li><strong>firmware ausente</strong> — o chip precisa de <code>.bin</code>/<code>.cfg</code> em <code>/lib/firmware</code>;</li>
+                            <li><strong>instabilidade</strong> — quedas por <em>power management</em>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p class="small-text">Código-base: driver parcialmente atualizado (a partir do repositório de Eloi Rotava), adaptado em <code>ssv6051-driver/</code>.</p>
+        </section>
+
+        <!-- ===================== WIFI B — PASSO 1: HEADERS / VERSION MAGIC ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">W1</span>Corrigir o <em>version magic</em></h2>
+            <p>O Armbian nem sempre gera a string de versão completa que o kernel espera, causando erro ao carregar o módulo mesmo quando ele compila. A correção ajusta o <code>EXTRAVERSION</code> e recria o <code>utsrelease.h</code> para baterem com <code>uname -r</code>:</p>
+            <pre><code class="language-bash" data-trim>KVER=$(uname -r)
+HDIR="/usr/src/linux-headers-$KVER"
+
+# garante que os headers existem
+sudo apt install -y linux-headers-current-meson64
+
+cd "$HDIR"
+# extrai o sufixo do kernel (ex.: "-current-meson64") direto do uname -r
+EXTRAVERSION=$(echo $KVER | sed 's/[0-9.]*//')
+sudo sed -i "s/^EXTRAVERSION =.*/EXTRAVERSION = $EXTRAVERSION/" Makefile
+echo "#define UTS_RELEASE \"$KVER\"" | sudo tee include/generated/utsrelease.h</code></pre>
+            <div class="tip-box">Detalhe importante do script real (<code>rebuild_wifi_v3.sh</code>): o sufixo <strong>não é fixo</strong> — é derivado do próprio <code>uname -r</code> com <code>sed</code>, então o procedimento sobrevive a atualizações de kernel.</div>
+        </section>
+
+        <!-- ===================== WIFI C — PASSO 2: COMPILAR ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">W2</span>Compilar o módulo <code>ssv6051.ko</code></h2>
+            <p>Com os headers corrigidos, compila-se o driver direto na TV Box, apontando o <code>KBUILD</code> para os headers do kernel ativo:</p>
+            <pre><code class="language-bash" data-trim>SRC_DIR="/root/ssv6051-driver/6051/ssv6xxx"
+MOD_DEST="/lib/modules/$KVER/kernel/drivers/net/wireless/ssv6051"
+
+cd "$SRC_DIR"
+make clean || true
+make KBUILD="$HDIR"          # gera ssv6051.ko contra o kernel atual
+
+# instala o modulo e atualiza o indice de dependencias
+sudo mkdir -p "$MOD_DEST"
+sudo cp ssv6051.ko "$MOD_DEST/"
+sudo depmod -a</code></pre>
+            <p class="small-text">Todo o fluxo (W1→W4) está automatizado em <code>ssv6051-driver/rebuild_wifi_v3.sh</code> — basta executá-lo na caixa.</p>
+        </section>
+
+        <!-- ===================== WIFI D — PASSO 3: FIRMWARE + BOOT ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">W3</span>Firmware e carregamento no boot</h2>
+            <p>O chip carrega firmware auxiliar a partir de <code>/lib/firmware</code>. Sem esses arquivos o módulo até carrega, mas a interface não inicializa:</p>
+            <pre><code class="language-bash" data-trim>FW_DEST="/lib/firmware"
+sudo cp "$SRC_DIR/ssv6051-wifi.cfg" "$FW_DEST/"
+sudo cp "$SRC_DIR/ssv6051-sw.bin"   "$FW_DEST/"
+
+# carrega o driver automaticamente a cada boot
+echo 'ssv6051' | sudo tee /etc/modules-load.d/ssv6051.conf</code></pre>
+            <p>No projeto, o arquivo <code>ssv6051-wifi.cfg</code> tambem desativa <code>HT</code> e <code>AMPDU</code> para reduzir quedas no barramento SDIO (erro <code>-84</code> / brownout).</p>
+        </section>
+
+        <!-- ===================== WIFI E — PASSO 4: ESTABILIDADE ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">W4</span>Estabilidade — desligar power save</h2>
+            <p>Nos testes o Wi-Fi caía de forma intermitente: a causa era o <strong>gerenciamento de energia</strong> da interface. A solução é um <em>hook</em> do NetworkManager que desativa o <code>power_save</code> sempre que <code>wlan0</code> ou <code>wlan1</code> sobem:</p>
+            <pre><code class="language-bash" data-trim>sudo tee /etc/NetworkManager/dispatcher.d/99-ssv6051-fix >/dev/null <<'EOF'
+#!/bin/sh
+INTERFACE=$1
+ACTION=$2
+if [ "$ACTION" = "up" ] &amp;&amp; { [ "$INTERFACE" = "wlan0" ] || [ "$INTERFACE" = "wlan1" ]; }; then
+    /usr/sbin/iw dev "$INTERFACE" set power_save off
+fi
+EOF
+sudo chmod +x /etc/NetworkManager/dispatcher.d/99-ssv6051-fix
+
+# carrega e aplica agora
+sudo modprobe ssv6051
+IFACE=$(iw dev | awk '$1=="Interface"{print $2; exit}')
+sudo iw dev "$IFACE" set power_save off</code></pre>
+        </section>
+
+        <!-- ===================== WIFI F — CONECTAR E VALIDAR ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge">W5</span>Conectar e validar</h2>
+            <p><strong>Conectar à rede</strong> com <code>nmcli</code>:</p>
+            <pre><code class="language-bash" data-trim>nmcli device wifi rescan
+nmcli device wifi connect 'NOME_DA_REDE' password 'SENHA_AQUI'
+nmcli connection modify 'NOME_DA_REDE' connection.autoconnect yes</code></pre>
+            <p><strong>Validação final</strong> — confirmar kernel, módulo, IP e power save:</p>
+            <pre><code class="language-bash" data-trim>IFACE=$(iw dev | awk '$1=="Interface"{print $2; exit}')
+uname -r                        # kernel ativo esperado
+lsmod | grep ssv6051            # modulo carregado?
+echo "$IFACE"                   # wlan0 ou wlan1?
+ip addr show "$IFACE"           # recebeu IP?
+iw dev "$IFACE" get power_save  # deve estar "off"</code></pre>
+            <div class="tip-box">Nao assuma o nome da interface. Em parte dos testes ela apareceu como <code>wlan0</code>; em outros, como <code>wlan1</code>.</div>
+        </section>
+
+        <!-- ===================== 18. CHECKLIST FINAL ===================== -->
+        <section class="compact">
+            <h2>Checklist da Oficina</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <h3 style="margin-top:0;">✔ Você conseguiu...</h3>
+                    <ul class="icon-list">
+                        <li><span class="ic">☑</span>Conectar no Android via <code>adb devices</code></li>
+                        <li><span class="ic">☑</span>Identificar SoC, Wi-Fi e partições</li>
+                        <li><span class="ic">☑</span>Salvar backup mínimo de <code>boot</code>, <code>dtb</code>, <code>recovery</code> e <code>logo</code></li>
+                        <li><span class="ic">☑</span>Extrair o DTB com <code>dd</code> + <code>adb pull</code></li>
+                        <li><span class="ic">☑</span>Descompilar para <code>.dts</code> com <code>dtc</code></li>
+                        <li><span class="ic">☑</span>Gravar o Armbian no microSD e validar o boot base</li>
+                        <li><span class="ic">☑</span>Distinguir <code>install_tx9.sh</code>, <code>armbian-install</code> e <code>rebuild_wifi_v3.sh</code></li>
+                    </ul>
+                </div>
+                <div class="col-text">
+                    <h3 style="margin-top:0;">⚠ Cuidados</h3>
+                    <ul class="icon-list">
+                        <li><span class="ic" style="color:var(--accent-red)">!</span>Confirme o <code>/dev/sdX</code> antes de <code>dd</code></li>
+                        <li><span class="ic" style="color:var(--accent-red)">!</span>Faça backup de <code>boot</code> e <code>dtb</code> originais</li>
+                        <li><span class="ic" style="color:var(--accent-red)">!</span>Valide o boot via SD antes de rodar <code>armbian-install</code></li>
+                        <li><span class="ic" style="color:var(--accent-red)">!</span>Revisões de placa podem mudar o DTB</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== 19. REFERÊNCIAS ===================== -->
+        <section class="compact">
+            <h2>Referências</h2>
+            <ul style="font-size:0.9em; line-height:1.5em;">
+                <li>Repositório do projeto: <em>github.com/rbeninca/tvbox</em> (scripts, dumps e relatório técnico completo).</li>
+                <li>Arquivos-chave do fluxo: <em>METODOLOGIA_EXTRACAO.md</em>, <em>CONFIG_SDCAD.md</em>, <em>update_kernel.md</em> e <em>emmc_boot_setup.sh</em>.</li>
+                <li>Armbian — Aml-s9xx-box: <em>armbian.com/boards/aml-s9xx-box</em> · releases: <em>github.com/armbian/community/releases</em>.</li>
+                <li>Espelho de imagens: <em>fi.mirror.armbian.de/cache/artifacts/aml-s9xx-box/archive/</em>.</li>
+                <li>Documentação do <em>Device Tree Compiler (dtc)</em> e do Android Debug Bridge (<em>developer.android.com/tools/adb</em>).</li>
+                <li>Driver SSV6051 (out-of-tree) — adaptação a partir do repositório de Eloi Rotava.</li>
+            </ul>
+        </section>
+
+        <!-- ===================== 20. ENCERRAMENTO ===================== -->
+        <section style="text-align:center;">
+            <h1 style="font-size:2.2em; border:none;">Mãos à obra!</h1>
+            <p style="font-size:1.1em; color:#555;">Descaracterização de TV Box TX9 Pro — Android → Armbian</p>
+            <div style="margin-top:50px;">
+                <p><strong>Romulo de Aguiar Beninca</strong></p>
+                <p class="small-text">Projeto IFSC · Dispositivos destinados pela Receita Federal</p>
+                <p class="small-text">github.com/rbeninca/tvbox</p>
+            </div>
+            <p style="margin-top:36px; font-size:0.9em; color:#888;">Perguntas?</p>
+        </section>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: true,
+        transition: 'slide',
+        slideNumber: 'c/t',
+        width: 1100,
+        height: 800,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 1.5,
+        plugins: [ RevealHighlight ]
+    });
+
+    // --- Botao Gerar PDF ---
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', () => setTimeout(() => window.print(), 800));
+    }
+</script>
+</body>
+</html>
