@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otimização: Algoritmo de Nelder-Mead</title>
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <!-- Folha de estilo de impressao do Reveal.js (gera o PDF paginado) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <!-- KaTeX para fórmulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        :root {
+            --ufpr-blue: #004a8e;
+            --math-red: #e74c3c;
+            --math-green: #27ae60;
+            --math-gold: #f39c12;
+            --grid-color: #f0f0f0;
+        }
+        .reveal h1, .reveal h2 { color: var(--ufpr-blue); font-weight: 800; text-transform: uppercase; }
+        .reveal h2 { border-bottom: 3px solid var(--ufpr-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 20px; }
+        .reveal section { text-align: left; padding: 20px; }
+        
+        .reveal section p { margin: 8px 0; }
+        .reveal section ul, .reveal section ol { margin: 8px 0; }
+
+        /* Slides com muito texto: reduz a fonte para caber tudo */
+        .reveal section.compact { font-size: 0.82em; }
+        .reveal section.compact li { margin: 5px 0; }
+
+        .formula-box {
+            background: #f8faff;
+            padding: 12px 16px;
+            border-left: 6px solid var(--ufpr-blue);
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .canvas-container {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            padding: 6px;
+            margin-top: 8px;
+        }
+        /* Canvas escala para caber na largura do slide, mantendo proporcao */
+        .canvas-container canvas { max-width: 100%; height: auto; }
+
+        .highlight { color: var(--ufpr-blue); font-weight: bold; }
+        .small-text { font-size: 0.7em; color: #666; }
+
+        table.numeric-example {
+            width: 100%;
+            font-size: 0.6em;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table.numeric-example th { background: var(--ufpr-blue); color: white; padding: 8px; }
+        table.numeric-example td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+
+        /* Layout de duas colunas (texto + foto) */
+        .two-col { display: flex; align-items: center; gap: 40px; }
+        .two-col .col-text { flex: 1.2; }
+        .two-col .col-img { flex: 1; text-align: center; }
+        .two-col .col-img img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+        }
+        .two-col .col-img figcaption { font-size: 0.6em; color: #888; margin-top: 8px; }
+        .icon-list { list-style: none; margin-left: 0; }
+        .icon-list li { margin: 14px 0; padding-left: 4px; }
+        .icon-list .ic { color: var(--ufpr-blue); margin-right: 8px; }
+
+        /* Timeline / fluxograma horizontal */
+        .timeline { position: relative; display: flex; justify-content: space-between; margin: 30px 0 14px; }
+        .timeline::before {
+            content: ""; position: absolute; top: 12px; left: 4%; right: 4%;
+            height: 3px; background: #d6dde7; z-index: 0;
+        }
+        .timeline .stage { position: relative; z-index: 1; flex: 1; text-align: center; padding: 0 8px; }
+        .timeline .dot {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: var(--ufpr-blue); border: 4px solid #fff;
+            box-shadow: 0 0 0 2px var(--ufpr-blue);
+            margin: 0 auto 14px;
+        }
+        .timeline .stage h4 { color: #1a2b45; font-size: 0.95em; font-weight: 700; margin: 0 0 6px; }
+        .timeline .stage p { font-size: 0.72em; color: #555; margin: 0; line-height: 1.35em; }
+
+        /* Botao flutuante de gerar PDF */
+        #btnPdf {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: var(--ufpr-blue);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            transition: background 0.2s, transform 0.1s;
+        }
+        #btnPdf:hover { background: #003567; }
+        #btnPdf:active { transform: scale(0.96); }
+        /* Esconde o botao na propria impressao/PDF */
+        @media print { #btnPdf { display: none !important; } }
+
+        /* Numero do slide */
+        .reveal .slide-number {
+            background: var(--ufpr-blue);
+            color: #fff;
+            font-size: 16px;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Botao flutuante para gerar PDF -->
+<button id="btnPdf" title="Gerar PDF da apresentação" aria-label="Gerar PDF">
+    📄 PDF
+</button>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- SLIDE 1: CAPA -->
+        <section style="text-align: center;">
+            <h1 style="font-size: 2.2em;">Otimização Numérica</h1>
+            <h2 style="border:none; color: #555;">Algoritmo de Nelder-Mead</h2>
+            <p>Busca Direta Multidimensional sem Derivadas</p>
+            <div style="margin-top: 100px;">
+                <p><strong>Aluno:</strong> Romulo de Aguiar Beninca</p>
+                <p><strong>Professor:</strong> Prof. Dr. Carlos Alberto Bavastri</p>
+                <p class="small-text">UFPR - Engenharia Mecânica</p>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: INTRODUÇÃO E ORIGEM HISTÓRICA -->
+        <section class="compact">
+            <h2>Introdução e Origem Histórica</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <ul class="icon-list">
+                        <li><span class="ic"></span><strong>Histórico:</strong> Proposto por John Nelder e Roger Mead em 1965.</li>
+                        <li><span class="ic"></span><strong>Método:</strong> Busca direta heurística que não depende de gradientes ou derivadas.</li>
+                        <li><span class="ic"></span><strong>Diferencial:</strong> Diferente do Simplex Linear, o Nelder-Mead deforma o poliedro para se adaptar à topologia da função.</li>
+                        <li><span class="ic"></span><strong>Aplicações:</strong> Ideal para funções "caixa-preta" ou ruidosas onde o cálculo da derivada é caro.</li>
+                    </ul>
+                </div>
+                <figure class="col-img">
+                    <img src="./nelder.jpg" alt="Retrato de John Ashworth Nelder">
+                    <figcaption>John A. Nelder (1924–2010)</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: FILOSOFIA -->
+        <section class="compact">
+            <h2> Método</h2>
+            <p><strong>A ideia central:</strong> em vez de usar derivadas para saber "para onde descer", o método mantém um <span class="highlight">triângulo de pontos</span> (o <em>simplex</em>) sobre a superfície e, a cada passo, <strong>joga fora o pior vértice</strong>, criando um novo ponto melhor no lugar. Repetindo isso, o triângulo <strong>rola, estica e encolhe</strong> até cercar o mínimo.</p>
+            <ul>
+                <li>É um método <span class="highlight">heurístico de busca direta</span>: decide tudo apenas <strong>comparando valores</strong> de $f(x)$ — nunca calcula gradientes.</li>
+                <li>O <span class="highlight">Simplex</span> tem $n+1$ vértices em $R^n$ (triângulo em 2D, tetraedro em 3D).</li>
+                <li>Ideal quando a derivada é <strong>indisponível, cara ou ruidosa</strong> — ex.: $f$ vinda de simulação ou experimento (função "caixa-preta").</li>
+            </ul>
+        </section>
+
+        <!-- SLIDE 4: A ESTRUTURA – O SIMPLEX -->
+        <section class="compact">
+            <h2>A Estrutura – O Simplex</h2>
+            <div class="two-col">
+                <div class="col-img" style="flex:1.1;">
+                    <div class="canvas-container">
+                        <canvas id="canvasSimplex" width="420" height="340"></canvas>
+                    </div>
+                </div>
+                <div class="col-text">
+                    <h3 style="margin-top:0;">Geometria do Simplex</h3>
+                    <p>Um <em>simplex</em> em um espaço de <strong>n</strong> dimensões é um poliedro com <strong>n+1</strong> vértices:</p>
+                    <ul class="icon-list">
+                        <li><span class="ic">🔺</span><strong>2D:</strong> um triângulo (3 pontos).</li>
+                        <li><span class="ic">🔷</span><strong>3D:</strong> um tetraedro (4 pontos).</li>
+                    </ul>
+                    <p>O algoritmo mantém esses pontos e <strong>"caminha" ou "encolhe"</strong> o simplex em direção ao valor mínimo da função através de iterações sucessivas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: REPRESENTAÇÃO GRÁFICA -->
+        <section class="compact">
+            <h2>Representação Gráfica (2D)</h2>
+            <p>O algoritmo compara apenas valores de $f(x)$ e vai <strong>deformando o simplex</strong> até cercar o mínimo. As curvas ao fundo são as <span class="highlight">curvas de nível</span> de $f$.</p>
+            <div class="canvas-container">
+                <canvas id="canvasIdea" width="900" height="520"></canvas>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: ORDENAÇÃO DOS VÉRTICES -->
+        <section class="compact">
+            <h2>Como o Simplex se Organiza</h2>
+            <p>Antes de cada movimento, os vértices são <strong>ordenados</strong> do melhor (menor $f$) ao pior (maior $f$):</p>
+            <div class="formula-box">
+                $f(x_1) \le f(x_2) \le \dots \le f(x_{n+1})$ <br><br>
+                $x_1$ = <span style="color:var(--math-green)">Melhor (B)</span> &nbsp;·&nbsp;
+                $x_n$ = <span style="color:var(--math-gold)">2º pior (G)</span> &nbsp;·&nbsp;
+                $x_{n+1}$ = <span style="color:var(--math-red)">Pior (W)</span>
+            </div>
+            <p>É sempre o <span style="color:var(--math-red)"><strong>Pior (W)</strong></span> que tentamos eliminar — todos os movimentos dos próximos slides partem dele.</p>
+        </section>
+
+        <!-- SLIDE 7: CENTROIDE -->
+        <section>
+            <h2>O Pivô: Centroide ($c$)</h2>
+            <p>Antes de qualquer movimento, calcula-se o <span class="highlight">centro de massa</span> dos vértices — mas <strong>excluindo o pior ($x_{n+1}$)</strong>. É em torno dele que o pior ponto será "espelhado".</p>
+            <div class="formula-box">
+                $c = \dfrac{1}{n} \displaystyle\sum_{i=1}^{n} x_i$ &nbsp;&nbsp; <span class="small-text">(média dos $n$ melhores vértices)</span>
+            </div>
+            <p class="small-text">No exemplo abaixo (2D), o centroide $c$ é o ponto médio da aresta entre o Melhor (B) e o Bom (G); o Pior (W) fica de fora.</p>
+            <div class="canvas-container">
+                <canvas id="canvasCentroid" width="600" height="200"></canvas>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: REFLEXÃO -->
+        <section>
+            <h2>1. Reflexão ($x_r$)</h2>
+            <p>É o movimento padrão. Espelha-se o pior vértice <strong>através do centroide</strong>, apostando que a direção oposta ao pior ponto leva "morro abaixo".</p>
+            <div class="formula-box">
+                $x_r = c + \alpha\,(c - x_{n+1})$ &nbsp;&nbsp;&nbsp; <span class="small-text">(coeficiente de reflexão $\alpha = 1$)</span>
+            </div>
+            <ul class="small-text">
+                <li>Se $x_r$ ficar <strong>entre o melhor e o segundo pior</strong> ($f(x_1) \le f(x_r) < f(x_n)$): aceita-se $x_r$ e segue-se para a próxima iteração.</li>
+                <li>Se for <strong>muito bom</strong> ($f(x_r) < f(x_1)$) → tenta-se a <strong>Expansão</strong>. Se for <strong>ruim</strong> → tenta-se a <strong>Contração</strong>.</li>
+            </ul>
+            <div class="canvas-container">
+                <canvas id="canvasReflex" width="600" height="200"></canvas>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: EXPANSÃO -->
+        <section>
+            <h2>2. Expansão ($x_e$)</h2>
+            <p>Se a reflexão bateu um novo recorde ($f(x_r) < f(x_1)$), a direção é promissora. O algoritmo <strong>dá um passo ainda maior</strong> no mesmo sentido, acelerando a descida.</p>
+            <div class="formula-box">
+                $x_e = c + \gamma\,(x_r - c)$ &nbsp;&nbsp;&nbsp; <span class="small-text">(coeficiente de expansão $\gamma = 2$)</span>
+            </div>
+            <p class="small-text">Compara-se então $x_e$ com $x_r$: <strong>fica o melhor dos dois</strong> no lugar do pior vértice. É assim que o simplex "estica" e cobre mais terreno por iteração.</p>
+            <div class="canvas-container">
+                <canvas id="canvasExpand" width="600" height="200"></canvas>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: CONTRAÇÃO -->
+        <section>
+            <h2>3. Contração ($x_c$)</h2>
+            <p>Se a reflexão foi <strong>ruim</strong>, provavelmente passamos do vale. Em vez de avançar, o simplex <strong>recua em direção ao centroide</strong>, sondando mais perto. Há duas variantes, conforme o $x_r$ seja melhor ou pior que o pior vértice:</p>
+            <div class="formula-box small-text">
+                <strong>Externa</strong> (se $f(x_r) < f(x_{n+1})$): &nbsp; $x_c = c + \beta\,(x_r - c)$ <br>
+                <strong>Interna</strong> (se $f(x_r) \ge f(x_{n+1})$): &nbsp; $x_c = c + \beta\,(x_{n+1} - c)$ <br>
+                <span style="color:#666">(coeficiente de contração $\beta = 0.5$)</span>
+            </div>
+            <p class="small-text">Se nem a contração melhorar o pior vértice, recorre-se ao <strong>encolhimento (shrink)</strong> — visto no próximo slide.</p>
+            <div class="canvas-container">
+                <canvas id="canvasContract" width="600" height="200"></canvas>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: ENCOLHIMENTO (SHRINK) -->
+        <section>
+            <h2>4. Encolhimento (Shrink)</h2>
+            <p>É o último recurso, usado quando <strong>nenhum movimento anterior funcionou</strong>. Em vez de mover só o pior ponto, <strong>todos</strong> os vértices são puxados em direção ao melhor ($x_1$), reduzindo o tamanho do simplex.</p>
+            <div class="formula-box">
+                $x_i \leftarrow x_1 + \sigma\,(x_i - x_1)$, &nbsp; para todo $i \ne 1$ &nbsp;&nbsp; <span class="small-text">(coeficiente $\sigma = 0.5$)</span>
+            </div>
+            <ul class="small-text">
+                <li>Acontece quando a função tem geometria difícil (vales curvos, estreitos).</li>
+                <li>Garante a <strong>convergência</strong>: ao encolher, o simplex se concentra em torno da melhor região conhecida.</li>
+                <li>É a operação mais "cara": exige reavaliar $f$ em $n$ vértices de uma vez.</li>
+            </ul>
+        </section>
+
+        <!-- SLIDE 12: FLUXO DE DECISÃO -->
+        <section class="compact">
+            <h2>Fluxo de uma Iteração</h2>
+
+            <div class="timeline">
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>Ordenação</h4>
+                    <p>Classificar os vértices do melhor ao pior e calcular o centroide.</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>Reflexão</h4>
+                    <p>Espelhar o pior ponto através do centroide.</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>Expansão</h4>
+                    <p>Se a reflexão foi ótima, acelerar o passo.</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>Ajuste Final</h4>
+                    <p>Contração ou encolhimento (shrink) se a reflexão falhar.</p>
+                </div>
+            </div>
+            <p class="small-text" style="text-align:center; font-style:italic; margin-bottom:18px;">
+                Loop contínuo até atingir o critério de parada.
+            </p>
+
+            <p>Detalhando a ordem em que as operações são tentadas:</p>
+            <ol style="font-size: 0.8em; line-height: 1.6em;">
+                <li><strong>Ordenar</strong> os vértices e calcular o centroide $c$.</li>
+                <li><strong>Refletir</strong> → obter $x_r$.</li>
+                <li>Se $x_r$ é o novo melhor → <strong>Expandir</strong> e ficar com o melhor entre $x_e$ e $x_r$.</li>
+                <li>Se $x_r$ é apenas razoável → <strong>aceitar $x_r$</strong>.</li>
+                <li>Se $x_r$ é ruim → <strong>Contrair</strong> (interna ou externa).</li>
+                <li>Se a contração falhar → <strong>Encolher</strong> todo o simplex.</li>
+            </ol>
+            <div class="formula-box small-text">
+                A cada iteração, exatamente <strong>uma</strong> dessas ações é executada, e o simplex se aproxima do mínimo.
+            </div>
+        </section>
+
+        <!-- SLIDE 13: EXEMPLO NUMÉRICO -->
+        <section>
+            <h2>Exemplo Prático Detalhado</h2>
+            <p>Minimizar: $f(x,y) = x^2 + y^2$ (Paraboloide)</p>
+            <div class="formula-box">
+                <strong>Início:</strong> $x_1(1,1), x_2(1,2), x_3(2,1)$ <br>
+                Valores: $f(x_1)=2$ (Melhor), $f(x_2)=5$ (Médio), $f(x_3)=5$ (Pior).
+            </div>
+            <table class="numeric-example">
+                <tr>
+                    <th>Passo</th>
+                    <th>Cálculo</th>
+                    <th>Resultado</th>
+                    <th>Ação</th>
+                </tr>
+                <tr>
+                    <td>1. Centroide</td>
+                    <td>$c = (x_1 + x_2)/2$</td>
+                    <td>$c = (1, 1.5)$</td>
+                    <td>Pivô entre B e G</td>
+                </tr>
+                <tr>
+                    <td>2. Reflexão</td>
+                    <td>$x_r = c + 1(c - x_3)$</td>
+                    <td>$x_r = (0, 2)$</td>
+                    <td>$f(x_r) = 4$</td>
+                </tr>
+                <tr>
+                    <td>3. Avaliação</td>
+                    <td>$f(x_r) < f(x_2)$?</td>
+                    <td>$4 < 5$ (Sim!)</td>
+                    <td><strong>Substituir $x_3$ por $x_r$</strong></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- SLIDE 14: CRITÉRIO DE PARADA -->
+        <section>
+            <h2>Critérios de Parada</h2>
+            <p>O algoritmo para quando o simplex "encolheu" o bastante — ou seja, todos os vértices têm valores de $f$ quase iguais. Mede-se isso pelo <span class="highlight">desvio padrão</span> dos valores no simplex:</p>
+            <div class="formula-box">
+                $\sqrt{\dfrac{1}{n+1} \displaystyle\sum_{i=1}^{n+1} \big[f(x_i) - \bar{f}\,\big]^2} < \epsilon$
+                &nbsp;&nbsp; <span class="small-text">($\bar{f}$ = média dos $f(x_i)$)</span>
+            </div>
+            <ul>
+                <li>Tolerância $\epsilon$ tipicamente $10^{-6}$ a $10^{-8}$ — quanto menor, mais preciso e mais lento.</li>
+                <li>Também se encerra ao atingir um <strong>número máximo de iterações</strong> (proteção contra não-convergência).</li>
+                <li>Alternativa comum: parar quando o <strong>tamanho do simplex</strong> (maior aresta) fica abaixo de $\epsilon$.</li>
+            </ul>
+        </section>
+
+        <!-- SLIDE 15: VANTAGENS E DESVANTAGENS -->
+        <section class="compact">
+            <h2>Vantagens e Desvantagens</h2>
+            <div class="two-col" style="align-items:flex-start;">
+                <div class="col-text">
+                    <h3 style="margin-top:0; color:var(--math-green);">✔ Vantagens</h3>
+                    <ul>
+                        <li><strong>Não usa derivadas</strong> — funciona com funções não diferenciáveis, ruidosas ou "caixa-preta".</li>
+                        <li><strong>Simples de implementar</strong> e de entender geometricamente.</li>
+                        <li><strong>Robusto</strong> para problemas de baixa dimensão e bom para uma solução inicial rápida.</li>
+                        <li>Cada iteração é <strong>barata</strong>: poucas avaliações da função.</li>
+                    </ul>
+                </div>
+                <div class="col-text">
+                    <h3 style="margin-top:0; color:var(--math-red);">✘ Desvantagens</h3>
+                    <ul>
+                        <li><strong>Sem garantia de convergência</strong> para o mínimo global — pode estagnar em mínimos locais.</li>
+                        <li>Perde eficiência em <strong>alta dimensão</strong> (acima de ~10 variáveis).</li>
+                        <li>Pode <strong>colapsar/degenerar</strong> o simplex e travar antes do ótimo.</li>
+                        <li>Convergência <strong>mais lenta</strong> que métodos que usam gradiente, quando este está disponível.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 16: REFERÊNCIAS -->
+        <section class="compact">
+            <h2>Referências</h2>
+            <ul style="font-size:0.9em; line-height:1.5em;">
+                <li>NELDER, J. A.; MEAD, R. <em>A Simplex Method for Function Minimization</em>. The Computer Journal, v. 7, n. 4, p. 308–313, 1965.</li>
+                <li>BAVASTRI, C. A. <em>Notas de aula — Otimização Não Linear</em>. PPGEM, Universidade Federal do Paraná (UFPR).</li>
+                <li>NOCEDAL, J.; WRIGHT, S. J. <em>Numerical Optimization</em>. 2. ed. New York: Springer, 2006.</li>
+                <li>PRESS, W. H. et al. <em>Numerical Recipes: The Art of Scientific Computing</em>. 3. ed. Cambridge University Press, 2007. (cap. Downhill Simplex Method)</li>
+                <li>Wikipedia. <em>Nelder–Mead method</em>. Disponível em: en.wikipedia.org/wiki/Nelder–Mead_method.</li>
+                <li>Foto de John Nelder: Wikipedia, <em>John Nelder</em>. en.wikipedia.org/wiki/John_Nelder.</li>
+            </ul>
+        </section>
+
+        <!-- SLIDE 17: ENCERRAMENTO -->
+        <section style="text-align:center;">
+            <h1 style="font-size:2.4em; border:none;">Obrigado!</h1>
+            <p style="font-size:1.1em; color:#555;">Algoritmo de Nelder-Mead — Otimização Numérica</p>
+            <div style="margin-top:70px;">
+                <p><strong>Romulo de Aguiar Beninca</strong></p>
+                <p class="small-text">Prof. Dr. Carlos Alberto Bavastri · UFPR — Engenharia Mecânica</p>
+            </div>
+            <p style="margin-top:40px; font-size:0.9em; color:#888;">Perguntas?</p>
+        </section>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: true,
+        transition: 'slide',
+        slideNumber: 'c/t',   // numero do slide atual / total (ex.: 3/9)
+        width: 1100,          // area de conteudo mais larga
+        height: 800,          // ...e mais alta, para caber texto + desenho
+        margin: 0.04,         // menos margem ao redor do slide
+        minScale: 0.2,
+        maxScale: 1.5
+    });
+
+    // --- Botao Gerar PDF ---
+    // O Reveal.js exporta PDF abrindo a apresentacao com ?print-pdf na URL
+    // e usando "Salvar como PDF" na caixa de impressao do navegador (Chrome/Edge).
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            // Entra no modo de impressao recarregando com o parametro print-pdf
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+
+    // Se a pagina ja abriu em modo print-pdf, dispara a impressao automaticamente
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', () => setTimeout(() => window.print(), 800));
+    }
+
+    // Renderiza as formulas $...$ e $$...$$ com KaTeX
+    renderMathInElement(document.body, {
+        delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$',  right: '$',  display: false }
+        ],
+        throwOnError: false
+    });
+
+    // --- ENGINE DE DESENHO VETORIAL ---
+    const colors = { best: '#27ae60', good: '#2980b9', worst: '#e74c3c', accent: '#f39c12', vector: '#8e44ad', grid: '#f0f0f0' };
+
+    function setupCanvas(id) {
+        const canvas = document.getElementById(id);
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+
+        const drawGrid = () => {
+            ctx.strokeStyle = colors.grid;
+            ctx.lineWidth = 1;
+            for(let i=0; i<=w; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+            for(let i=0; i<=h; i+=40) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+        };
+
+        const drawArrow = (from, to, color, label) => {
+            const headlen = 10;
+            const angle = Math.atan2(to.y - from.y, to.x - from.x);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(from.x, from.y);
+            ctx.lineTo(to.x, to.y);
+            ctx.stroke();
+            // Cabeça da seta
+            ctx.beginPath();
+            ctx.moveTo(to.x, to.y);
+            ctx.lineTo(to.x - headlen * Math.cos(angle - Math.PI / 6), to.y - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(to.x - headlen * Math.cos(angle + Math.PI / 6), to.y - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = color;
+            ctx.fill();
+        };
+
+        const drawNode = (p, color, label, isMain = true) => {
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, isMain ? 6 : 4, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#333";
+            ctx.font = "bold 13px Arial";
+            ctx.fillText(label, p.x + 8, p.y - 8);
+        };
+
+        return { ctx, drawGrid, drawNode, drawArrow };
+    }
+
+    // 0. Representação grafica: simplex deformando-se ate o minimo (estilo intuicao 2D)
+    (function desenharIdeia() {
+        const canvas = document.getElementById('canvasIdea');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        const min = { x: w * 0.40, y: h * 0.45 };   // minimo da funcao
+
+        // helper triangulo a partir dos 3 vertices
+        const tri = (p, cor, fill, lw) => {
+            ctx.beginPath();
+            ctx.moveTo(p[0].x, p[0].y); ctx.lineTo(p[1].x, p[1].y); ctx.lineTo(p[2].x, p[2].y);
+            ctx.closePath();
+            if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+            ctx.strokeStyle = cor; ctx.lineWidth = lw || 2; ctx.stroke();
+        };
+        const ponto = (x, y, cor, r) => { ctx.fillStyle = cor; ctx.beginPath(); ctx.arc(x, y, r || 5, 0, Math.PI*2); ctx.fill(); };
+
+        // ---- Curvas de nivel irregulares ao fundo (topografia) ----
+        ctx.strokeStyle = '#e3e8ef'; ctx.lineWidth = 1.2;
+        for (let r = 1; r <= 9; r++) {
+            ctx.beginPath();
+            const rx = r * 42, ry = r * 30;
+            for (let a = 0; a <= Math.PI*2 + 0.01; a += 0.12) {
+                // raio levemente perturbado para parecer mapa topografico
+                const wob = 1 + 0.10*Math.sin(3*a + r) + 0.06*Math.cos(5*a);
+                const x = min.x + rx * wob * Math.cos(a);
+                const y = min.y + ry * wob * Math.sin(a);
+                a === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+        // marca do minimo
+        ponto(min.x, min.y, '#222', 4);
+        ctx.fillStyle = '#222'; ctx.font = 'italic 13px Arial';
+        ctx.fillText('Mínimo', min.x + 8, min.y - 8);
+
+        // ---- Sequencia de simplexes caminhando (vermelho -> azul -> verde) ----
+        // cada passo: centro + escala + cor; triangulo apontando para o minimo
+        const passos = [
+            { c:{x:w*0.10, y:h*0.30}, s:1.00, cor:'#e74c3c', fill:'rgba(231,76,60,0.18)' },
+            { c:{x:w*0.24, y:h*0.46}, s:0.78, cor:'#2e6fc4', fill:'rgba(46,111,196,0.16)' },
+            { c:{x:w*0.34, y:h*0.50}, s:0.60, cor:'#2e6fc4', fill:'rgba(46,111,196,0.16)' },
+            { c:{x:w*0.44, y:h*0.54}, s:0.46, cor:'#2e6fc4', fill:'rgba(46,111,196,0.16)' }
+        ];
+        const triCentro = (cx, cy, e) => ([
+            { x: cx - 38*e, y: cy - 30*e },
+            { x: cx + 40*e, y: cy - 6*e  },
+            { x: cx - 14*e, y: cy + 34*e }
+        ]);
+
+        // setas tracejadas ligando os passos
+        ctx.setLineDash([6,5]);
+        for (let i = 0; i < passos.length - 1; i++) {
+            ctx.strokeStyle = '#7f8c9b'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(passos[i].c.x, passos[i].c.y);
+            ctx.lineTo(passos[i+1].c.x, passos[i+1].c.y); ctx.stroke();
+        }
+        ctx.setLineDash([]);
+        passos.forEach(p => {
+            tri(triCentro(p.c.x, p.c.y, p.s), p.cor, p.fill, 2.5);
+            const v = triCentro(p.c.x, p.c.y, p.s);
+            v.forEach(pt => ponto(pt.x, pt.y, p.cor, 4));
+        });
+
+        // ---- Simplex final (verde) proximo do minimo ----
+        const finalC = { x: w*0.52, y: h*0.60 };
+        const finalTri = triCentro(finalC.x, finalC.y, 0.42);
+        // halo verde
+        ctx.fillStyle = 'rgba(39,174,96,0.12)';
+        ctx.beginPath(); ctx.ellipse(finalC.x, finalC.y+6, 70, 48, 0, 0, Math.PI*2); ctx.fill();
+        tri(finalTri, '#27ae60', 'rgba(39,174,96,0.25)', 2.5);
+        finalTri.forEach(pt => ponto(pt.x, pt.y, '#27ae60', 4));
+        ctx.fillStyle = '#1e7e44'; ctx.font = 'bold 12px Arial';
+        ctx.fillText('Simplex final', finalC.x - 6, finalC.y + 64);
+        ctx.font = '11px Arial';
+        ctx.fillText('(próximo do mínimo)', finalC.x - 18, finalC.y + 80);
+
+        // ---- Detalhe do simplex atual (canto sup. direito) com reflexao ----
+        const Bx = w*0.66, By = h*0.30;             // melhor
+        const Gx = w*0.80, Gy = h*0.30;             // 2o pior
+        const Wx = w*0.73, Wy = h*0.13;             // pior (topo)
+        const Cx = (Bx+Gx)/2, Cy = (By+Gy)/2;       // centroide
+        const Rx = Cx + (Cx - Wx), Ry = Cy + (Cy - Wy);  // reflexao
+
+        // triangulo do simplex atual
+        tri([{x:Bx,y:By},{x:Gx,y:Gy},{x:Wx,y:Wy}], '#2e6fc4', 'rgba(46,111,196,0.10)', 2);
+        // centroide e linha W->c (pontilhada)
+        ctx.setLineDash([4,4]); ctx.strokeStyle='#555'; ctx.lineWidth=1.3;
+        ctx.beginPath(); ctx.moveTo(Wx,Wy); ctx.lineTo(Cx,Cy); ctx.stroke(); ctx.setLineDash([]);
+        // seta de reflexao c -> xr (vermelha tracejada curva)
+        ctx.setLineDash([6,4]); ctx.strokeStyle='#e74c3c'; ctx.lineWidth=1.8;
+        ctx.beginPath(); ctx.moveTo(Cx,Cy); ctx.lineTo(Rx,Ry); ctx.stroke(); ctx.setLineDash([]);
+
+        ponto(Bx,By,'#27ae60',5); ponto(Gx,Gy,'#27ae60',5);
+        ponto(Wx,Wy,'#e74c3c',5); ponto(Cx,Cy,'#222',3); ponto(Rx,Ry,'#8e44ad',5);
+
+        ctx.font = 'bold 13px Arial';
+        ctx.fillStyle = '#1a2b45'; ctx.fillText('Simplex atual', Bx - 6, By - 50);
+        ctx.fillStyle = '#e74c3c'; ctx.fillText('W (pior)', Wx - 18, Wy - 8);
+        ctx.fillStyle = '#1e7e44'; ctx.fillText('B (melhor)', Bx - 64, By + 20);
+        ctx.fillStyle = '#1e7e44'; ctx.fillText('G (2º pior)', Gx + 6, Gy + 20);
+        ctx.fillStyle = '#222'; ctx.font = '12px Arial'; ctx.fillText('c', Cx + 4, Cy + 16);
+        ctx.fillStyle = '#8e44ad'; ctx.font = 'bold 14px Arial'; ctx.fillText('xr', Rx + 8, Ry + 4);
+        ctx.fillStyle = '#666'; ctx.font = '10px Arial';
+        ctx.fillText('Novo ponto', Rx - 6, Ry + 20);
+        ctx.fillText('candidato (reflexão)', Rx - 30, Ry + 33);
+        ctx.fillStyle = '#444'; ctx.font = '10px Arial';
+        ctx.fillText('c = centroide de todos os', Bx - 6, Gy + 42);
+        ctx.fillText('vértices, exceto o pior (W).', Bx - 6, Gy + 56);
+
+        // ---- Legenda (canto inf. esquerdo) ----
+        const lx = 16, ly = h - 70;
+        ctx.fillStyle = '#fff'; ctx.strokeStyle = '#d6dde7';
+        ctx.lineWidth = 1; ctx.fillRect(lx, ly, 230, 58); ctx.strokeRect(lx, ly, 230, 58);
+        const leg = [
+            ['#27ae60', 'Verde: melhor vértice (menor f)'],
+            ['#2e6fc4', 'Azul: vértices intermediários'],
+            ['#e74c3c', 'Vermelho: pior vértice (maior f)']
+        ];
+        ctx.font = '11px Arial';
+        leg.forEach((l, i) => {
+            const yy = ly + 16 + i*16;
+            ponto(lx + 14, yy - 4, l[0], 5);
+            ctx.fillStyle = '#333'; ctx.fillText(l[1], lx + 28, yy);
+        });
+    })();
+
+    // 0b. Estrutura do simplex (triangulo B-G-W com pontos M e I)
+    (function desenharSimplexEstrutura() {
+        const canvas = document.getElementById('canvasSimplex');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+
+        // grade de fundo
+        ctx.strokeStyle = '#eef1f6'; ctx.lineWidth = 1;
+        for (let i = 0; i <= w; i += 30) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+        for (let i = 0; i <= h; i += 30) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+
+        // vertices do triangulo
+        const Bp = { x: 70,  y: 50  };   // Best (topo esq.)
+        const Gp = { x: 360, y: 290 };   // Good (base dir.)
+        const Wp = { x: 70,  y: 290 };   // Worst (base esq.)
+        const Mp = { x: (Bp.x + Gp.x)/2, y: (Bp.y + Gp.y)/2 };  // Middle: meio da aresta B-G
+        const Ip = { x: 150, y: 220 };   // Inner: ponto interno
+
+        // arestas solidas do triangulo (azul)
+        ctx.strokeStyle = '#004a8e'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(Bp.x, Bp.y); ctx.lineTo(Gp.x, Gp.y);
+        ctx.lineTo(Wp.x, Wp.y); ctx.closePath(); ctx.stroke();
+
+        // arestas tracejadas (B-I, G-I) — construcao interna
+        ctx.strokeStyle = '#9aa7b8'; ctx.lineWidth = 1.5; ctx.setLineDash([6,5]);
+        ctx.beginPath(); ctx.moveTo(Bp.x, Bp.y); ctx.lineTo(Gp.x, Gp.y); ctx.stroke();   // diagonal B-G
+        ctx.beginPath(); ctx.moveTo(Bp.x, Bp.y); ctx.lineTo(Ip.x, Ip.y); ctx.stroke();
+        ctx.setLineDash([2,4]);
+        ctx.beginPath(); ctx.moveTo(Wp.x, Wp.y); ctx.lineTo(Ip.x, Ip.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(Gp.x, Gp.y); ctx.lineTo(Ip.x, Ip.y); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // pontos + rotulos
+        const ponto = (p, cor, label, dx, dy) => {
+            ctx.fillStyle = cor;
+            ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#1a2b45'; ctx.font = 'bold 14px Arial';
+            ctx.fillText(label, p.x + dx, p.y + dy);
+        };
+        ponto(Bp, '#004a8e', 'B (Best)',   10, -8);
+        ponto(Gp, '#004a8e', 'G (Good)',  -90,  20);
+        ponto(Wp, '#004a8e', 'W (Worst)',  10,  22);
+        ponto(Mp, '#2980b9', 'M (Middle)', 10,  -6);
+        ponto(Ip, '#5b7fb4', 'I (Inner)', -70,  -6);
+    })();
+
+    // Posicoes ajustadas para caber em canvas de 200px de altura
+    const B = {x: 180, y: 150}, G = {x: 360, y: 150}, W = {x: 270, y: 50};
+    const C = {x: (B.x + G.x)/2, y: (B.y + G.y)/2};   // centroide = ponto medio de B e G
+
+    // Desenha as arestas cinzas do simplex (triangulo B-G-W) para dar contexto visual
+    function desenharArestasSimplex(cv) {
+        cv.ctx.strokeStyle = '#cfd8e3'; cv.ctx.lineWidth = 1.5;
+        cv.ctx.beginPath();
+        cv.ctx.moveTo(B.x, B.y); cv.ctx.lineTo(G.x, G.y);
+        cv.ctx.lineTo(W.x, W.y); cv.ctx.closePath(); cv.ctx.stroke();
+    }
+
+    // 1. Centroide
+    const c1 = setupCanvas('canvasCentroid');
+    c1.drawGrid();
+    // arestas do simplex (triangulo B-G-W) em cinza claro
+    c1.ctx.strokeStyle = '#cfd8e3'; c1.ctx.lineWidth = 1.5;
+    c1.ctx.beginPath();
+    c1.ctx.moveTo(B.x, B.y); c1.ctx.lineTo(G.x, G.y);
+    c1.ctx.lineTo(W.x, W.y); c1.ctx.closePath(); c1.ctx.stroke();
+    // aresta B-G destacada (origem do centroide) tracejada azul
+    c1.ctx.strokeStyle = colors.good; c1.ctx.lineWidth = 2; c1.ctx.setLineDash([5,5]);
+    c1.ctx.beginPath(); c1.ctx.moveTo(B.x, B.y); c1.ctx.lineTo(G.x, G.y); c1.ctx.stroke();
+    c1.ctx.setLineDash([]);
+    c1.drawNode(B, colors.best, 'Melhor (B)');
+    c1.drawNode(G, colors.good, 'Bom (G)');
+    c1.drawNode(W, colors.worst, 'Pior (W)');
+    c1.drawNode(C, 'black', 'c (centroide)', false);
+
+    // 2. Reflexão
+    const c2 = setupCanvas('canvasReflex');
+    c2.drawGrid();
+    desenharArestasSimplex(c2);
+    const R = { x: C.x + (C.x - W.x), y: C.y + (C.y - W.y) };
+    c2.drawArrow(W, R, colors.vector);
+    c2.drawNode(B, colors.best, 'B', false);
+    c2.drawNode(G, colors.good, 'G', false);
+    c2.drawNode(W, '#ccc', 'W');
+    c2.drawNode(C, 'black', 'c');
+    c2.drawNode(R, colors.accent, 'xr');
+
+    // 3. Expansão
+    const c3 = setupCanvas('canvasExpand');
+    c3.drawGrid();
+    desenharArestasSimplex(c3);
+    const E = { x: C.x + 2*(R.x - C.x), y: C.y + 2*(R.y - C.y) };
+    c3.drawArrow(R, E, colors.vector);
+    c3.drawNode(B, colors.best, 'B', false);
+    c3.drawNode(G, colors.good, 'G', false);
+    c3.drawNode(W, '#ccc', 'W', false);
+    c3.drawNode(C, 'black', 'c');
+    c3.drawNode(R, colors.accent, 'xr');
+    c3.drawNode(E, colors.good, 'xe');
+
+    // 4. Contração
+    const c4 = setupCanvas('canvasContract');
+    c4.drawGrid();
+    desenharArestasSimplex(c4);
+    const Ci = { x: C.x + 0.5*(W.x - C.x), y: C.y + 0.5*(W.y - C.y) };
+    const Ce = { x: C.x + 0.5*(R.x - C.x), y: C.y + 0.5*(R.y - C.y) };
+    c4.drawArrow(W, Ci, '#95a5a6');
+    c4.drawArrow(R, Ce, '#95a5a6');
+    c4.drawNode(B, colors.best, 'B', false);
+    c4.drawNode(G, colors.good, 'G', false);
+    c4.drawNode(W, '#ccc', 'W', false);
+    c4.drawNode(Ci, colors.worst, 'xc (Int)');
+    c4.drawNode(Ce, colors.accent, 'xc (Ext)');
+    c4.drawNode(C, 'black', 'c');
+
+</script>
+</body>
+</html>
