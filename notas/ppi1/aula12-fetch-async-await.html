@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programação para Internet I - Aula 12 - Fetch, Async e Await</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+
+    <style>
+        :root {
+            --ufpr-blue: #004a8e;
+            --math-red: #e74c3c;
+            --math-green: #27ae60;
+            --math-gold: #f39c12;
+            --grid-color: #f0f0f0;
+            --slate: #0f172a;
+            --slate-soft: #1e293b;
+        }
+
+        .reveal h1, .reveal h2 {
+            color: var(--ufpr-blue);
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .reveal h2 {
+            border-bottom: 3px solid var(--ufpr-blue);
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        .reveal section {
+            text-align: left;
+            padding: 20px;
+        }
+
+        .reveal section p {
+            margin: 8px 0;
+        }
+
+        .reveal section ul, .reveal section ol {
+            margin: 8px 0;
+        }
+
+        .reveal section.compact {
+            font-size: 0.82em;
+        }
+
+        .reveal section.compact li {
+            margin: 5px 0;
+        }
+
+        .formula-box {
+            background: #f8faff;
+            padding: 12px 16px;
+            border-left: 6px solid var(--ufpr-blue);
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .highlight {
+            color: var(--ufpr-blue);
+            font-weight: bold;
+        }
+
+        .small-text {
+            font-size: 0.7em;
+            color: #666;
+        }
+
+        code, .mono {
+            font-family: "Courier New", monospace;
+        }
+
+        .icon-list {
+            list-style: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        .icon-list li {
+            margin: 12px 0;
+            padding-left: 4px;
+        }
+
+        .two-col {
+            display: flex;
+            align-items: flex-start;
+            gap: 28px;
+        }
+
+        .two-col .col {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cards {
+            display: flex;
+            gap: 18px;
+            margin-top: 16px;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 0;
+            background: #f8faff;
+            border-radius: 8px;
+            border-top: 5px solid var(--ufpr-blue);
+            padding: 14px 18px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .card h3 {
+            margin: 0 0 8px;
+            color: var(--ufpr-blue);
+            font-size: 1.02em;
+        }
+
+        .card p, .card li {
+            font-size: 0.84em;
+            line-height: 1.45em;
+        }
+
+        .state-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .state-box {
+            background: #fff;
+            border: 2px solid #d8e1ed;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+
+        .state-box.pending {
+            border-color: var(--math-gold);
+        }
+
+        .state-box.fulfilled {
+            border-color: var(--math-green);
+        }
+
+        .state-box.rejected {
+            border-color: var(--math-red);
+        }
+
+        .state-box h3 {
+            margin: 0 0 8px;
+            font-size: 1em;
+        }
+
+        .state-box p {
+            font-size: 0.82em;
+            margin: 0;
+            line-height: 1.45em;
+        }
+
+        .timeline {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0 14px;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            top: 12px;
+            left: 4%;
+            right: 4%;
+            height: 3px;
+            background: #d6dde7;
+            z-index: 0;
+        }
+
+        .timeline .stage {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            text-align: center;
+            padding: 0 8px;
+        }
+
+        .timeline .dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--ufpr-blue);
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 2px var(--ufpr-blue);
+            margin: 0 auto 14px;
+        }
+
+        .timeline .stage h4 {
+            color: #1a2b45;
+            font-size: 0.92em;
+            font-weight: 700;
+            margin: 0 0 6px;
+        }
+
+        .timeline .stage p {
+            font-size: 0.7em;
+            color: #555;
+            margin: 0;
+            line-height: 1.35em;
+        }
+
+        .pill-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 14px 0;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.68em;
+            font-weight: 700;
+        }
+
+        .pill-blue {
+            background: #e6f0fb;
+            color: var(--ufpr-blue);
+        }
+
+        .pill-green {
+            background: #e9f7ef;
+            color: var(--math-green);
+        }
+
+        .pill-gold {
+            background: #fdf1dc;
+            color: #b56e00;
+        }
+
+        .pill-red {
+            background: #fde9e6;
+            color: var(--math-red);
+        }
+
+        pre.code-block {
+            margin: 10px 0 0;
+            padding: 16px 18px;
+            background: var(--slate);
+            color: #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+            font-size: 0.6em;
+            line-height: 1.5em;
+            overflow: hidden;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            box-sizing: border-box;
+        }
+
+        pre.code-block code {
+            color: inherit;
+            display: block;
+            background: transparent;
+            max-height: none;
+            overflow: visible;
+            padding: 0;
+            white-space: inherit;
+        }
+
+        .code-note {
+            font-size: 0.68em;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 14px;
+        }
+
+        .compare .panel {
+            background: #fbfcff;
+            border: 2px solid #dce5f0;
+            border-radius: 12px;
+            padding: 14px;
+            min-width: 0;
+        }
+
+        .compare .panel h3 {
+            margin: 0 0 10px;
+            color: var(--ufpr-blue);
+            font-size: 0.98em;
+        }
+
+        .stack-steps {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .step-box {
+            background: #fff;
+            border-left: 6px solid var(--ufpr-blue);
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-box h3 {
+            margin: 0 0 6px;
+            color: var(--ufpr-blue);
+            font-size: 0.95em;
+        }
+
+        .step-box p {
+            font-size: 0.8em;
+            margin: 0;
+            line-height: 1.45em;
+        }
+
+        .alert-box {
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            font-size: 0.82em;
+            line-height: 1.5em;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .alert-good {
+            background: #edf8f1;
+            border-left: 6px solid var(--math-green);
+        }
+
+        .alert-warn {
+            background: #fff8ed;
+            border-left: 6px solid var(--math-gold);
+        }
+
+        .alert-bad {
+            background: #fff1ef;
+            border-left: 6px solid var(--math-red);
+        }
+
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .mistake {
+            background: #fff;
+            border: 2px solid #e7edf5;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .mistake h3 {
+            margin: 0 0 8px;
+            color: var(--math-red);
+            font-size: 0.92em;
+        }
+
+        .mistake p {
+            margin: 0;
+            font-size: 0.78em;
+            line-height: 1.45em;
+        }
+
+        .check-list {
+            list-style: none;
+            padding-left: 0;
+            margin-left: 0;
+            margin-top: 10px;
+        }
+
+        .reveal ul.check-list {
+            list-style: none;
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .check-list li {
+            list-style: none;
+            background: #f8faff;
+            border-left: 5px solid var(--ufpr-blue);
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.82em;
+        }
+
+        #btnPdf {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: var(--ufpr-blue);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        #btnPdf:hover {
+            background: #003567;
+        }
+
+        #btnPdf:active {
+            transform: scale(0.96);
+        }
+
+        @media print {
+            #btnPdf {
+                display: none !important;
+            }
+        }
+
+        .reveal .slide-number {
+            background: var(--ufpr-blue);
+            color: #fff;
+            font-size: 16px;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<button id="btnPdf" title="Gerar PDF da apresentação" aria-label="Gerar PDF">
+    PDF
+</button>
+
+<div class="reveal">
+    <div class="slides">
+
+        <section style="text-align: center;">
+            <h1 style="font-size: 2em;">Programação para Internet I</h1>
+            <h2 style="border:none; color: #555;">Aula 12 - Fetch, Async e Await</h2>
+            <p>Do arquivo local à API externa, passo a passo</p>
+            <div style="margin-top: 90px;">
+                <p><strong>Curso ADS</strong></p>
+                <p class="small-text">Primeiro texto e JSON, depois Chuck Norris e OMDb</p>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>O que veremos hoje</h2>
+            <ul class="icon-list">
+                <li><strong>Passo 1:</strong> carregar um <code>texto.txt</code> com <code>response.text()</code></li>
+                <li><strong>Passo 2:</strong> carregar um <code>dados.json</code> com <code>response.json()</code></li>
+                <li><strong>Passo 3:</strong> reescrever a mesma ideia com <code>async</code> e <code>await</code></li>
+                <li><strong>Passo 4:</strong> consumir a API do Chuck Norris e mostrar a piada na tela</li>
+                <li><strong>Passo 5:</strong> usar a OMDb para buscar filmes por título ou pesquisa</li>
+                <li><strong>No meio do caminho:</strong> entender o que realmente muda em cada etapa</li>
+            </ul>
+        </section>
+
+        <section class="compact">
+            <h2>Sequência Didática</h2>
+            <div class="timeline">
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>1. Arquivo texto</h4>
+                    <p>O aluno clica e vê um texto simples aparecer.</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>2. Arquivo JSON</h4>
+                    <p>Agora o conteúdo vira objeto JavaScript.</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>3. Async/await</h4>
+                    <p>Mesmo comportamento, leitura mais linear.</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>4. API divertida</h4>
+                    <p>Chuck Norris gera resultado instantâneo na tela.</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>5. API real</h4>
+                    <p>OMDb mostra aplicação prática com filmes.</p>
+                </div>
+            </div>
+            <div class="alert-box alert-good">
+                A força dessa sequência é que <strong>o padrão do código quase não muda</strong>: mudam a <strong>URL</strong>, o <strong>tipo de dado</strong> e o <strong>campo que queremos mostrar</strong>.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Antes de tudo: rode em servidor local</h2>
+            <div class="two-col">
+                <div class="col">
+                    <p>Para começar com <code>texto.txt</code> e <code>dados.json</code>, o ideal é abrir a pasta com <strong>Live Server</strong> ou com um servidor simples.</p>
+                    <pre class="code-block"><code>python3 -m http.server</code></pre>
+                    <p class="code-note">Depois acesse o endereço mostrado no terminal, como <code>http://localhost:8000</code>.</p>
+                </div>
+                <div class="col">
+                    <ul class="check-list">
+                        <li><code>index.html</code> com o botão e a função JavaScript</li>
+                        <li><code>texto.txt</code> para o primeiro teste</li>
+                        <li><code>dados.json</code> para o segundo teste</li>
+                        <li>Um <code>&lt;div id="conteudo"&gt;</code> para exibir o resultado</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="alert-box alert-warn">
+                Se o HTML for aberto direto como <code>file://</code>, o <code>fetch()</code> pode falhar. Em aula, vale muito a pena já mostrar isso cedo.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Passo 1: Buscar um arquivo texto</h2>
+            <pre class="code-block" style="font-size: 0.56em;"><code>&lt;button onclick="carregarConteudo()"&gt;Carregar Conteúdo&lt;/button&gt;
+&lt;div id="conteudo"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+function carregarConteudo() {
+  fetch('texto.txt')
+    .then(response =&gt; response.text())
+    .then(texto =&gt; {
+      document.querySelector('#conteudo').textContent = texto;
+    });
+}
+&lt;/script&gt;</code></pre>
+            <div class="cards">
+                <div class="card">
+                    <h3>O aluno vê</h3>
+                    <p>Clica no botão e o conteúdo de <code>texto.txt</code> aparece no <code>div</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Ideia principal</h3>
+                    <p>A URL ainda é só um arquivo da própria pasta.</p>
+                </div>
+                <div class="card">
+                    <h3>Ponto-chave</h3>
+                    <p>Como é texto simples, usamos <code>response.text()</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Passo 2: Trocar texto por JSON</h2>
+            <div class="compare">
+                <div class="panel">
+                    <h3>Arquivo <code>dados.json</code></h3>
+                    <pre class="code-block"><code>{
+  "nome": "Ana",
+  "curso": "ADS",
+  "periodo": 3
+}</code></pre>
+                </div>
+                <div class="panel">
+                    <h3>Leitura no JavaScript</h3>
+                    <pre class="code-block"><code>function carregarAluno() {
+  fetch('dados.json')
+    .then(response =&gt; response.json())
+    .then(aluno =&gt; {
+      document.querySelector('#conteudo').textContent =
+        `${aluno.nome} - ${aluno.curso}`;
+    });
+}</code></pre>
+                </div>
+            </div>
+            <p class="code-note">Aqui os alunos percebem uma mudança muito importante: o dado não é mais uma string; agora ele vira um objeto.</p>
+        </section>
+
+        <section class="compact">
+            <h2>O que mudou de verdade?</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Continua igual</h3>
+                    <p><code>fetch(...)</code> inicia a requisição e devolve uma <code>Promise</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Muda aqui</h3>
+                    <p><code>response.text()</code> lê texto. <code>response.json()</code> converte para objeto JavaScript.</p>
+                </div>
+                <div class="card">
+                    <h3>Objetivo final</h3>
+                    <p>No final, quase sempre queremos <strong>pegar um valor</strong> e <strong>colocar na tela</strong>.</p>
+                </div>
+            </div>
+            <div class="formula-box">
+                Modelo mental: <strong>buscar</strong> → <strong>ler a resposta</strong> → <strong>extrair o campo desejado</strong> → <strong>atualizar o DOM</strong>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Reescrevendo com async e await</h2>
+            <div class="two-col">
+                <div class="col">
+                    <pre class="code-block"><code>async function carregarAluno() {
+  const response = await fetch('dados.json');
+  const aluno = await response.json();
+
+  document.querySelector('#conteudo').textContent =
+    `${aluno.nome} - ${aluno.curso}`;
+}</code></pre>
+                </div>
+                <div class="col">
+                    <ul class="check-list">
+                        <li><code>async</code> marca a função assíncrona</li>
+                        <li><code>await fetch(...)</code> espera a chegada da resposta</li>
+                        <li><code>await response.json()</code> espera a conversão do corpo</li>
+                        <li>A leitura fica mais próxima da ordem em que explicamos no quadro</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="alert-box alert-warn">
+                <strong><code>await</code> não “trava a página inteira”</strong>; ele pausa só aquela função até o resultado chegar.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>API Externa: Chuck Norris</h2>
+            <pre class="code-block" style="font-size: 0.54em;"><code>async function carregarPiada() {
+  const url = 'https://api.chucknorris.io/jokes/random';
+  const response = await fetch(url);
+  const dados = await response.json();
+  const conteudo = document.getElementById('conteudo');
+
+  conteudo.innerText = dados.value;
+}</code></pre>
+            <div class="cards">
+                <div class="card">
+                    <h3>URL pronta</h3>
+                    <p><code>/jokes/random</code> já devolve uma piada aleatória em JSON.</p>
+                </div>
+                <div class="card">
+                    <h3>Campo importante</h3>
+                    <p>A frase que queremos mostrar está em <code>dados.value</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Por que funciona bem em aula</h3>
+                    <p>É rápido, divertido e o resultado aparece imediatamente na interface.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Chuck Norris: extensões naturais</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Outra URL útil</h3>
+                    <p><code>https://api.chucknorris.io/jokes/categories</code> devolve a lista de categorias.</p>
+                </div>
+                <div class="card">
+                    <h3>Piada por categoria</h3>
+                    <p><code>/jokes/random?category=dev</code> permite brincar com filtros.</p>
+                </div>
+                <div class="card">
+                    <h3>Busca textual</h3>
+                    <p><code>/jokes/search?query=car</code> já introduz a ideia de parâmetros na URL.</p>
+                </div>
+            </div>
+            <div class="alert-box alert-good">
+                Esse momento é ótimo para mostrar que <strong>a estrutura do código é a mesma</strong>; o que muda é a URL e o campo do JSON que vamos usar.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Passo 4: OMDb API</h2>
+            <div class="two-col">
+                <div class="col">
+                    <p>A OMDb já aproxima muito mais de um cenário real de aplicação:</p>
+                    <ul class="check-list">
+                        <li>exige <code>apikey</code></li>
+                        <li>permite buscar por <code>t</code> (título) ou <code>s</code> (pesquisa)</li>
+                        <li>aceita filtros como <code>type</code> e <code>y</code></li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <div class="cards" style="flex-direction: column; margin-top: 0;">
+                        <div class="card">
+                            <h3>Exemplo de base</h3>
+                            <p><code>https://www.omdbapi.com/?apikey=SUA_CHAVE&amp;t=Batman</code></p>
+                        </div>
+                        <div class="card" style="border-top-color: var(--math-gold);">
+                            <h3>Ponto prático</h3>
+                            <p>Sem chave válida, a API responde com erro no JSON.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="code-note">Na prática de aula, isso ajuda a mostrar que consumir API real quase sempre envolve mais um detalhe de configuração. A página de chave da OMDb informa plano gratuito com limite diário de 1.000 requisições.</p>
+        </section>
+
+        <section class="compact">
+            <h2>OMDb: buscar um filme por título</h2>
+            <pre class="code-block" style="font-size: 0.54em;"><code>async function buscarFilme() {
+  const titulo = document.querySelector('#titulo').value;
+  const url = `https://www.omdbapi.com/?apikey=SUA_CHAVE&t=${encodeURIComponent(titulo)}`;
+
+  const response = await fetch(url);
+  const filme = await response.json();
+
+  if (filme.Response === 'False') {
+    document.querySelector('#conteudo').textContent = filme.Error;
+    return;
+  }
+
+  document.querySelector('#conteudo').innerHTML =
+    `&lt;h3&gt;${filme.Title} (${filme.Year})&lt;/h3&gt;
+     &lt;p&gt;${filme.Genre}&lt;/p&gt;`;
+}</code></pre>
+            <div class="cards">
+                <div class="card">
+                    <h3>Campo do título</h3>
+                    <p>Agora a URL depende do que o usuário digitou.</p>
+                </div>
+                <div class="card">
+                    <h3>Resposta da API</h3>
+                    <p>O JSON já traz campos úteis como <code>Title</code>, <code>Year</code> e <code>Genre</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Ganho didático</h3>
+                    <p>Os alunos percebem a passagem do “arquivo local” para “consulta montada dinamicamente”.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>OMDb: pesquisar vários filmes</h2>
+            <pre class="code-block" style="font-size: 0.54em;"><code>async function pesquisarFilmes() {
+  const termo = document.querySelector('#busca').value;
+  const url = `https://www.omdbapi.com/?apikey=SUA_CHAVE&s=${encodeURIComponent(termo)}`;
+
+  const dados = await (await fetch(url)).json();
+
+  if (dados.Response === 'False') {
+    document.querySelector('#conteudo').textContent = dados.Error;
+    return;
+  }
+
+  const itens = dados.Search
+    .map(filme =&gt; `&lt;li&gt;${filme.Title} (${filme.Year})&lt;/li&gt;`)
+    .join('');
+
+  document.querySelector('#conteudo').innerHTML = `&lt;ul&gt;${itens}&lt;/ul&gt;`;
+}</code></pre>
+            <p class="code-note">Esse exemplo é muito bom para conectar <code>fetch</code> com manipulação de lista e geração de HTML no DOM.</p>
+        </section>
+
+        <section class="compact">
+            <h2>Erros práticos nessa sequência</h2>
+            <div class="mistake-grid">
+                <div class="mistake">
+                    <h3>Abrir no <code>file://</code></h3>
+                    <p>O exemplo de <code>texto.txt</code> pode falhar se a página não estiver sendo servida por HTTP.</p>
+                </div>
+                <div class="mistake">
+                    <h3>Trocar <code>text()</code> por <code>json()</code></h3>
+                    <p>Quando o arquivo é JSON, esquecer essa troca impede o acesso aos campos como <code>nome</code> ou <code>curso</code>.</p>
+                </div>
+                <div class="mistake">
+                    <h3>Esquecer o segundo <code>await</code></h3>
+                    <p><code>response.json()</code> também é assíncrono; ele não devolve o objeto imediatamente.</p>
+                </div>
+                <div class="mistake">
+                    <h3>Na OMDb, confiar só no HTTP</h3>
+                    <p>A API pode responder com erro dentro do próprio JSON, como quando a <code>apikey</code> é inválida.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Roteiro prático com a turma</h2>
+            <ul class="check-list">
+                <li>Comece com <code>texto.txt</code> e peça para eles preverem o que aparecerá no <code>div</code>.</li>
+                <li>Troque só uma linha: <code>text()</code> por <code>json()</code>, e mostre o salto para objeto JavaScript.</li>
+                <li>Reescreva com <code>async/await</code> mantendo a mesma lógica.</li>
+                <li>Mude apenas a URL para a Chuck Norris API e pergunte: “qual campo do JSON interessa agora?”</li>
+                <li>Finalize com a OMDb, mostrando que aplicações reais costumam pedir <code>apikey</code> e validação extra.</li>
+            </ul>
+        </section>
+
+        <section class="compact">
+            <h2>Resumo mental</h2>
+            <div class="timeline">
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>1. Buscar</h4>
+                    <p><code>fetch(url)</code></p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>2. Ler</h4>
+                    <p><code>text()</code> ou <code>json()</code></p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>3. Extrair</h4>
+                    <p>pegar o campo certo</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>4. Mostrar</h4>
+                    <p>atualizar o DOM</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>5. Repetir</h4>
+                    <p>agora com outra URL</p>
+                </div>
+            </div>
+            <pre class="code-block"><code>async function buscarDados(url) {
+  const response = await fetch(url);
+  return await response.json();
+}</code></pre>
+            <div class="alert-box alert-good">
+                O padrão-base é quase sempre o mesmo. Em aula, isso ajuda os alunos a perceberem que <strong>consumir API não é “aprender outro mundo”</strong>; é repetir uma estrutura conhecida.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Referências</h2>
+            <ul style="font-size:0.88em; line-height:1.5em;">
+                <li>MDN Web Docs. <em>Fetch API</em>. developer.mozilla.org.</li>
+                <li>MDN Web Docs. <em>Using the Fetch API</em>. developer.mozilla.org.</li>
+                <li>MDN Web Docs. <em>async function</em>. developer.mozilla.org.</li>
+                <li>MDN Web Docs. <em>await</em>. developer.mozilla.org.</li>
+                <li>Chuck Norris API. <em>Usage</em>. api.chucknorris.io.</li>
+                <li>OMDb API. <em>Parameters</em> e <em>API Key</em>. omdbapi.com.</li>
+            </ul>
+        </section>
+
+        <section style="text-align:center;">
+            <h1 style="font-size:2.3em; border:none;">Dúvidas?</h1>
+            <p style="font-size:1.05em; color:#555;">Aula 12 - Fetch, Async e Await</p>
+            <div style="margin-top:60px;">
+                <p><strong>Programação para Internet I</strong></p>
+                <p class="small-text">Próximo passo: consumir uma API real e renderizar listas no DOM.</p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: true,
+        transition: 'slide',
+        slideNumber: 'c/t',
+        width: 1100,
+        height: 800,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 1.5
+    });
+
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                window.print();
+            }, 800);
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programação para Internet I - Aula 11 - LocalStorage e IndexedDB</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+
+    <style>
+        :root {
+            --ufpr-blue: #004a8e;
+            --math-red: #e74c3c;
+            --math-green: #27ae60;
+            --math-gold: #f39c12;
+            --slate: #0f172a;
+        }
+
+        .reveal h1, .reveal h2 {
+            color: var(--ufpr-blue);
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .reveal h2 {
+            border-bottom: 3px solid var(--ufpr-blue);
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        .reveal section {
+            text-align: left;
+            padding: 20px;
+        }
+
+        .reveal section p {
+            margin: 8px 0;
+        }
+
+        .reveal section ul, .reveal section ol {
+            margin: 8px 0;
+        }
+
+        .reveal section.compact {
+            font-size: 0.82em;
+        }
+
+        .reveal section.compact li {
+            margin: 5px 0;
+        }
+
+        .small-text {
+            font-size: 0.7em;
+            color: #666;
+        }
+
+        .highlight {
+            color: var(--ufpr-blue);
+            font-weight: bold;
+        }
+
+        .formula-box {
+            background: #f8faff;
+            padding: 12px 16px;
+            border-left: 6px solid var(--ufpr-blue);
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        code, .mono {
+            font-family: "Courier New", monospace;
+        }
+
+        pre.code-block {
+            margin: 10px 0 0;
+            padding: 16px 18px;
+            background: var(--slate);
+            color: #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+            font-size: 0.56em;
+            line-height: 1.48em;
+            overflow: hidden;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            box-sizing: border-box;
+        }
+
+        pre.code-block code {
+            color: inherit;
+            display: block;
+            background: transparent;
+            max-height: none;
+            overflow: visible;
+            padding: 0;
+            white-space: inherit;
+        }
+
+        .code-note {
+            font-size: 0.68em;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .icon-list {
+            list-style: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+
+        .icon-list li {
+            margin: 12px 0;
+            padding-left: 4px;
+        }
+
+        .two-col {
+            display: flex;
+            align-items: flex-start;
+            gap: 28px;
+        }
+
+        .two-col .col {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cards {
+            display: flex;
+            gap: 18px;
+            margin-top: 16px;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 0;
+            background: #f8faff;
+            border-radius: 8px;
+            border-top: 5px solid var(--ufpr-blue);
+            padding: 14px 18px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .card h3 {
+            margin: 0 0 8px;
+            color: var(--ufpr-blue);
+            font-size: 1.02em;
+        }
+
+        .card p, .card li {
+            font-size: 0.84em;
+            line-height: 1.45em;
+        }
+
+        .compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 14px;
+        }
+
+        .compare .panel {
+            background: #fbfcff;
+            border: 2px solid #dce5f0;
+            border-radius: 12px;
+            padding: 14px;
+            min-width: 0;
+        }
+
+        .compare .panel h3 {
+            margin: 0 0 10px;
+            color: var(--ufpr-blue);
+            font-size: 0.98em;
+        }
+
+        .timeline {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0 14px;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            top: 12px;
+            left: 4%;
+            right: 4%;
+            height: 3px;
+            background: #d6dde7;
+            z-index: 0;
+        }
+
+        .timeline .stage {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            text-align: center;
+            padding: 0 8px;
+        }
+
+        .timeline .dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--ufpr-blue);
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 2px var(--ufpr-blue);
+            margin: 0 auto 14px;
+        }
+
+        .timeline .stage h4 {
+            color: #1a2b45;
+            font-size: 0.92em;
+            font-weight: 700;
+            margin: 0 0 6px;
+        }
+
+        .timeline .stage p {
+            font-size: 0.7em;
+            color: #555;
+            margin: 0;
+            line-height: 1.35em;
+        }
+
+        .check-list {
+            list-style: none;
+            padding-left: 0;
+            margin-left: 0;
+            margin-top: 10px;
+        }
+
+        .reveal ul.check-list {
+            list-style: none;
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .check-list li {
+            list-style: none;
+            background: #f8faff;
+            border-left: 5px solid var(--ufpr-blue);
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.82em;
+        }
+
+        .stack-steps {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .step-box {
+            background: #fff;
+            border-left: 6px solid var(--ufpr-blue);
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-box h3 {
+            margin: 0 0 6px;
+            color: var(--ufpr-blue);
+            font-size: 0.95em;
+        }
+
+        .step-box p {
+            font-size: 0.8em;
+            margin: 0;
+            line-height: 1.45em;
+        }
+
+        .alert-box {
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            font-size: 0.82em;
+            line-height: 1.5em;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .alert-good {
+            background: #edf8f1;
+            border-left: 6px solid var(--math-green);
+        }
+
+        .alert-warn {
+            background: #fff8ed;
+            border-left: 6px solid var(--math-gold);
+        }
+
+        .alert-bad {
+            background: #fff1ef;
+            border-left: 6px solid var(--math-red);
+        }
+
+        .mistake-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .mistake {
+            background: #fff;
+            border: 2px solid #e7edf5;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .mistake h3 {
+            margin: 0 0 8px;
+            color: var(--math-red);
+            font-size: 0.92em;
+        }
+
+        .mistake p {
+            margin: 0;
+            font-size: 0.78em;
+            line-height: 1.45em;
+        }
+
+        table.compare-table {
+            width: 100%;
+            font-size: 0.7em;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        table.compare-table th {
+            background: var(--ufpr-blue);
+            color: white;
+            padding: 8px;
+        }
+
+        table.compare-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        #btnPdf {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: var(--ufpr-blue);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        #btnPdf:hover {
+            background: #003567;
+        }
+
+        #btnPdf:active {
+            transform: scale(0.96);
+        }
+
+        @media print {
+            #btnPdf {
+                display: none !important;
+            }
+        }
+
+        .reveal .slide-number {
+            background: var(--ufpr-blue);
+            color: #fff;
+            font-size: 16px;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<button id="btnPdf" title="Gerar PDF da apresentação" aria-label="Gerar PDF">
+    PDF
+</button>
+
+<div class="reveal">
+    <div class="slides">
+
+        <section style="text-align: center;">
+            <h1 style="font-size: 2em;">Programação para Internet I</h1>
+            <h2 style="border:none; color: #555;">Aula 11 - LocalStorage e IndexedDB</h2>
+            <p>Armazenando dados no navegador de forma simples e prática</p>
+            <div style="margin-top: 90px;">
+                <p><strong>Curso ADS</strong></p>
+                <p class="small-text">Do valor simples até um pequeno banco de dados no browser</p>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>O que veremos hoje</h2>
+            <ul class="icon-list">
+                <li><strong>Passo 1:</strong> salvar um valor simples com <code>localStorage</code></li>
+                <li><strong>Passo 2:</strong> recuperar esse valor depois de recarregar a página</li>
+                <li><strong>Passo 3:</strong> salvar listas e objetos com <code>JSON.stringify()</code></li>
+                <li><strong>Passo 4:</strong> entender quando <code>localStorage</code> deixa de ser suficiente</li>
+                <li><strong>Passo 5:</strong> criar um banco local com <code>IndexedDB</code></li>
+                <li><strong>Passo 6:</strong> inserir e listar registros passo a passo</li>
+            </ul>
+        </section>
+
+        <section class="compact">
+            <h2>Dois Tipos de Armazenamento</h2>
+            <div class="compare">
+                <div class="panel">
+                    <h3>LocalStorage</h3>
+                    <ul class="check-list">
+                        <li>guarda pares <code>chave = valor</code></li>
+                        <li>ideal para preferências e dados pequenos</li>
+                        <li>muito fácil de usar</li>
+                    </ul>
+                </div>
+                <div class="panel">
+                    <h3>IndexedDB</h3>
+                    <ul class="check-list">
+                        <li>funciona como banco de dados do navegador</li>
+                        <li>guarda muitos registros e objetos complexos</li>
+                        <li>melhor para aplicações maiores</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="alert-box alert-good">
+                Nesta aula, vou tratar o que você chamou de <strong>dbstorage</strong> como <strong>IndexedDB</strong>, que é a solução de banco local do navegador.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Sequência Da Aula</h2>
+            <div class="timeline">
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>1. Salvar</h4>
+                    <p>guardar um nome com <code>setItem</code></p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>2. Ler</h4>
+                    <p>recuperar com <code>getItem</code></p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>3. Estruturar</h4>
+                    <p>listas com JSON</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>4. Escalar</h4>
+                    <p>quando migrar para IndexedDB</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>5. Persistir</h4>
+                    <p>inserir e listar registros</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Passo 1: Primeiro Contato com localStorage</h2>
+            <pre class="code-block"><code>localStorage.setItem('nome', 'Ana');
+
+const nomeSalvo = localStorage.getItem('nome');
+console.log(nomeSalvo);</code></pre>
+            <div class="cards">
+                <div class="card">
+                    <h3><code>setItem</code></h3>
+                    <p>guarda um valor usando uma chave.</p>
+                </div>
+                <div class="card">
+                    <h3><code>getItem</code></h3>
+                    <p>lê o valor salvo naquela chave.</p>
+                </div>
+                <div class="card">
+                    <h3>Ponto importante</h3>
+                    <p>o <code>localStorage</code> guarda <strong>texto</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Exemplo 1: Salvar o Nome do Usuário</h2>
+            <pre class="code-block"><code>&lt;input id="nome" placeholder="Digite seu nome"&gt;
+&lt;button onclick="salvarNome()"&gt;Salvar&lt;/button&gt;
+&lt;div id="saida"&gt;&lt;/div&gt;
+
+function salvarNome() {
+  const nome = document.getElementById('nome').value;
+  localStorage.setItem('nomeUsuario', nome);
+  document.getElementById('saida').innerText = 'Nome salvo!';
+}</code></pre>
+            <p class="code-note">Aqui o aluno digita, clica no botão e já vê um retorno imediato na tela.</p>
+        </section>
+
+        <section class="compact">
+            <h2>Exemplo 2: Recuperar ao Recarregar a Página</h2>
+            <pre class="code-block"><code>function mostrarNomeSalvo() {
+  const nome = localStorage.getItem('nomeUsuario');
+
+  if (nome) {
+    document.getElementById('saida').innerText =
+      `Bem-vindo de volta, ${nome}!`;
+  }
+}
+
+window.addEventListener('load', mostrarNomeSalvo);</code></pre>
+            <div class="stack-steps">
+                <div class="step-box">
+                    <h3>O que o aluno percebe</h3>
+                    <p>mesmo recarregando a página, o dado continua ali.</p>
+                </div>
+                <div class="step-box">
+                    <h3>Ideia central</h3>
+                    <p><code>localStorage</code> persiste depois do refresh e até depois de fechar o navegador.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Exemplo 3: Lista de Tarefas com localStorage</h2>
+            <pre class="code-block" style="font-size: 0.54em;"><code>function adicionarTarefa() {
+  const texto = document.getElementById('tarefa').value;
+  const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+
+  tarefas.push(texto);
+  localStorage.setItem('tarefas', JSON.stringify(tarefas));
+
+  listarTarefas();
+}
+
+function listarTarefas() {
+  const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+  document.getElementById('saida').innerHTML =
+    tarefas.map(t => `&lt;li&gt;${t}&lt;/li&gt;`).join('');
+}</code></pre>
+            <div class="alert-box alert-warn">
+                Para guardar arrays e objetos, usamos <code>JSON.stringify()</code> ao salvar e <code>JSON.parse()</code> ao ler.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Quando localStorage é uma Boa Escolha?</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Ótimo para</h3>
+                    <p>tema escuro, nome do usuário, idioma, carrinho simples, filtros de tela.</p>
+                </div>
+                <div class="card">
+                    <h3>Não é ideal para</h3>
+                    <p>muitos registros, buscas complexas, relacionamentos e grandes volumes de dados.</p>
+                </div>
+                <div class="card">
+                    <h3>Resumo</h3>
+                    <p>simples, rápido e ótimo para pequenas persistências.</p>
+                </div>
+            </div>
+            <div class="formula-box">
+                Regra prática: se cabe como <strong>algumas chaves e poucos dados</strong>, comece com <code>localStorage</code>.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Entrando no IndexedDB</h2>
+            <div class="two-col">
+                <div class="col">
+                    <p>O <code>IndexedDB</code> é o banco de dados embutido no navegador.</p>
+                    <ul class="check-list">
+                        <li>guarda muitos registros</li>
+                        <li>aceita objetos completos</li>
+                        <li>trabalha com transações</li>
+                        <li>é assíncrono</li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <div class="cards" style="flex-direction: column; margin-top: 0;">
+                        <div class="card">
+                            <h3>Pense assim</h3>
+                            <p><code>localStorage</code> parece uma caixinha de rótulos; <code>IndexedDB</code> parece uma mini base local.</p>
+                        </div>
+                        <div class="card" style="border-top-color: var(--math-gold);">
+                            <h3>Uso comum</h3>
+                            <p>catálogos, rascunhos offline, dados de apps e registros maiores.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Passo 1: Abrir o Banco</h2>
+            <pre class="code-block"><code>let db;
+
+const request = indexedDB.open('LojaDB', 1);
+
+request.onsuccess = function (event) {
+  db = event.target.result;
+  console.log('Banco aberto com sucesso');
+};</code></pre>
+            <div class="cards">
+                <div class="card">
+                    <h3><code>LojaDB</code></h3>
+                    <p>é o nome do banco.</p>
+                </div>
+                <div class="card">
+                    <h3><code>1</code></h3>
+                    <p>é a versão do banco.</p>
+                </div>
+                <div class="card">
+                    <h3><code>onsuccess</code></h3>
+                    <p>é chamado quando a abertura funciona.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Passo 2: Criar a Estrutura</h2>
+            <pre class="code-block"><code>request.onupgradeneeded = function (event) {
+  db = event.target.result;
+
+  db.createObjectStore('produtos', {
+    keyPath: 'id',
+    autoIncrement: true
+  });
+};</code></pre>
+            <div class="stack-steps">
+                <div class="step-box">
+                    <h3><code>onupgradeneeded</code></h3>
+                    <p>roda quando o banco é criado pela primeira vez ou quando a versão muda.</p>
+                </div>
+                <div class="step-box">
+                    <h3><code>objectStore</code></h3>
+                    <p>funciona como uma “tabela” dentro do banco.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Passo 3: Inserir um Registro</h2>
+            <pre class="code-block"><code>function adicionarProduto() {
+  const tx = db.transaction('produtos', 'readwrite');
+  const store = tx.objectStore('produtos');
+
+  store.add({
+    nome: 'Mouse',
+    preco: 59.90
+  });
+}</code></pre>
+            <div class="cards">
+                <div class="card">
+                    <h3><code>transaction</code></h3>
+                    <p>abre uma transação para leitura ou escrita.</p>
+                </div>
+                <div class="card">
+                    <h3><code>readwrite</code></h3>
+                    <p>permite gravar dados.</p>
+                </div>
+                <div class="card">
+                    <h3><code>store.add()</code></h3>
+                    <p>insere um novo objeto na store.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Passo 4: Listar os Dados</h2>
+            <pre class="code-block" style="font-size: 0.54em;"><code>function listarProdutos() {
+  const tx = db.transaction('produtos', 'readonly');
+  const store = tx.objectStore('produtos');
+  const request = store.getAll();
+
+  request.onsuccess = function () {
+    const produtos = request.result;
+
+    document.getElementById('saida').innerHTML =
+      produtos.map(p => `&lt;li&gt;${p.nome} - R$ ${p.preco}&lt;/li&gt;`).join('');
+  };
+}</code></pre>
+            <p class="code-note">Esse é o momento em que a turma enxerga o banco local funcionando de verdade: grava e depois lista.</p>
+        </section>
+
+        <section class="compact">
+            <h2>Exemplo Prático Completo</h2>
+            <pre class="code-block" style="font-size: 0.52em;"><code>&lt;input id="produto" placeholder="Nome do produto"&gt;
+&lt;button onclick="salvarProduto()"&gt;Salvar&lt;/button&gt;
+&lt;ul id="saida"&gt;&lt;/ul&gt;
+
+function salvarProduto() {
+  const nome = document.getElementById('produto').value;
+  const tx = db.transaction('produtos', 'readwrite');
+  const store = tx.objectStore('produtos');
+
+  store.add({ nome: nome });
+  tx.oncomplete = listarProdutos;
+}</code></pre>
+            <div class="alert-box alert-good">
+                Em sala, esse exemplo costuma funcionar bem porque o aluno vê a diferença entre <strong>guardar um valor isolado</strong> e <strong>guardar vários registros</strong>.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>LocalStorage x IndexedDB</h2>
+            <table class="compare-table">
+                <thead>
+                    <tr>
+                        <th>Critério</th>
+                        <th>LocalStorage</th>
+                        <th>IndexedDB</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Modelo</td>
+                        <td>chave e valor</td>
+                        <td>banco com stores e registros</td>
+                    </tr>
+                    <tr>
+                        <td>Tipo de uso</td>
+                        <td>simples e rápido</td>
+                        <td>mais robusto</td>
+                    </tr>
+                    <tr>
+                        <td>Tamanho e volume</td>
+                        <td>pequeno</td>
+                        <td>muito maior</td>
+                    </tr>
+                    <tr>
+                        <td>Dados complexos</td>
+                        <td>precisa converter para JSON</td>
+                        <td>lida melhor com objetos</td>
+                    </tr>
+                    <tr>
+                        <td>Curva de aprendizado</td>
+                        <td>baixa</td>
+                        <td>maior</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="compact">
+            <h2>Erros Comuns</h2>
+            <div class="mistake-grid">
+                <div class="mistake">
+                    <h3>Salvar objeto direto no localStorage</h3>
+                    <p>sem <code>JSON.stringify()</code>, o valor não fica no formato esperado.</p>
+                </div>
+                <div class="mistake">
+                    <h3>Esquecer o <code>JSON.parse()</code></h3>
+                    <p>o dado volta como texto, não como array ou objeto.</p>
+                </div>
+                <div class="mistake">
+                    <h3>Usar o IndexedDB antes de abrir o banco</h3>
+                    <p>se <code>db</code> ainda não foi inicializado, as funções falham.</p>
+                </div>
+                <div class="mistake">
+                    <h3>Confundir tabela com objectStore</h3>
+                    <p>no IndexedDB falamos em <code>objectStore</code>, não exatamente em tabela SQL.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Exercício Guiado</h2>
+            <ul class="check-list">
+                <li>Crie um formulário para salvar a cor favorita com <code>localStorage</code>.</li>
+                <li>Ao recarregar a página, mostre a cor salva e aplique no fundo.</li>
+                <li>Depois, crie uma <code>objectStore</code> chamada <code>anotacoes</code> no IndexedDB.</li>
+                <li>Permita inserir várias anotações e listá-las na tela.</li>
+                <li>Pergunta final para a turma: qual parte faria mais sentido guardar em cada tecnologia?</li>
+            </ul>
+        </section>
+
+        <section class="compact">
+            <h2>Resumo Mental</h2>
+            <div class="timeline">
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>1. Pouco dado</h4>
+                    <p>comece com <code>localStorage</code></p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>2. Mais estrutura</h4>
+                    <p>use JSON</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>3. Muitos registros</h4>
+                    <p>vá para IndexedDB</p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>4. Abrir banco</h4>
+                    <p><code>indexedDB.open()</code></p>
+                </div>
+                <div class="stage">
+                    <div class="dot"></div>
+                    <h4>5. Persistir</h4>
+                    <p>transação, store e registros</p>
+                </div>
+            </div>
+            <div class="formula-box">
+                <strong>LocalStorage:</strong> simples e imediato. <br>
+                <strong>IndexedDB:</strong> mais trabalhoso, mas muito mais poderoso.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Referências</h2>
+            <ul style="font-size:0.88em; line-height:1.5em;">
+                <li>MDN Web Docs. <em>Window.localStorage</em>.</li>
+                <li>MDN Web Docs. <em>Using the Web Storage API</em>.</li>
+                <li>MDN Web Docs. <em>IndexedDB API</em>.</li>
+                <li>MDN Web Docs. <em>Using IndexedDB</em>.</li>
+            </ul>
+        </section>
+
+        <section style="text-align:center;">
+            <h1 style="font-size:2.3em; border:none;">Dúvidas?</h1>
+            <p style="font-size:1.05em; color:#555;">Aula 11 - LocalStorage e IndexedDB</p>
+            <div style="margin-top:60px;">
+                <p><strong>Programação para Internet I</strong></p>
+                <p class="small-text">Próximo passo: integrar armazenamento local com interface e eventos.</p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: true,
+        transition: 'slide',
+        slideNumber: 'c/t',
+        width: 1100,
+        height: 800,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 1.5
+    });
+
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                window.print();
+            }, 800);
+        });
+    }
+</script>
+</body>
+</html>
