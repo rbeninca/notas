@@ -8,7 +8,6 @@ Presencial: 48h
 Curso: Superior — ADS4 | Dias: Segunda-feira | Período: 03/08/2026 a 09/11/2026 | Horário: 18h30 às 22h30 | Local: Lab INFO 2
 
 Planejamento encontros presenciais da Unidade
-
 | #  | Conteúdo | CH| Data | Modal | Local|
 |:---:|----------|:---:|:---:|:---:| :---:|
 | [1.](#1-encontro-1) | Plano de Ensino, ambiente de desenvolvimento e primeiro app Android |4h | 03/08/2026 | Pres. | Lab. 2 |
@@ -26,3 +25,10 @@ Planejamento encontros presenciais da Unidade
 |Total |  |48h|  |  |  |
 
 # As atividades práticas e trabalhos desenvolvidos ao longo do semestre estarão disponíveis no Moodle da disciplina.
+
+
+--- 
+<div id="calendario-presencial"></div>
+
+
+---
