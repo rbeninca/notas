@@ -140,6 +140,43 @@
         .dotstat.staged    { background:#2e7d32; }
         .dotstat.clean     { background:#8fa0b8; }
 
+        /* Painel de destaque para a cadeia de commits — o objeto central da Parte 2.
+           Centraliza o grafo e o coloca em evidência, em vez de espremido numa coluna. */
+        .commit-stage { background:linear-gradient(180deg,#fafcff 0%,#f3f7fb 100%);
+            border:1px solid #dde5ee; border-radius:12px; box-shadow:0 3px 14px rgba(30,50,80,0.10);
+            padding:14px 18px 12px; margin:12px auto; max-width:760px; text-align:center; }
+        .commit-stage .stage-lbl { font-size:0.52em; font-weight:800; letter-spacing:1.2px; text-transform:uppercase;
+            color:#8a93a8; margin-bottom:4px; }
+        .commit-stage .chain { margin:2px 0 0; }
+        /* Nós maiores dentro do painel: é o elemento que a plateia deve olhar. */
+        .commit-stage .cnode { width:52px; height:52px; font-size:0.82em; }
+        .commit-stage .clink { font-size:1.3em; margin:0 2px; }
+        .commit-stage .ptrs { font-size:0.68em; margin-top:8px; }
+
+        /* Commit como CARTÃO: além do nome (C1, C2…), mostra o conteúdo que aquele
+           commit registrou — linhas de contexto e linhas adicionadas. Torna visível
+           que um commit guarda um estado, não apenas um rótulo. */
+        .commit-stage .chain.cards { gap:0; align-items:stretch; }
+        .ccard { display:flex; flex-direction:column; min-width:132px; border-radius:10px; overflow:hidden;
+            border:2px solid #cfd8e4; background:#fff; box-shadow:0 3px 10px rgba(30,50,80,0.12); flex-shrink:0; }
+        .ccard .ctag { background:var(--ifsc-green); color:#fff; font-size:0.56em; font-weight:800;
+            letter-spacing:.5px; padding:4px 8px; }
+        .ccard.new .ctag { background:var(--git-orange); }
+        .ccard .cbody { padding:5px 0 6px; text-align:left; }
+        .ccard .cline { font-family:monospace; font-size:0.46em; line-height:1.55em; padding:1px 8px; white-space:nowrap; color:#586069; }
+        .ccard .cline.add { background:#e6ffed; color:#1b5e20; font-weight:700; }
+        .ccard .cline.add::before { content:"+ "; }
+        .ccard .cline.ctx::before { content:"\00a0\00a0"; }
+        /* elo entre cartões */
+        .commit-stage .chain.cards .clink { font-size:1.2em; margin:0 6px; align-self:center; }
+
+        /* Variante para o diagrama das 4 regiões: ocupa a largura toda e mantém
+           os nós no tamanho original (senão as caixas do modelo estouram). */
+        .commit-stage.model-stage { max-width:100%; padding:10px 12px 8px; }
+        .commit-stage.model-stage .cnode { width:28px; height:28px; font-size:0.58em; }
+        .commit-stage.model-stage .clink { font-size:0.8em; margin:0; }
+        .commit-stage.model-stage .ptrs { font-size:0.6em; margin-top:2px; }
+
         .chain { display:flex; align-items:center; justify-content:center; gap:3px; margin:10px 0 6px; flex-wrap:wrap; min-height:32px; }
         .cnode { width:28px; height:28px; border-radius:50%; background:var(--ifsc-green); color:#fff; font-size:0.58em;
             font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); flex-shrink:0; }
@@ -779,7 +816,8 @@
         <!-- ===================== O contexto: Linux ===================== -->
         <section class="compact" id="slide-linux-context">
             <h2>O contexto: o kernel Linux</h2>
-            <p>Milhares de desenvolvedores, espalhados pelo mundo, escreviam <strong>patches de código</strong> e os enviavam por e-mail para Linus Torvalds <strong>integrar manualmente</strong>:</p>
+            <h4>História do git</h4>
+            <p>De <span class="git-highlight">1991 a 2002</span> — os primeiros <strong>onze anos</strong> do kernel — o Linux foi desenvolvido <strong>sem nenhuma ferramenta de controle de versão</strong>. Milhares de desenvolvedores, espalhados pelo mundo, escreviam <strong>patches de código</strong> e os enviavam por e-mail para Linus Torvalds <strong>integrar manualmente, usando tarballs</strong>:</p>
             <div class="linux-anim">
                 <img class="la-dev la-tl" src="dev1-lado-esquedo.png" alt="Desenvolvedor enviando patch">
                 <img class="la-dev la-tr" src="dev2-lado-direito.png" alt="Desenvolvedora enviando patch">
@@ -791,7 +829,7 @@
                     <div class="la-center-label">Linus Torvalds</div>
                 </div>
             </div>
-            <p class="small-text" style="text-align:center;">Esse processo manual, feito por e-mail, <strong>não escalava</strong> — foi exatamente esse gargalo que motivou a busca por uma ferramenta melhor.</p>
+            <p class="small-text" style="text-align:center;">Onze anos aplicando patches à mão: o processo <strong>não escalava</strong> e fazia de Linus um <strong>gargalo</strong> — foi isso que, em <strong>2002</strong>, levou o projeto a adotar o BitKeeper.</p>
         </section>
 
         <!-- ===================== BitKeeper ===================== -->
@@ -858,12 +896,22 @@
         <section class="compact">
             <h2>Commits são fotografias do projeto</h2>
             <p>Cada <strong>commit</strong> representa um estado registrado do projeto em um momento específico — como uma fotografia. Vamos acompanhar isso com um arquivo de texto simples.</p>
-            <div class="term">
+            <div class="term" style="max-width:340px; margin:8px auto;">
                 <div class="ttl">arquivo.txt</div>
                 <div class="ln">Olá</div>
             </div>
-            <div class="chain" style="justify-content:flex-start;"><div class="cnode new">C1</div></div>
-            <p class="small-text">Um único commit registrado: o conteúdo "Olá" está gravado permanentemente na história do projeto.</p>
+            <div class="commit-stage">
+                <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
+                <div class="chain cards">
+                    <div class="ccard new">
+                        <div class="ctag">C1</div>
+                        <div class="cbody">
+                            <div class="cline add">Olá</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="small-text" style="text-align:center;">Um único commit registrado: o conteúdo "Olá" está gravado permanentemente na história do projeto.</p>
         </section>
 
         <!-- ===================== Commit 2 + diff ===================== -->
@@ -876,9 +924,6 @@
                         <div class="ln">Olá</div>
                         <div class="ln">Git</div>
                     </div>
-                    <div class="chain" style="justify-content:flex-start;">
-                        <div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode new">C2</div>
-                    </div>
                 </div>
                 <div class="col-text">
                     <p class="small-text">O Git não guarda "um arquivo novo" — ele guarda que, entre C1 e C2, uma linha foi <strong>adicionada</strong>:</p>
@@ -886,6 +931,25 @@
                         <div class="dhead">diff C1 → C2</div>
                         <div class="diffline ctx">Olá</div>
                         <div class="diffline add">Git</div>
+                    </div>
+                </div>
+            </div>
+            <div class="commit-stage">
+                <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
+                <div class="chain cards">
+                    <div class="ccard">
+                        <div class="ctag">C1</div>
+                        <div class="cbody">
+                            <div class="cline add">Olá</div>
+                        </div>
+                    </div>
+                    <span class="clink">&larr;</span>
+                    <div class="ccard new">
+                        <div class="ctag">C2</div>
+                        <div class="cbody">
+                            <div class="cline ctx">Olá</div>
+                            <div class="cline add">Git</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -902,9 +966,6 @@
                         <div class="ln">Git</div>
                         <div class="ln">Controle de versão</div>
                     </div>
-                    <div class="chain" style="justify-content:flex-start;">
-                        <div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode">C2</div><span class="clink">&larr;</span><div class="cnode new">C3</div>
-                    </div>
                 </div>
                 <div class="col-text">
                     <div class="diffbox">
@@ -916,20 +977,86 @@
                     <p class="small-text">O Git mantém uma <strong>sequência de estados relacionados</strong> — a qualquer momento dá para saber exatamente o que mudou entre dois pontos da história.</p>
                 </div>
             </div>
+            <div class="commit-stage">
+                <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
+                <div class="chain cards">
+                    <div class="ccard">
+                        <div class="ctag">C1</div>
+                        <div class="cbody">
+                            <div class="cline add">Olá</div>
+                        </div>
+                    </div>
+                    <span class="clink">&larr;</span>
+                    <div class="ccard">
+                        <div class="ctag">C2</div>
+                        <div class="cbody">
+                            <div class="cline ctx">Olá</div>
+                            <div class="cline add">Git</div>
+                        </div>
+                    </div>
+                    <span class="clink">&larr;</span>
+                    <div class="ccard new">
+                        <div class="ctag">C3</div>
+                        <div class="cbody">
+                            <div class="cline ctx">Olá</div>
+                            <div class="cline ctx">Git</div>
+                            <div class="cline add">Controle de versão</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- ===================== Commits formam um branch (crossfade) ===================== -->
         <section class="compact">
             <h2>Commits formando um branch</h2>
             <p>Uma sequência de commits é o histórico de um <strong>branch</strong>. Um branch é, na prática, apenas um <span class="git-highlight">ponteiro</span> para o último commit — e <strong>HEAD</strong> aponta para o branch atual.</p>
-            <div class="stackwrap" style="min-height:130px;">
-                <div class="stacked fragment fade-out" data-fragment-index="0" style="text-align:center;">
-                    <div class="chain" style="justify-content:center;"><div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode new">C2</div></div>
-                    <div class="ptrs"><b>main</b> · HEAD → C2</div>
-                </div>
-                <div class="stacked fragment fade-in" data-fragment-index="0" style="text-align:center;">
-                    <div class="chain" style="justify-content:center;"><div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode">C2</div><span class="clink">&larr;</span><div class="cnode new">C3</div></div>
-                    <div class="ptrs"><b>main</b> · HEAD → C3</div>
+            <div class="commit-stage">
+                <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
+                <div class="stackwrap" style="min-height:118px;">
+                    <div class="stacked fragment fade-out" data-fragment-index="0">
+                        <div class="chain cards">
+                            <div class="ccard">
+                                <div class="ctag">C1</div>
+                                <div class="cbody"><div class="cline add">Olá</div></div>
+                            </div>
+                            <span class="clink">&larr;</span>
+                            <div class="ccard new">
+                                <div class="ctag">C2</div>
+                                <div class="cbody">
+                                    <div class="cline ctx">Olá</div>
+                                    <div class="cline add">Git</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ptrs"><b>main</b> · HEAD → C2</div>
+                    </div>
+                    <div class="stacked fragment fade-in" data-fragment-index="0">
+                        <div class="chain cards">
+                            <div class="ccard">
+                                <div class="ctag">C1</div>
+                                <div class="cbody"><div class="cline add">Olá</div></div>
+                            </div>
+                            <span class="clink">&larr;</span>
+                            <div class="ccard">
+                                <div class="ctag">C2</div>
+                                <div class="cbody">
+                                    <div class="cline ctx">Olá</div>
+                                    <div class="cline add">Git</div>
+                                </div>
+                            </div>
+                            <span class="clink">&larr;</span>
+                            <div class="ccard new">
+                                <div class="ctag">C3</div>
+                                <div class="cbody">
+                                    <div class="cline ctx">Olá</div>
+                                    <div class="cline ctx">Git</div>
+                                    <div class="cline add">Controle de versão</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ptrs"><b>main</b> · HEAD → C3</div>
+                    </div>
                 </div>
             </div>
             <p style="text-align:center;" class="small-text">Clique para avançar: um novo commit é criado → o ponteiro <strong>main</strong> (e HEAD, que aponta para main) se move para o novo commit.</p>
@@ -939,7 +1066,10 @@
         <section class="compact">
             <h2>O Modelo: as Quatro Regiões do Git</h2>
             <p>Este é o diagrama que vamos reutilizar em <strong>quase todos</strong> os slides daqui em diante. Cada novo comando só vai <span class="git-highlight">alterar o estado</span> destas caixas.</p>
-            <div id="g-regioes"></div>
+            <div class="commit-stage model-stage">
+                <div class="stage-lbl">o modelo completo</div>
+                <div id="g-regioes"></div>
+            </div>
             <script>paint('g-regioes', { wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2','C3']} });</script>
             <ul class="icon-list" style="margin-top:6px;">
                 <li><span class="ic">1</span><strong>Working Tree</strong> — os arquivos como você vê e edita no disco.</li>
