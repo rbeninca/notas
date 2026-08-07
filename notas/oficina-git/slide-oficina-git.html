@@ -115,6 +115,19 @@
         @keyframes blinkCursor { 50% { opacity:0; } }
         .term-lines .ln { min-height:1.5em; }
 
+        /* Etapas 1..6 da Parte 3: o diagrama fica SEMPRE na mesma posição, logo abaixo
+           do título, e o terminal vem depois — assim, ao avançar os slides, o aluno vê
+           as caixas mudarem de estado sem que elas saltem pela tela. A altura do bloco
+           do terminal é reservada para que o diagrama não se desloque. */
+        .step-slide .stage-diagram { min-height:150px; margin:2px 0 6px; }
+        .step-slide .stage-term { min-height:112px; }
+        .step-slide .stage-term .term { margin:4px 0; }
+        .step-slide .flow-up { text-align:center; margin:2px 0 4px; }
+        .step-slide .flow-up .arrow { font-size:1.3em; color:var(--git-orange); line-height:1; font-weight:700; }
+        .step-slide .flow-up .lbl { display:block; font-size:0.42em; color:#7a8497; font-weight:700;
+            letter-spacing:.5px; text-transform:uppercase; margin-top:-2px; }
+        .step-slide > p.small-text { margin-top:4px; }
+
         /* Seta de fluxo comando -> efeito -> diagrama */
         .flow-down { text-align:center; margin: 4px 0; }
         .flow-down .arrow { font-size:1.5em; color: var(--git-orange); line-height:1; font-weight:700; }
@@ -996,56 +1009,76 @@
         </section>
 
         <!-- ===================== Construção progressiva — Etapa 1 e 2 ===================== -->
-        <section class="compact">
+        <section class="compact step-slide">
             <h2><span class="step-badge git">1</span>Working Tree + <code>git status</code></h2>
-            <p>Criamos um arquivo. Ele existe no disco, mas o Git <strong>ainda não sabe</strong> que ele deve fazer parte da história do projeto.</p>
-            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></div>
-                <div class="ln out">Untracked files:</div>
-                <div class="ln out">&nbsp;&nbsp;arquivo.txt</div></div>
-            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
-            <div id="g-etapa1"></div>
-            <script>paint('g-etapa1', { active:'wt', wt:[{name:'arquivo.txt', status:'untracked', content:['Olá']}], stage:[], local:{commits:[]} });</script>
+            <div class="stage-diagram">
+                <div id="g-etapa1"></div>
+                <script>paint('g-etapa1', { active:'wt', wt:[{name:'arquivo.txt', status:'untracked', content:['Olá']}], stage:[], local:{commits:[]} });</script>
+            </div>
+            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
+            <div class="stage-term">
+                <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></div>
+                    <div class="ln out">Untracked files:</div>
+                    <div class="ln out">&nbsp;&nbsp;arquivo.txt</div></div>
+            </div>
+            <p class="small-text">Criamos um arquivo. Ele existe no disco, mas o Git <strong>ainda não sabe</strong> que ele deve fazer parte da história do projeto.</p>
         </section>
 
         <!-- ===================== Etapa 3: git add ===================== -->
-        <section class="compact">
+        <section class="compact step-slide">
             <h2><span class="step-badge git">2</span><code>git add</code></h2>
-            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git add arquivo.txt</span></div></div>
-            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
-            <div id="g-etapa3"></div>
-            <script>paint('g-etapa3', { active:'add', wt:[{name:'arquivo.txt', status:'clean', content:['Olá']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:[]} });</script>
+            <div class="stage-diagram">
+                <div id="g-etapa3"></div>
+                <script>paint('g-etapa3', { active:'add', wt:[{name:'arquivo.txt', status:'clean', content:['Olá']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:[]} });</script>
+            </div>
+            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
+            <div class="stage-term">
+                <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git add arquivo.txt</span></div></div>
+            </div>
             <p class="small-text">O arquivo continua no Working Tree — apenas uma <strong>cópia do seu estado atual</strong> passa a existir na Staging Area, preparada para o próximo commit.</p>
         </section>
 
         <!-- ===================== Etapa 4: git commit ===================== -->
-        <section class="compact">
+        <section class="compact step-slide">
             <h2><span class="step-badge git">3</span><code>git commit</code></h2>
-            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git commit -m "Adiciona arquivo inicial"</span></div></div>
-            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
-            <div id="g-etapa4"></div>
-            <script>paint('g-etapa4', { active:'commit', wt:[{name:'arquivo.txt', status:'clean', content:['Olá']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            <div class="stage-diagram">
+                <div id="g-etapa4"></div>
+                <script>paint('g-etapa4', { active:'commit', wt:[{name:'arquivo.txt', status:'clean', content:['Olá']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            </div>
+            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
+            <div class="stage-term">
+                <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git commit -m "Adiciona arquivo inicial"</span></div></div>
+            </div>
             <p class="small-text">Nasce o commit <strong>C1</strong>. <code>main</code> e <code>HEAD</code> passam a apontar para ele. A Staging Area volta a "espelhar" exatamente o que está no último commit.</p>
         </section>
 
         <!-- ===================== Etapa 5: edição do arquivo ===================== -->
-        <section class="compact">
+        <section class="compact step-slide">
             <h2><span class="step-badge git">4</span>Editando o arquivo</h2>
-            <div class="term"><div class="ttl">arquivo.txt (editado)</div><div class="ln">Olá</div><div class="ln">Git</div></div>
-            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
-            <div id="g-etapa5"></div>
-            <script>paint('g-etapa5', { active:'wt', wt:[{name:'arquivo.txt', status:'modified', content:['Olá','Git']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            <div class="stage-diagram">
+                <div id="g-etapa5"></div>
+                <script>paint('g-etapa5', { active:'wt', wt:[{name:'arquivo.txt', status:'modified', content:['Olá','Git']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            </div>
+            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
+            <div class="stage-term">
+                <div class="term"><div class="ttl">arquivo.txt (editado)</div><div class="ln">Olá</div><div class="ln">Git</div></div>
+            </div>
             <p class="small-text">Repare: <strong>três versões diferentes</strong> convivem agora — Working Tree <code>[Olá, Git]</code>, Staging <code>[Olá]</code> e o commit C1 <code>[Olá]</code>. Essa diferença é o coração do modelo do Git.</p>
         </section>
 
         <!-- ===================== Etapa 6: git status novamente ===================== -->
-        <section class="compact">
+        <section class="compact step-slide">
             <h2><span class="step-badge git">5</span><code>git status</code> — de novo</h2>
-            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></div>
-                <div class="ln out">Changes not staged for commit:</div>
-                <div class="ln out">&nbsp;&nbsp;modified: arquivo.txt</div></div>
-            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">relação direta com o diagrama</span></div>
-            <div id="g-etapa6"></div>
-            <script>paint('g-etapa6', { active:'wt', wt:[{name:'arquivo.txt', status:'modified', content:['Olá','Git']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            <div class="stage-diagram">
+                <div id="g-etapa6"></div>
+                <script>paint('g-etapa6', { active:'wt', wt:[{name:'arquivo.txt', status:'modified', content:['Olá','Git']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            </div>
+            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">relação direta com o diagrama</span></div>
+            <div class="stage-term">
+                <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></div>
+                    <div class="ln out">Changes not staged for commit:</div>
+                    <div class="ln out">&nbsp;&nbsp;modified: arquivo.txt</div></div>
+            </div>
             <p class="small-text">"Modified, not staged" é só o Git descrevendo em palavras a diferença entre <strong>Working Tree</strong> e <strong>Staging Area</strong> que já víamos no diagrama.</p>
         </section>
 
