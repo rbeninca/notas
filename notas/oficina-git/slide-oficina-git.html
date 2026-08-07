@@ -170,6 +170,56 @@
         /* elo entre cartões */
         .commit-stage .chain.cards .clink { font-size:1.2em; margin:0 6px; align-self:center; }
 
+        /* ===== Slide animado "nascimento de um histórico" ===== */
+        .story-layout { display:flex; gap:18px; align-items:flex-start; margin:8px 0 6px; }
+        .story-left { flex:0 0 300px; }
+        .story-right { flex:1; min-width:0; }
+        /* arquivo de trabalho, à esquerda */
+        .story-file { background:#1e1e2e; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,0.28); overflow:hidden; }
+        .story-file .fhead { background:#2b2b40; color:#8a93a8; font-size:0.54em; font-weight:800; letter-spacing:1px;
+            text-transform:uppercase; padding:5px 12px; display:flex; justify-content:space-between; align-items:center; }
+        .story-file .fhead .dirty { color:var(--accent-gold); text-transform:none; letter-spacing:0; font-size:0.92em; }
+        .story-file .fbody { padding:8px 0 10px; min-height:96px; }
+        .story-file .fline { font-family:'Consolas','Menlo',monospace; font-size:0.62em; color:#e6e6e6;
+            padding:2px 12px; white-space:nowrap; transition:background .3s; }
+        .story-file .fline.justAdded { background:rgba(126,231,135,0.20); color:#7ee787; }
+        /* cursor de digitação da linha que está sendo escrita */
+        .story-file .tcursor { color:#7ee787; font-weight:400; animation: blinkCursor 0.85s steps(1) infinite; margin-left:1px; }
+        .story-file .fline.empty { color:#5a6072; font-style:italic; }
+        /* passos da narrativa, abaixo do arquivo */
+        .story-steps { margin-top:10px; }
+        .story-steps .st { display:flex; gap:8px; align-items:flex-start; font-size:0.6em; line-height:1.35em;
+            padding:5px 8px; border-radius:6px; color:#8a93a8; transition:background .3s, color .3s; }
+        .story-steps .st .n { flex:0 0 18px; height:18px; border-radius:50%; background:#dde5ee; color:#7a8497;
+            font-weight:800; font-size:0.82em; display:flex; align-items:center; justify-content:center; }
+        .story-steps .st.on { background:#fff6f2; color:#3a4658; }
+        .story-steps .st.on .n { background:var(--git-orange); color:#fff; }
+        .story-steps .st.done .n { background:var(--ifsc-green); color:#fff; }
+        /* controles */
+        .story-ctrl { display:flex; gap:8px; align-items:center; justify-content:center; margin-top:8px; flex-wrap:wrap; }
+        .story-ctrl button { font-family:inherit; font-size:0.58em; font-weight:800; letter-spacing:.4px;
+            border:1px solid #cfd8e4; background:#fff; color:#48566b; border-radius:6px; padding:6px 12px; cursor:pointer;
+            transition:background .2s, border-color .2s, color .2s; }
+        .story-ctrl button:hover:not(:disabled) { border-color:var(--git-orange); color:var(--git-orange); }
+        .story-ctrl button:disabled { opacity:.45; cursor:default; }
+        .story-ctrl button.primary { background:var(--ifsc-green); border-color:var(--ifsc-green); color:#fff; }
+        .story-ctrl button.primary:hover:not(:disabled) { background:var(--ifsc-dark); border-color:var(--ifsc-dark); color:#fff; }
+        .story-ctrl .pos { font-size:0.55em; font-weight:800; color:#8a93a8; margin-left:4px; }
+        /* cartões de commit surgindo */
+        .ccard.appear { animation: cardIn .45s ease-out; }
+        @keyframes cardIn { from { opacity:0; transform:translateY(10px) scale(.94); } to { opacity:1; transform:none; } }
+        /* ponteiro de branch sob a cadeia */
+        .branch-ptr { display:inline-flex; flex-direction:column; align-items:center; margin-top:6px;
+            transition: transform .5s cubic-bezier(.4,1.4,.6,1); }
+        .branch-ptr .arrowup { color:var(--git-orange); font-size:0.9em; line-height:.7em; font-weight:800; }
+        .branch-ptr .tagname { background:#fff6f2; border:2px solid var(--git-orange); color:var(--git-orange);
+            font-size:0.56em; font-weight:800; border-radius:5px; padding:2px 10px; white-space:nowrap; }
+        .branch-ptr .headname { font-size:0.5em; font-weight:800; color:#8a93a8; margin-top:3px; }
+        .ptr-rail { display:flex; justify-content:flex-start; min-height:0; }
+        /* a cadeia precisa ser referência de posicionamento para alinhar o ponteiro */
+        #storyChain { position:relative; justify-content:center; }
+        #storyChain .ccard { position:relative; }
+
         /* Variante para o diagrama das 4 regiões: ocupa a largura toda e mantém
            os nós no tamanho original (senão as caixas do modelo estouram). */
         .commit-stage.model-stage { max-width:100%; padding:10px 12px 8px; }
@@ -892,174 +942,40 @@
             <p>Construindo, passo a passo, o mapa mental que vamos reutilizar até o fim da oficina</p>
         </section>
 
-        <!-- ===================== Commits: intro ===================== -->
-        <section class="compact">
-            <h2>Commits são fotografias do projeto</h2>
-            <p>Cada <strong>commit</strong> representa um estado registrado do projeto em um momento específico — como uma fotografia. Vamos acompanhar isso com um arquivo de texto simples.</p>
-            <div class="term" style="max-width:340px; margin:8px auto;">
-                <div class="ttl">arquivo.txt</div>
-                <div class="ln">Olá</div>
-            </div>
-            <div class="commit-stage">
-                <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
-                <div class="chain cards">
-                    <div class="ccard new">
-                        <div class="ctag">C1</div>
-                        <div class="cbody">
-                            <div class="cline add">Olá</div>
-                        </div>
+        <!-- ===================== Nascimento de um histórico (animado) ===================== -->
+        <section class="compact" id="slide-commit-story">
+            <h2>Como um histórico nasce</h2>
+            <p>Cada <strong>commit</strong> é uma <span class="git-highlight">fotografia</span> do projeto num instante. Acompanhe: o arquivo muda à esquerda, e a história cresce à direita.</p>
+            <div class="story-layout">
+                <div class="story-left">
+                    <div class="story-file">
+                        <div class="fhead"><span>arquivo.txt</span><span class="dirty" id="storyDirty"></span></div>
+                        <div class="fbody" id="storyFile"></div>
                     </div>
+                    <div class="story-steps" id="storySteps">
+                        <div class="st" data-step="0"><span class="n">1</span><span>escrevo <code>Olá</code> no arquivo</span></div>
+                        <div class="st" data-step="1"><span class="n">2</span><span><code>git commit</code> → nasce <b>C1</b></span></div>
+                        <div class="st" data-step="2"><span class="n">3</span><span>acrescento <code>Git</code> → <code>commit</code> <b>C2</b></span></div>
+                        <div class="st" data-step="3"><span class="n">4</span><span>acrescento mais uma linha → <b>C3</b></span></div>
+                        <div class="st" data-step="4"><span class="n">5</span><span><b>main</b> e <b>HEAD</b>: ponteiros para o último commit</span></div>
+                    </div>
+                </div>
+                <div class="story-right">
+                    <div class="commit-stage" style="margin:0;">
+                        <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
+                        <div class="chain cards" id="storyChain"></div>
+                        <div class="ptr-rail" id="storyPtrRail"></div>
+                    </div>
+                    <div class="story-ctrl">
+                        <button id="storyPrev" type="button">◀ voltar</button>
+                        <button id="storyNext" type="button" class="primary">avançar ▶</button>
+                        <button id="storyAll" type="button">executar até o fim</button>
+                        <button id="storyReset" type="button">recomeçar</button>
+                        <span class="pos" id="storyPos"></span>
+                    </div>
+                    <p class="small-text" id="storyCaption" style="text-align:center; margin-top:6px; min-height:2.4em;"></p>
                 </div>
             </div>
-            <p class="small-text" style="text-align:center;">Um único commit registrado: o conteúdo "Olá" está gravado permanentemente na história do projeto.</p>
-        </section>
-
-        <!-- ===================== Commit 2 + diff ===================== -->
-        <section class="compact">
-            <h2>Segundo commit</h2>
-            <div class="two-col">
-                <div class="col-text">
-                    <div class="term">
-                        <div class="ttl">arquivo.txt</div>
-                        <div class="ln">Olá</div>
-                        <div class="ln">Git</div>
-                    </div>
-                </div>
-                <div class="col-text">
-                    <p class="small-text">O Git não guarda "um arquivo novo" — ele guarda que, entre C1 e C2, uma linha foi <strong>adicionada</strong>:</p>
-                    <div class="diffbox">
-                        <div class="dhead">diff C1 → C2</div>
-                        <div class="diffline ctx">Olá</div>
-                        <div class="diffline add">Git</div>
-                    </div>
-                </div>
-            </div>
-            <div class="commit-stage">
-                <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
-                <div class="chain cards">
-                    <div class="ccard">
-                        <div class="ctag">C1</div>
-                        <div class="cbody">
-                            <div class="cline add">Olá</div>
-                        </div>
-                    </div>
-                    <span class="clink">&larr;</span>
-                    <div class="ccard new">
-                        <div class="ctag">C2</div>
-                        <div class="cbody">
-                            <div class="cline ctx">Olá</div>
-                            <div class="cline add">Git</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===================== Commit 3 + diff ===================== -->
-        <section class="compact">
-            <h2>Terceiro commit</h2>
-            <div class="two-col">
-                <div class="col-text">
-                    <div class="term">
-                        <div class="ttl">arquivo.txt</div>
-                        <div class="ln">Olá</div>
-                        <div class="ln">Git</div>
-                        <div class="ln">Controle de versão</div>
-                    </div>
-                </div>
-                <div class="col-text">
-                    <div class="diffbox">
-                        <div class="dhead">diff C2 → C3</div>
-                        <div class="diffline ctx">Olá</div>
-                        <div class="diffline ctx">Git</div>
-                        <div class="diffline add">Controle de versão</div>
-                    </div>
-                    <p class="small-text">O Git mantém uma <strong>sequência de estados relacionados</strong> — a qualquer momento dá para saber exatamente o que mudou entre dois pontos da história.</p>
-                </div>
-            </div>
-            <div class="commit-stage">
-                <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
-                <div class="chain cards">
-                    <div class="ccard">
-                        <div class="ctag">C1</div>
-                        <div class="cbody">
-                            <div class="cline add">Olá</div>
-                        </div>
-                    </div>
-                    <span class="clink">&larr;</span>
-                    <div class="ccard">
-                        <div class="ctag">C2</div>
-                        <div class="cbody">
-                            <div class="cline ctx">Olá</div>
-                            <div class="cline add">Git</div>
-                        </div>
-                    </div>
-                    <span class="clink">&larr;</span>
-                    <div class="ccard new">
-                        <div class="ctag">C3</div>
-                        <div class="cbody">
-                            <div class="cline ctx">Olá</div>
-                            <div class="cline ctx">Git</div>
-                            <div class="cline add">Controle de versão</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===================== Commits formam um branch (crossfade) ===================== -->
-        <section class="compact">
-            <h2>Commits formando um branch</h2>
-            <p>Uma sequência de commits é o histórico de um <strong>branch</strong>. Um branch é, na prática, apenas um <span class="git-highlight">ponteiro</span> para o último commit — e <strong>HEAD</strong> aponta para o branch atual.</p>
-            <div class="commit-stage">
-                <div class="stage-lbl">história do projeto — <span style="color:#1b5e20">verde</span> = o que aquele commit acrescentou</div>
-                <div class="stackwrap" style="min-height:118px;">
-                    <div class="stacked fragment fade-out" data-fragment-index="0">
-                        <div class="chain cards">
-                            <div class="ccard">
-                                <div class="ctag">C1</div>
-                                <div class="cbody"><div class="cline add">Olá</div></div>
-                            </div>
-                            <span class="clink">&larr;</span>
-                            <div class="ccard new">
-                                <div class="ctag">C2</div>
-                                <div class="cbody">
-                                    <div class="cline ctx">Olá</div>
-                                    <div class="cline add">Git</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ptrs"><b>main</b> · HEAD → C2</div>
-                    </div>
-                    <div class="stacked fragment fade-in" data-fragment-index="0">
-                        <div class="chain cards">
-                            <div class="ccard">
-                                <div class="ctag">C1</div>
-                                <div class="cbody"><div class="cline add">Olá</div></div>
-                            </div>
-                            <span class="clink">&larr;</span>
-                            <div class="ccard">
-                                <div class="ctag">C2</div>
-                                <div class="cbody">
-                                    <div class="cline ctx">Olá</div>
-                                    <div class="cline add">Git</div>
-                                </div>
-                            </div>
-                            <span class="clink">&larr;</span>
-                            <div class="ccard new">
-                                <div class="ctag">C3</div>
-                                <div class="cbody">
-                                    <div class="cline ctx">Olá</div>
-                                    <div class="cline ctx">Git</div>
-                                    <div class="cline add">Controle de versão</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ptrs"><b>main</b> · HEAD → C3</div>
-                    </div>
-                </div>
-            </div>
-            <p style="text-align:center;" class="small-text">Clique para avançar: um novo commit é criado → o ponteiro <strong>main</strong> (e HEAD, que aponta para main) se move para o novo commit.</p>
         </section>
 
         <!-- ===================== As 4 regiões ===================== -->
@@ -2295,6 +2211,223 @@ git pull origin main   # equivale a: git fetch + git merge</code></pre>
         }
         Reveal.on('slidechanged', event => syncToSlide(event.currentSlide));
         Reveal.on('ready', event => syncToSlide(event.currentSlide));
+    })();
+
+    // --- Slide "Como um histórico nasce": construção passo a passo de commits + ponteiro ---
+    // Cinco passos encadeados: editar arquivo → C1 → C2 → C3 → ponteiros main/HEAD.
+    // Controlável: avançar, voltar, executar tudo e recomeçar. Cada passo é um estado
+    // completo, então navegar para trás apenas re-renderiza — não precisa desfazer nada.
+    (function () {
+        const root = document.getElementById('slide-commit-story');
+        if (!root) return;
+
+        const fileEl    = document.getElementById('storyFile');
+        const dirtyEl   = document.getElementById('storyDirty');
+        const chainEl   = document.getElementById('storyChain');
+        const railEl    = document.getElementById('storyPtrRail');
+        const capEl     = document.getElementById('storyCaption');
+        const posEl     = document.getElementById('storyPos');
+        const stepEls   = Array.from(root.querySelectorAll('.story-steps .st'));
+        const btnPrev   = document.getElementById('storyPrev');
+        const btnNext   = document.getElementById('storyNext');
+        const btnAll    = document.getElementById('storyAll');
+        const btnReset  = document.getElementById('storyReset');
+
+        // Estado de cada passo, de forma declarativa.
+        //  file      : linhas do arquivo no disco (a última pode estar "recém-escrita")
+        //  justAdded : índice da linha recém-digitada (destaque verde), ou -1
+        //  dirty     : rótulo de "não commitado" no cabeçalho do arquivo
+        //  commits   : cartões já gravados na história
+        //  ptr       : mostra os ponteiros main/HEAD
+        const L1 = 'Olá', L2 = 'Git', L3 = 'Controle de versão';
+        const C1 = { tag: 'C1', lines: [{ t: L1, add: true }] };
+        const C2 = { tag: 'C2', lines: [{ t: L1 }, { t: L2, add: true }] };
+        const C3 = { tag: 'C3', lines: [{ t: L1 }, { t: L2 }, { t: L3, add: true }] };
+
+        const STEPS = [
+            { file: [L1], justAdded: 0, dirty: 'alterado, não commitado', commits: [], ptr: false,
+              cap: 'O arquivo existe no disco, mas o Git ainda não guardou nada.' },
+            { file: [L1], justAdded: -1, dirty: '', commits: [C1], ptr: false,
+              cap: '<code>git commit</code> → <b>C1</b> guarda o estado do projeto: a linha "Olá".' },
+            { file: [L1, L2], justAdded: 1, dirty: '', commits: [C1, C2], ptr: false,
+              cap: '<b>C2</b> não guarda "um arquivo novo": guarda que, sobre C1, uma linha foi <b>acrescentada</b>.' },
+            { file: [L1, L2, L3], justAdded: 2, dirty: '', commits: [C1, C2, C3], ptr: false,
+              cap: 'Uma <b>sequência de estados relacionados</b>: dá para saber o que mudou entre quaisquer dois pontos.' },
+            { file: [L1, L2, L3], justAdded: -1, dirty: '', commits: [C1, C2, C3], ptr: true,
+              cap: 'Essa sequência é um <b>branch</b>. <b>main</b> é só um <span class="git-highlight">ponteiro</span> para o último commit — e <b>HEAD</b> aponta para main.' }
+        ];
+
+        let idx = -1;       // -1 = nada aconteceu ainda
+        let autoTimer = null;
+
+        let typeTimer = null;
+        function stopTyping() {
+            if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; }
+        }
+
+        // Desenha o arquivo. Quando `typeIt` é verdadeiro e o passo introduziu uma
+        // linha nova, ela é digitada caractere a caractere, com cursor piscando —
+        // as linhas anteriores já aparecem prontas.
+        function renderFile(st, typeIt) {
+            stopTyping();
+            if (!st || !st.file.length) {
+                fileEl.innerHTML = '<div class="fline empty">(arquivo vazio)</div>';
+                dirtyEl.textContent = '';
+                return;
+            }
+            const nova = st.justAdded;
+            const doType = typeIt && nova >= 0;
+
+            function paintLines(typedLen, showCursor) {
+                fileEl.innerHTML = st.file.map((t, i) => {
+                    if (doType && i === nova) {
+                        const txt = t.slice(0, typedLen);
+                        const cur = showCursor ? '<span class="tcursor">▌</span>' : '';
+                        return `<div class="fline justAdded">${txt}${cur}</div>`;
+                    }
+                    return `<div class="fline${i === nova ? ' justAdded' : ''}">${t}</div>`;
+                }).join('');
+            }
+
+            if (!doType) {
+                paintLines(0, false);
+                dirtyEl.textContent = st.dirty || '';
+                return;
+            }
+
+            // digita a linha nova, depois revela o rótulo de "não commitado"
+            const alvo = st.file[nova];
+            dirtyEl.textContent = '';
+            let n = 0;
+            paintLines(0, true);
+            (function tick() {
+                n++;
+                paintLines(n, n < alvo.length);
+                if (n < alvo.length) {
+                    typeTimer = setTimeout(tick, 55 / globalAnimSpeed);
+                } else {
+                    typeTimer = setTimeout(() => {
+                        dirtyEl.textContent = st.dirty || '';
+                        typeTimer = null;
+                    }, 260 / globalAnimSpeed);
+                }
+            })();
+        }
+
+        function renderChain(st, animateLast) {
+            const commits = (st && st.commits) || [];
+            if (!commits.length) {
+                chainEl.innerHTML = '<div class="stage-lbl" style="opacity:.6">nenhum commit ainda</div>';
+                railEl.innerHTML = '';
+                return;
+            }
+            chainEl.innerHTML = commits.map((c, i) => {
+                const isLast = i === commits.length - 1;
+                const cls = 'ccard' + (isLast ? ' new' : '') + (isLast && animateLast ? ' appear' : '');
+                const body = c.lines.map(l =>
+                    `<div class="cline ${l.add ? 'add' : 'ctx'}">${l.t}</div>`).join('');
+                return (i ? '<span class="clink">&larr;</span>' : '') +
+                    `<div class="${cls}"><div class="ctag">${c.tag}</div><div class="cbody">${body}</div></div>`;
+            }).join('');
+
+            // Ponteiro main/HEAD alinhado sob o ÚLTIMO cartão.
+            if (st.ptr) {
+                railEl.innerHTML =
+                    '<div class="branch-ptr"><span class="arrowup">▲</span>' +
+                    '<span class="tagname">main</span>' +
+                    '<span class="headname">HEAD → main</span></div>';
+                // alinha horizontalmente com o centro do último cartão
+                requestAnimationFrame(() => {
+                    const cards = chainEl.querySelectorAll('.ccard');
+                    const ptr = railEl.querySelector('.branch-ptr');
+                    if (!cards.length || !ptr) return;
+                    const last = cards[cards.length - 1];
+                    const offset = last.offsetLeft + last.offsetWidth / 2 - ptr.offsetWidth / 2;
+                    ptr.style.transform = 'translateX(' + Math.max(0, offset) + 'px)';
+                });
+            } else {
+                railEl.innerHTML = '';
+            }
+        }
+
+        function render(animateLast) {
+            const st = idx >= 0 ? STEPS[idx] : null;
+            renderFile(st, animateLast);
+            renderChain(st, animateLast);
+            capEl.innerHTML = st ? st.cap : 'Clique em <b>avançar</b> para construir o histórico passo a passo.';
+            stepEls.forEach((el, i) => {
+                el.classList.toggle('on', i === idx);
+                el.classList.toggle('done', i < idx);
+            });
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx < 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled = idx >= STEPS.length - 1;
+        }
+
+        function stopAuto() {
+            if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+            stopTyping();
+        }
+        function go(to, animate) {
+            idx = Math.max(-1, Math.min(STEPS.length - 1, to));
+            render(animate);
+        }
+        function next() { stopAuto(); go(idx + 1, true); }
+        function prev() { stopAuto(); go(idx - 1, false); }
+        function reset() { stopAuto(); go(-1, false); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1, true);
+                autoTimer = setTimeout(tick, 2200 / globalAnimSpeed);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', reset);
+
+        // As setas →/← percorrem os passos da animação ANTES de trocar de slide,
+        // como fazem os fragments nativos do Reveal: só depois de esgotar os passos
+        // é que a navegação segue para o próximo slide (e o mesmo ao voltar).
+        // Capturamos na fase de captura, antes do handler do Reveal.
+        document.addEventListener('keydown', ev => {
+            if (Reveal.getCurrentSlide() !== root) return;
+            if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+
+            // Espaço fica de fora: se o foco estiver num dos botões, ele já significa
+            // "acionar este botão" — interceptá-lo confundiria as duas coisas.
+            const FWD  = ev.key === 'ArrowRight' || ev.key === 'ArrowDown' || ev.key === 'PageDown';
+            const BACK = ev.key === 'ArrowLeft'  || ev.key === 'ArrowUp' || ev.key === 'PageUp';
+            if (!FWD && !BACK) return;
+
+            if (FWD && idx < STEPS.length - 1) {
+                ev.preventDefault(); ev.stopImmediatePropagation();
+                next();
+            } else if (BACK && idx >= 0) {
+                ev.preventDefault(); ev.stopImmediatePropagation();
+                prev();
+            }
+            // Nos extremos não fazemos nada: o evento segue para o Reveal,
+            // que troca de slide normalmente.
+        }, true);
+
+        // Ao ENTRAR no slide vindo de trás, começa do zero. Vindo de frente (o usuário
+        // apertou ← no slide seguinte), entra já no estado final — assim continuar
+        // apertando ← desmonta a história na ordem inversa, sem pular tudo.
+        function syncToSlide(event) {
+            const slide = event.currentSlide;
+            if (slide !== root) { stopAuto(); return; }
+            const cameFromAhead = event.previousSlide &&
+                root.compareDocumentPosition(event.previousSlide) & Node.DOCUMENT_POSITION_FOLLOWING;
+            stopAuto();
+            go(cameFromAhead ? STEPS.length - 1 : -1, false);
+        }
+        Reveal.on('slidechanged', syncToSlide);
+        Reveal.on('ready', syncToSlide);
     })();
 
     // --- Animação: patches convergindo para Linus e sendo mergiados (slide "O contexto: o kernel Linux") ---
