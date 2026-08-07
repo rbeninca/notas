@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oficina de Git — Do modelo conceitual aos comandos</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <!-- Highlight.js para realce de codigo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --ifsc-green: #2e7d32;
+            --ifsc-dark:  #1b5e20;
+            --accent-red: #c0392b;
+            --accent-gold: #f39c12;
+            --accent-blue: #2980b9;
+            --git-orange: #f05033;
+            --git-purple: #8e44ad;
+            --grid-color: #f0f0f0;
+        }
+        .reveal h1, .reveal h2 { color: var(--ifsc-green); font-weight: 800; text-transform: uppercase; }
+        .reveal h2 { border-bottom: 3px solid var(--ifsc-green); display: inline-block; padding-bottom: 5px; margin-bottom: 16px; }
+        .reveal h3 { color: var(--ifsc-dark); }
+        .reveal section { text-align: left; padding: 18px; }
+        .reveal section p { margin: 8px 0; }
+        .reveal section ul, .reveal section ol { margin: 8px 0; }
+
+        .reveal section.compact { font-size: 0.80em; }
+        .reveal section.compact li { margin: 5px 0; }
+
+        /* Bloco de codigo de terminal (highlight.js) */
+        .reveal pre { width: 100%; box-shadow: 0 3px 12px rgba(0,0,0,0.18); font-size: 0.60em; margin: 8px 0; }
+        .reveal pre code { padding: 12px 16px; max-height: 420px; border-radius: 6px; }
+
+        .formula-box {
+            background: #f3faf4; padding: 12px 16px; border-left: 6px solid var(--ifsc-green);
+            border-radius: 4px; margin: 10px 0; font-size: 0.88em; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        }
+        .warn-box { background: #fdf3f2; border-left: 6px solid var(--accent-red); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+        .tip-box  { background: #fff8e8; border-left: 6px solid var(--accent-gold); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+
+        .highlight { color: var(--ifsc-green); font-weight: bold; }
+        .git-highlight { color: var(--git-orange); font-weight: bold; }
+        .small-text { font-size: 0.72em; color: #666; }
+
+        table.tbl { width: 100%; font-size: 0.62em; border-collapse: collapse; margin-top: 10px; }
+        table.tbl th { background: var(--ifsc-green); color: white; padding: 8px; }
+        table.tbl td { border: 1px solid #ddd; padding: 6px 8px; }
+        table.tbl tr:nth-child(even) td { background: #f6faf6; }
+
+        .two-col { display: flex; align-items: flex-start; gap: 36px; }
+        .two-col .col-text { flex: 1.2; }
+        .two-col .col-img { flex: 1; text-align: center; }
+        .two-col .col-img img { max-width: 100%; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+        .two-col figcaption { font-size: 0.6em; color: #888; margin-top: 8px; }
+
+        .icon-list { list-style: none; margin-left: 0; }
+        .icon-list li { margin: 12px 0; padding-left: 4px; }
+        .icon-list .ic { color: var(--ifsc-green); margin-right: 8px; font-weight: 700; }
+
+        /* Timeline horizontal */
+        .timeline { position: relative; display: flex; justify-content: space-between; margin: 26px 0 14px; }
+        .timeline::before { content: ""; position: absolute; top: 12px; left: 4%; right: 4%; height: 3px; background: #cfe3cf; z-index: 0; }
+        .timeline .stage { position: relative; z-index: 1; flex: 1; text-align: center; padding: 0 6px; }
+        .timeline .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--ifsc-green); border: 4px solid #fff; box-shadow: 0 0 0 2px var(--ifsc-green); margin: 0 auto 12px; }
+        .timeline .stage h4 { color: #1a3b1a; font-size: 0.92em; font-weight: 700; margin: 0 0 6px; }
+        .timeline .stage p { font-size: 0.68em; color: #555; margin: 0; line-height: 1.3em; }
+        .timeline.git-tl .dot { background: var(--git-orange); box-shadow: 0 0 0 2px var(--git-orange); }
+        .timeline.git-tl::before { background: #f7d9d0; }
+
+        /* Etapa numerada (badge) */
+        .step-badge { display:inline-block; background: var(--ifsc-green); color:#fff; border-radius:50%;
+            width: 34px; height: 34px; line-height: 34px; text-align:center; font-weight:800; margin-right:10px; }
+        .step-badge.git { background: var(--git-orange); }
+
+        /* Barra fixa superior: controle de velocidade + botao PDF */
+        .topbar { position: fixed; top: 16px; right: 16px; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        @media print { .topbar { display: none !important; } }
+
+        #btnPdf { background: var(--ifsc-green);
+            color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: background 0.2s, transform 0.1s; }
+        #btnPdf:hover { background: var(--ifsc-dark); }
+        #btnPdf:active { transform: scale(0.96); }
+
+        .reveal .slide-number { background: var(--ifsc-green); color: #fff; font-size: 16px; padding: 4px 10px; border-radius: 4px; }
+        .pill { display:inline-block; background:#e8f5e9; color: var(--ifsc-dark); border-radius: 12px; padding: 2px 10px; font-size: 0.7em; font-weight:700; margin: 2px; }
+        .pill.git { background:#fdece8; color: var(--git-orange); }
+
+        /* ===================== Slides divisorios de secao ===================== */
+        .divider { text-align:center; }
+        .divider .part-no { font-size: 0.9em; letter-spacing: 3px; color: rgba(255,255,255,0.85); font-weight:700; }
+        .divider h1 { color:#fff !important; font-size: 2.2em; border:none; margin-top:6px; }
+        .divider p { color: rgba(255,255,255,0.9); font-size: 1.05em; }
+
+        /* ===================== Terminal mockup ===================== */
+        .term { background:#1e1e2e; color:#e6e6e6; border-radius:8px; padding:12px 16px; font-family: 'Consolas','Menlo',monospace;
+            font-size: 0.78em; box-shadow: 0 4px 14px rgba(0,0,0,0.28); margin: 8px 0; line-height:1.55em; }
+        .term .ttl { color:#8a93a8; font-size:0.72em; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+        .term .ln  { white-space:pre; }
+        .term .prompt { color:#7ee787; }
+        .term .cmd { color:#fff; font-weight:700; }
+        .term .out { color:#9aa4b2; }
+        .term .cursor { color:#7ee787; animation: blinkCursor 0.9s steps(1) infinite; }
+        @keyframes blinkCursor { 50% { opacity:0; } }
+        .term-lines .ln { min-height:1.5em; }
+
+        /* Seta de fluxo comando -> efeito -> diagrama */
+        .flow-down { text-align:center; margin: 4px 0; }
+        .flow-down .arrow { font-size:1.5em; color: var(--git-orange); line-height:1; font-weight:700; }
+        .flow-down .lbl { display:block; font-size: 0.42em; color:#7a8497; font-weight:700; letter-spacing:.5px; text-transform:uppercase; margin-top:-4px;}
+
+        /* ===================== Motor do diagrama conceitual do Git ===================== */
+        .gitmodel { display:flex; flex-direction:column; gap:6px; margin: 8px 0 4px; }
+        .gitmodel .boxes { display:flex; align-items:stretch; gap:2px; }
+        .gbox { flex:1; min-width:0; border:2px solid #d7dee8; border-radius:10px; padding:8px 9px;
+            background:#fafcff; transition: box-shadow .3s, border-color .3s, background .3s; }
+        .gbox h5 { margin:0 0 6px; font-size:0.68em; text-transform:uppercase; letter-spacing:.4px; color:#48566b; text-align:center; }
+        .gbox.active { border-color: var(--git-orange); box-shadow: 0 0 0 3px rgba(240,80,51,0.18); background:#fff8f5; }
+        .gbox .file { font-size:0.64em; font-family:monospace; padding:3px 6px; border-radius:4px; margin:3px 0;
+            display:flex; align-items:center; gap:5px; }
+        .gbox .file.untracked { border:1px dashed #9aa4b2; color:#5b6577; }
+        .gbox .file.modified  { background:#fff3e0; color:#a3590c; border:1px solid #f3c584; }
+        .gbox .file.staged    { background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; }
+        .gbox .file.clean     { background:#eef2f7; color:#48566b; border:1px solid #d7dee8; }
+        .gbox .empty { text-align:center; color:#b7bfcc; font-size:0.62em; padding: 6px 0; }
+        .dotstat { width:7px; height:7px; min-width:7px; border-radius:50%; display:inline-block; }
+        .dotstat.untracked { background:#9aa4b2; }
+        .dotstat.modified  { background:#f39c12; }
+        .dotstat.staged    { background:#2e7d32; }
+        .dotstat.clean     { background:#8fa0b8; }
+
+        .chain { display:flex; align-items:center; justify-content:center; gap:3px; margin:10px 0 6px; flex-wrap:wrap; min-height:32px; }
+        .cnode { width:28px; height:28px; border-radius:50%; background:var(--ifsc-green); color:#fff; font-size:0.58em;
+            font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.2); flex-shrink:0; }
+        .cnode.remote { background:#6b7d99; }
+        .cnode.new { background: var(--git-orange); }
+        .clink { color:#aab3c0; font-weight:800; font-size:0.8em; }
+        .ptrs { text-align:center; font-size:0.6em; color:#48566b; }
+        .ptrs b { color: var(--git-orange); }
+
+        .arrowcol { display:flex; align-items:center; justify-content:center; width:64px; flex-shrink:0; }
+        .arr { font-size:0.56em; text-align:center; color:#aab3c0; font-weight:700; line-height:1.25em; transition: color .3s, transform .3s; }
+        .arr.active { color: var(--git-orange); transform: scale(1.1); }
+        .backrow { display:flex; justify-content:space-around; font-size:0.58em; color:#aab3c0; font-weight:700; margin-top:2px; }
+        .backrow .arr.active { color: var(--ifsc-green); }
+
+        /* Realce de crossfade (par de estados sobrepostos) */
+        .stackwrap { position:relative; }
+        .stackwrap .stacked { width:100%; }
+        .stackwrap .fragment.fade-in { position:absolute; top:0; left:0; }
+
+        /* Diff view */
+        .diffbox { font-family:monospace; font-size:0.72em; background:#f6f8fa; border:1px solid #d7dee8;
+            border-radius:6px; overflow:hidden; margin:8px 0; }
+        .diffbox .dhead { background:#eef2f7; color:#48566b; padding:4px 12px; font-size:0.85em; font-weight:700; }
+        .diffline { padding:2px 12px; white-space:pre; }
+        .diffline.add { background:#e6ffed; color:#1b5e20; }
+        .diffline.add::before { content:"+ "; font-weight:700; }
+        .diffline.ctx { color:#586069; }
+        .diffline.ctx::before { content:"  "; }
+        .diffline.rm { background:#ffeef0; color:#a3392b; }
+        .diffline.rm::before { content:"- "; font-weight:700; }
+        .diffbox.empty-diff .diffline { color:#b7bfcc; font-style:italic; }
+
+        .legend { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; font-size:0.62em; color:#555; margin-top:6px; }
+        .legend span.k { display:inline-flex; align-items:center; gap:5px; }
+
+        /* ===================== Slides de motivação (animados via revelação sequencial) ===================== */
+        .seq-item { opacity:0; transform:translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+        .seq-item.shown { opacity:1; transform:none; }
+
+        .file-pile { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:16px 0; min-height:170px; align-content:flex-start; }
+        .file-card { background:#fff; border:1px solid #d7dee8; border-radius:8px; padding:10px 12px; width:136px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+        .file-card .date { display:block; font-size:0.6em; font-weight:800; color:var(--git-orange); text-transform:uppercase; letter-spacing:0.4px; }
+        .file-card .ic { display:block; font-size:1.5em; margin:3px 0; }
+        .file-card .fname { display:block; font-family:monospace; font-size:0.68em; color:#3a4658; word-break:break-word; }
+
+        .team-grid { display:grid; grid-template-columns:1fr; gap:12px; margin:14px 0; }
+        .team-card { display:flex; gap:16px; align-items:center; background:#fff; border:1px solid #d7dee8; border-radius:10px; padding:10px 16px; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+        .team-card img { width:52px; height:52px; border-radius:50%; object-fit:cover; flex-shrink:0; }
+        .team-card .who { font-size:0.72em; font-weight:800; color:#48566b; }
+        .team-card .snippet { display:block; width:560px; max-width:100%; box-sizing:border-box; text-align:left; font-family:monospace; font-size:0.9em; color:var(--git-orange); background:#fff6f2; border:1px dashed #f3c1ae; border-radius:5px; padding:4px 12px; margin-top:5px; white-space:nowrap; }
+
+        .share-cols { display:flex; gap:16px; align-items:flex-start; justify-content:center; margin:10px 0; flex-wrap:wrap; }
+        .share-col { flex:1; min-width:230px; max-width:280px; }
+        .share-col .who { text-align:center; font-size:0.66em; font-weight:800; color:#48566b; margin-bottom:4px; }
+        .diffline.conflict { background:#3a1418; color:#ff9d8a; font-weight:700; }
+
+        /* ===================== Animação: patches convergindo para Linus ===================== */
+        .linux-anim { position:relative; width:900px; height:380px; margin:6px auto; }
+        .linux-anim .la-dev { position:absolute; width:130px; border-radius:8px; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.15)); z-index:2; }
+        .linux-anim .la-tl { top:0; left:0; }
+        .linux-anim .la-tr { top:0; right:0; }
+        .linux-anim .la-bl { bottom:0; left:0; }
+        .linux-anim .la-br { bottom:0; right:0; }
+        .linux-anim canvas { position:absolute; top:0; left:0; z-index:3; }
+        .linux-anim .la-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:4; }
+        .linux-anim .la-center img { width:84px; height:84px; object-fit:cover; border-radius:50%; border:3px solid var(--ifsc-green); box-shadow:0 0 0 6px rgba(46,125,50,0.12); background:#fff; display:block; margin:0 auto; }
+        .linux-anim .la-center-label { font-size:0.62em; font-weight:700; color:#48566b; margin-top:6px; background:#fff; padding:1px 8px; border-radius:8px; }
+
+        /* Controle global de velocidade das animações (barra superior) */
+        .anim-speed { display:flex; align-items:center; gap:7px; background:#fff; border:1px solid #d7dee8;
+            border-radius: 20px; padding: 6px 14px; font-size: 12px; color:#48566b; font-weight:700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+        .anim-speed input[type="range"] { width:110px; accent-color: var(--git-orange); cursor:pointer; }
+        .anim-speed .val { min-width:36px; color: var(--git-orange); font-weight:800; text-align:right; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="anim-speed">
+        <span>Velocidade das animações</span>
+        <input type="range" id="globalAnimSpeed" min="0.25" max="2.5" step="0.25" value="1" aria-label="Velocidade das animações">
+        <span class="val" id="globalAnimSpeedLabel">1.00x</span>
+    </div>
+    <button id="btnPdf" title="Gerar PDF da apresentação" aria-label="Gerar PDF">📄 PDF</button>
+</div>
+
+<!-- ===================== Motor de diagramas (definido antes dos slides) ===================== -->
+<script>
+    function gmFile(f, forceStatus) {
+        const st = forceStatus || f.status;
+        const label = f.content ? ` <span style="opacity:.65">[${f.content.join(' / ')}]</span>` : '';
+        return `<div class="file ${st}"><span class="dotstat ${st}"></span>${f.name}${label}</div>`;
+    }
+    function gmEmpty(msg) { return `<div class="empty">${msg || '(vazio)'}</div>`; }
+    function gmChain(commits, opts) {
+        opts = opts || {};
+        if (!commits || !commits.length) return gmEmpty('nenhum commit ainda');
+        const newest = commits[commits.length - 1];
+        let parts = [];
+        commits.forEach((c, i) => {
+            if (i > 0) parts.push('<span class="clink">&larr;</span>');
+            const isNew = opts.newBadge && c === newest;
+            parts.push(`<div class="cnode${opts.remote ? ' remote' : ''}${isNew ? ' new' : ''}">${c}</div>`);
+        });
+        return `<div class="chain">${parts.join('')}</div>`;
+    }
+    function gmBox(cls, title, inner, active) {
+        return `<div class="gbox ${cls}${active === cls ? ' active' : ''}"><h5>${title}</h5>${inner}</div>`;
+    }
+    function gmArrow(label, active) {
+        return `<div class="arrowcol"><div class="arr${active ? ' active' : ''}">${label}<br>&rarr;</div></div>`;
+    }
+    // Motor principal: recebe um estado e devolve o HTML do diagrama de 3 ou 4 regioes
+    function gitModel(state) {
+        const wtInner = (state.wt && state.wt.length) ? state.wt.map(f => gmFile(f)).join('') : gmEmpty();
+        const stageInner = (state.stage && state.stage.length) ? state.stage.map(f => gmFile(f, 'staged')).join('') : gmEmpty();
+        const localBranch = (state.local && state.local.branch) || 'main';
+        const localInner = gmChain(state.local ? state.local.commits : [], { newBadge: true }) +
+            (state.local && state.local.commits && state.local.commits.length ? `<div class="ptrs"><b>${localBranch}</b> · HEAD</div>` : '');
+
+        let html = `<div class="gitmodel"><div class="boxes">`;
+        html += gmBox('wt', 'Working Tree', wtInner, state.active);
+        html += gmArrow('git add', state.active === 'add');
+        html += gmBox('stage', 'Staging (Index)', stageInner, state.active);
+        html += gmArrow('git commit', state.active === 'commit');
+        html += gmBox('local', 'Repositório Local (.git)', localInner, state.active);
+        if (state.remote) {
+            const remoteInner = gmChain(state.remote.commits, { remote: true, newBadge: true }) +
+                (state.remote.commits.length ? `<div class="ptrs"><b>origin/${localBranch}</b></div>` : '');
+            html += gmArrow('git push', state.active === 'push');
+            html += gmBox('remote', 'Repositório Remoto (origin)', remoteInner, state.active);
+        }
+        html += `</div>`;
+        html += `<div class="backrow"><span class="arr${state.active === 'checkout' ? ' active' : ''}">&larr; git checkout / switch / restore</span>`;
+        if (state.remote) html += `<span class="arr${state.active === 'fetch' ? ' active' : ''}">&larr; git fetch / pull</span>`;
+        html += `</div></div>`;
+        return html;
+    }
+    function paint(id, state) {
+        document.addEventListener('DOMContentLoaded', function () {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = gitModel(state);
+        });
+    }
+</script>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- ===================== 1. CAPA ===================== -->
+        <section style="text-align:center;">
+            <h1 style="font-size:2.1em;">Oficina de Git</h1>
+            <h2 style="border:none; color:#555; text-transform:none;">Do modelo conceitual aos comandos</h2>
+            <p style="font-size:1.05em;">Antes de decorar comandos, entender <span class="highlight">como o Git pensa</span></p>
+            <div style="margin-top:60px;">
+                <p><span class="pill">IFSC</span> <span class="pill git">Controle de Versão</span> <span class="pill">Git 2.x</span></p>
+                <p style="margin-top:24px;"><strong>Apresentador:</strong> Romulo de Aguiar Beninca</p>
+            </div>
+        </section>
+
+        <!-- ===================== 2. ROTEIRO ===================== -->
+        <section class="compact">
+            <h2>Roteiro da Oficina</h2>
+            <div class="timeline">
+                <div class="stage"><div class="dot"></div><h4>Parte 1</h4><p>História, motivação — por que existe controle de versão.</p></div>
+                <div class="stage"><div class="dot"></div><h4>Parte 2</h4><p>Modelo conceitual: commits, branches, as 4 regiões do Git.</p></div>
+                <div class="stage"><div class="dot"></div><h4>Parte 3</h4><p>Uso prático: cada comando ligado ao efeito no modelo.</p></div>
+            </div>
+            <p style="text-align:center; margin-top:22px;">Ao final, você vai <span class="highlight">olhar para qualquer comando do Git e saber exatamente onde ele atua</span> — sem decorar receitas.</p>
+            <div class="tip-box"><strong>Como vamos trabalhar:</strong> o mesmo diagrama de 4 caixas (Working Tree → Staging → Repositório Local → Remoto) vai aparecer do início ao fim, só mudando de estado a cada comando.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 1                                                              -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#2e7d32">
+            <div class="part-no">PARTE 1</div>
+            <h1>Contextualização, História e Motivação</h1>
+            <p>De onde o Git veio — e por que ele resolve um problema real</p>
+        </section>
+
+        <!-- ===================== Motivação 1: sozinho, ao longo do tempo ===================== -->
+        <section class="compact" id="slide-motivation-time">
+            <h2>O problema no tempo: sozinho já é difícil</h2>
+            <p>Mesmo trabalhando <strong>sozinho</strong>, manter o controle das versões de um arquivo ao longo de dias, meses e anos vira uma bagunça:</p>
+            <div class="file-pile">
+                <div class="file-card seq-item"><span class="date">Dia 1</span><span class="ic">📄</span><span class="fname">trabalho.txt</span></div>
+                <div class="file-card seq-item"><span class="date">Dia 12</span><span class="ic">📄</span><span class="fname">trabalho_v2.txt</span></div>
+                <div class="file-card seq-item"><span class="date">Mês 2</span><span class="ic">📄</span><span class="fname">trabalho_final.txt</span></div>
+                <div class="file-card seq-item"><span class="date">Mês 5</span><span class="ic">📄</span><span class="fname">trabalho_final2.txt</span></div>
+                <div class="file-card seq-item"><span class="date">Ano 1</span><span class="ic">📄</span><span class="fname">trabalho_final_definitivo.txt</span></div>
+                <div class="file-card seq-item"><span class="date">Ano 2</span><span class="ic">📄</span><span class="fname">trabalho_final_AGORA_SIM.txt</span></div>
+            </div>
+            <div class="warn-box seq-item" style="text-align:center;">Qual desses é a versão certa? O que mudou entre eles? Dá para voltar ao que existia há 6 meses?</div>
+        </section>
+
+        <!-- ===================== Motivação 2: em equipe / distribuídos ===================== -->
+        <section class="compact" id="slide-motivation-team">
+            <h2>O problema piora em equipe — e em times distribuídos</h2>
+            <p>Agora imagine <strong>quatro pessoas</strong>, em cidades diferentes, cada uma com sua própria cópia do mesmo arquivo — sem nenhuma coordenação entre elas:</p>
+            <div class="team-grid">
+                <div class="team-card seq-item"><img src="dev1-lado-esquedo.png" alt="Desenvolvedor"><div><div class="who">São Paulo</div><span class="snippet">+ validação de login</span></div></div>
+                <div class="team-card seq-item"><img src="dev2-lado-direito.png" alt="Desenvolvedora"><div><div class="who">Berlim</div><span class="snippet">+ tratamento de erro</span></div></div>
+                <div class="team-card seq-item"><img src="dev3-lado-esquedo.png" alt="Desenvolvedor"><div><div class="who">Toronto</div><span class="snippet">+ validação de item</span></div></div>
+                <div class="team-card seq-item"><img src="dev4-lado-direito.png" alt="Desenvolvedora"><div><div class="who">Tóquio</div><span class="snippet">+ logout automático</span></div></div>
+            </div>
+            <div class="warn-box seq-item" style="text-align:center;">Cada um alterou o mesmo arquivo de um jeito diferente. Quem está com a versão "boa"? Como juntar tudo isso em uma só?</div>
+        </section>
+
+        <!-- ===================== Motivação 3: mesmo arquivo, ao mesmo tempo ===================== -->
+        <section class="compact" id="slide-motivation-merge">
+            <h2>O mesmo arquivo, ao mesmo tempo</h2>
+            <p>Dois colegas recebem o <strong>mesmo arquivo</strong> por e-mail e editam, cada um, um trecho diferente — ao mesmo tempo:</p>
+            <div class="share-cols">
+                <div class="share-col seq-item">
+                    <div class="who">Ana edita a cópia dela</div>
+                    <div class="diffbox">
+                        <div class="dhead">login.js — versão da Ana</div>
+                        <div class="diffline ctx">function login(user){</div>
+                        <div class="diffline add">if(!user.active) return false;</div>
+                        <div class="diffline ctx">}</div>
+                    </div>
+                </div>
+                <div class="share-col seq-item">
+                    <div class="who">Bruno edita a cópia dele</div>
+                    <div class="diffbox">
+                        <div class="dhead">login.js — versão do Bruno</div>
+                        <div class="diffline ctx">function login(user){</div>
+                        <div class="diffline add">console.log('login:', user);</div>
+                        <div class="diffline ctx">}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flow-down seq-item"><span class="arrow">↓</span><span class="lbl">alguém tenta juntar isso à mão…</span></div>
+            <div class="diffbox conflict-box seq-item">
+                <div class="dhead">login.js — tentativa manual de juntar as duas</div>
+                <div class="diffline ctx">function login(user){</div>
+                <div class="diffline conflict">&lt;&lt;&lt;&lt;&lt;&lt;&lt; versão da Ana</div>
+                <div class="diffline add">if(!user.active) return false;</div>
+                <div class="diffline conflict">=======</div>
+                <div class="diffline add">console.log('login:', user);</div>
+                <div class="diffline conflict">&gt;&gt;&gt;&gt;&gt;&gt;&gt; versão do Bruno</div>
+                <div class="diffline ctx">}</div>
+            </div>
+            <div class="warn-box seq-item" style="text-align:center;">Sem uma ferramenta para isso, alguém precisa abrir os dois arquivos e juntar tudo manualmente — lento, chato e fácil de errar.</div>
+        </section>
+
+        <!-- ===================== O contexto: Linux ===================== -->
+        <section class="compact" id="slide-linux-context">
+            <h2>O contexto: o kernel Linux</h2>
+            <p>Milhares de desenvolvedores, espalhados pelo mundo, escreviam <strong>patches de código</strong> e os enviavam por e-mail para Linus Torvalds <strong>integrar manualmente</strong>:</p>
+            <div class="linux-anim">
+                <img class="la-dev la-tl" src="dev1-lado-esquedo.png" alt="Desenvolvedor enviando patch">
+                <img class="la-dev la-tr" src="dev2-lado-direito.png" alt="Desenvolvedora enviando patch">
+                <img class="la-dev la-bl" src="dev3-lado-esquedo.png" alt="Desenvolvedor enviando patch">
+                <img class="la-dev la-br" src="dev4-lado-direito.png" alt="Desenvolvedora enviando patch">
+                <canvas id="linuxCanvas" width="900" height="380"></canvas>
+                <div class="la-center">
+                    <img src="linus-torvalds.png" alt="Linus Torvalds">
+                    <div class="la-center-label">Linus Torvalds</div>
+                </div>
+            </div>
+            <p class="small-text" style="text-align:center;">Esse processo manual, feito por e-mail, <strong>não escalava</strong> — foi exatamente esse gargalo que motivou a busca por uma ferramenta melhor.</p>
+        </section>
+
+        <!-- ===================== BitKeeper ===================== -->
+        <section class="compact">
+            <h2>Antes do Git: o BitKeeper</h2>
+            <div class="timeline git-tl">
+                <div class="stage"><div class="dot"></div><h4>2002</h4><p>Linux passa a usar o <strong>BitKeeper</strong>, sistema proprietário cedido gratuitamente à comunidade.</p></div>
+                <div class="stage"><div class="dot"></div><h4>2002–2005</h4><p>Ferramenta funciona bem, mas gera desconforto: código-fonte fechado, dependência de uma empresa.</p></div>
+                <div class="stage"><div class="dot"></div><h4>Abril/2005</h4><p>Conflito com um desenvolvedor da comunidade leva a <strong>BitMover a revogar</strong> a licença gratuita.</p></div>
+            </div>
+            <div class="warn-box" style="margin-top:18px;"><strong>Resultado:</strong> da noite para o dia, o projeto Linux ficou sem ferramenta de controle de versão. Linus Torvalds precisava de uma alternativa — <strong>livre, rápida e distribuída</strong>.</div>
+        </section>
+
+        <!-- ===================== Nascimento do Git ===================== -->
+        <section class="compact">
+            <h2>Nascimento do Git — 2005</h2>
+            <div class="timeline git-tl">
+                <div class="stage"><div class="dot"></div><h4>Dia 1–3</h4><p>Linus Torvalds começa a escrever o núcleo do Git do zero.</p></div>
+                <div class="stage"><div class="dot"></div><h4>~10 dias</h4><p>Versão funcional o suficiente para <strong>gerenciar o próprio código-fonte do Git</strong>.</p></div>
+                <div class="stage"><div class="dot"></div><h4>Jun/2005</h4><p>Git já é usado para versionar o kernel Linux em produção.</p></div>
+            </div>
+            <p style="margin-top:14px;">O nome <em>"Git"</em> é gíria britânica informal — o próprio Torvalds brincou dizendo que segue a tradição de nomear projetos com humor autodepreciativo. Um retroacrônimo popular: <span class="git-highlight">"Global Information Tracker"</span>.</p>
+        </section>
+
+        <!-- ===================== Plumbing vs Porcelain ===================== -->
+        <section class="compact" id="slide-git-birth">
+            <h2>Antes dos comandos "porcelain"</h2>
+            <p>No início, o Git <strong>não tinha os comandos "porcelain"</strong> — a interface amigável que usamos hoje (<code>git add</code>, <code>git commit</code>...). Existiam só os comandos de baixo nível, chamados de <span class="git-highlight">"plumbing"</span> ("encanamento"): criar um repositório, preparar arquivos e registrar um commit exigia montar isso manualmente, passo a passo:</p>
+            <div class="term">
+                <div class="ttl">terminal — como seria em 2006, direto no "encanamento" do Git</div>
+                <div class="term-lines" id="term-plumbing-lines"></div>
+            </div>
+            <p class="small-text">Só depois esses passos foram embrulhados nos comandos porcelain que conhecemos: <code>git init</code>, <code>git add</code> e <code>git commit</code>.</p>
+        </section>
+
+        <!-- ===================== Objetivos de projeto ===================== -->
+        <section class="compact">
+            <h2>Objetivos de Projeto do Git</h2>
+            <ul class="icon-list">
+                <li><span class="ic">⚡</span><strong>Velocidade</strong> — operações do dia a dia (commit, diff, branch) acontecem localmente, quase instantâneas.</li>
+                <li><span class="ic">🌐</span><strong>Distribuição</strong> — cada cópia do repositório contém o histórico inteiro; não existe um único servidor indispensável.</li>
+                <li><span class="ic">🔒</span><strong>Integridade dos dados</strong> — cada commit é identificado por um hash (SHA) calculado a partir do próprio conteúdo; qualquer alteração muda o hash.</li>
+                <li><span class="ic">🌿</span><strong>Branches e merges eficientes</strong> — criar, alternar e unir ramos deveria ser barato, ao contrário de ferramentas centralizadas da época.</li>
+            </ul>
+        </section>
+
+        <!-- ===================== Git como solução ===================== -->
+        <section style="text-align:center;">
+            <h2 style="border:none;">Git como solução</h2>
+            <p style="font-size:1.2em; max-width:800px; margin:20px auto 6px;">O Git não guarda "arquivos com nomes diferentes" nem exige juntar mudanças à mão. Ele registra a <span class="highlight">história de evolução de um projeto</span> — um estado registrado de cada vez — e sabe como combinar, de forma confiável, o trabalho de várias pessoas no mesmo arquivo.</p>
+            <p class="small-text">É exatamente esse modelo que construímos, peça por peça, na Parte 2.</p>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 2                                                              -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#2e7d32">
+            <div class="part-no">PARTE 2</div>
+            <h1>Modelo Conceitual do Git</h1>
+            <p>Construindo, passo a passo, o mapa mental que vamos reutilizar até o fim da oficina</p>
+        </section>
+
+        <!-- ===================== Commits: intro ===================== -->
+        <section class="compact">
+            <h2>Commits são fotografias do projeto</h2>
+            <p>Cada <strong>commit</strong> representa um estado registrado do projeto em um momento específico — como uma fotografia. Vamos acompanhar isso com um arquivo de texto simples.</p>
+            <div class="term">
+                <div class="ttl">arquivo.txt</div>
+                <div class="ln">Olá</div>
+            </div>
+            <div class="chain" style="justify-content:flex-start;"><div class="cnode new">C1</div></div>
+            <p class="small-text">Um único commit registrado: o conteúdo "Olá" está gravado permanentemente na história do projeto.</p>
+        </section>
+
+        <!-- ===================== Commit 2 + diff ===================== -->
+        <section class="compact">
+            <h2>Segundo commit</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <div class="term">
+                        <div class="ttl">arquivo.txt</div>
+                        <div class="ln">Olá</div>
+                        <div class="ln">Git</div>
+                    </div>
+                    <div class="chain" style="justify-content:flex-start;">
+                        <div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode new">C2</div>
+                    </div>
+                </div>
+                <div class="col-text">
+                    <p class="small-text">O Git não guarda "um arquivo novo" — ele guarda que, entre C1 e C2, uma linha foi <strong>adicionada</strong>:</p>
+                    <div class="diffbox">
+                        <div class="dhead">diff C1 → C2</div>
+                        <div class="diffline ctx">Olá</div>
+                        <div class="diffline add">Git</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== Commit 3 + diff ===================== -->
+        <section class="compact">
+            <h2>Terceiro commit</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <div class="term">
+                        <div class="ttl">arquivo.txt</div>
+                        <div class="ln">Olá</div>
+                        <div class="ln">Git</div>
+                        <div class="ln">Controle de versão</div>
+                    </div>
+                    <div class="chain" style="justify-content:flex-start;">
+                        <div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode">C2</div><span class="clink">&larr;</span><div class="cnode new">C3</div>
+                    </div>
+                </div>
+                <div class="col-text">
+                    <div class="diffbox">
+                        <div class="dhead">diff C2 → C3</div>
+                        <div class="diffline ctx">Olá</div>
+                        <div class="diffline ctx">Git</div>
+                        <div class="diffline add">Controle de versão</div>
+                    </div>
+                    <p class="small-text">O Git mantém uma <strong>sequência de estados relacionados</strong> — a qualquer momento dá para saber exatamente o que mudou entre dois pontos da história.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== Commits formam um branch (crossfade) ===================== -->
+        <section class="compact">
+            <h2>Commits formando um branch</h2>
+            <p>Uma sequência de commits é o histórico de um <strong>branch</strong>. Um branch é, na prática, apenas um <span class="git-highlight">ponteiro</span> para o último commit — e <strong>HEAD</strong> aponta para o branch atual.</p>
+            <div class="stackwrap" style="min-height:130px;">
+                <div class="stacked fragment fade-out" data-fragment-index="0" style="text-align:center;">
+                    <div class="chain" style="justify-content:center;"><div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode new">C2</div></div>
+                    <div class="ptrs"><b>main</b> · HEAD → C2</div>
+                </div>
+                <div class="stacked fragment fade-in" data-fragment-index="0" style="text-align:center;">
+                    <div class="chain" style="justify-content:center;"><div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode">C2</div><span class="clink">&larr;</span><div class="cnode new">C3</div></div>
+                    <div class="ptrs"><b>main</b> · HEAD → C3</div>
+                </div>
+            </div>
+            <p style="text-align:center;" class="small-text">Clique para avançar: um novo commit é criado → o ponteiro <strong>main</strong> (e HEAD, que aponta para main) se move para o novo commit.</p>
+        </section>
+
+        <!-- ===================== As 4 regiões ===================== -->
+        <section class="compact">
+            <h2>O Modelo: as Quatro Regiões do Git</h2>
+            <p>Este é o diagrama que vamos reutilizar em <strong>quase todos</strong> os slides daqui em diante. Cada novo comando só vai <span class="git-highlight">alterar o estado</span> destas caixas.</p>
+            <div id="g-regioes"></div>
+            <script>paint('g-regioes', { wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2','C3']} });</script>
+            <ul class="icon-list" style="margin-top:6px;">
+                <li><span class="ic">1</span><strong>Working Tree</strong> — os arquivos como você vê e edita no disco.</li>
+                <li><span class="ic">2</span><strong>Staging Area (Index)</strong> — a "prévia" do próximo commit.</li>
+                <li><span class="ic">3</span><strong>Repositório Local</strong> — o histórico de commits gravado em <code>.git</code>.</li>
+                <li><span class="ic">4</span><strong>Repositório Remoto</strong> — uma cópia hospedada (GitHub, GitLab...).</li>
+            </ul>
+        </section>
+
+        <!-- ===================== Construção progressiva — Etapa 1 e 2 ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge git">1</span>Working Tree + <code>git status</code></h2>
+            <p>Criamos um arquivo. Ele existe no disco, mas o Git <strong>ainda não sabe</strong> que ele deve fazer parte da história do projeto.</p>
+            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></div>
+                <div class="ln out">Untracked files:</div>
+                <div class="ln out">&nbsp;&nbsp;arquivo.txt</div></div>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-etapa1"></div>
+            <script>paint('g-etapa1', { active:'wt', wt:[{name:'arquivo.txt', status:'untracked', content:['Olá']}], stage:[], local:{commits:[]} });</script>
+        </section>
+
+        <!-- ===================== Etapa 3: git add ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge git">2</span><code>git add</code></h2>
+            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git add arquivo.txt</span></div></div>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-etapa3"></div>
+            <script>paint('g-etapa3', { active:'add', wt:[{name:'arquivo.txt', status:'clean', content:['Olá']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:[]} });</script>
+            <p class="small-text">O arquivo continua no Working Tree — apenas uma <strong>cópia do seu estado atual</strong> passa a existir na Staging Area, preparada para o próximo commit.</p>
+        </section>
+
+        <!-- ===================== Etapa 4: git commit ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge git">3</span><code>git commit</code></h2>
+            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git commit -m "Adiciona arquivo inicial"</span></div></div>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-etapa4"></div>
+            <script>paint('g-etapa4', { active:'commit', wt:[{name:'arquivo.txt', status:'clean', content:['Olá']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            <p class="small-text">Nasce o commit <strong>C1</strong>. <code>main</code> e <code>HEAD</code> passam a apontar para ele. A Staging Area volta a "espelhar" exatamente o que está no último commit.</p>
+        </section>
+
+        <!-- ===================== Etapa 5: edição do arquivo ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge git">4</span>Editando o arquivo</h2>
+            <div class="term"><div class="ttl">arquivo.txt (editado)</div><div class="ln">Olá</div><div class="ln">Git</div></div>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-etapa5"></div>
+            <script>paint('g-etapa5', { active:'wt', wt:[{name:'arquivo.txt', status:'modified', content:['Olá','Git']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            <p class="small-text">Repare: <strong>três versões diferentes</strong> convivem agora — Working Tree <code>[Olá, Git]</code>, Staging <code>[Olá]</code> e o commit C1 <code>[Olá]</code>. Essa diferença é o coração do modelo do Git.</p>
+        </section>
+
+        <!-- ===================== Etapa 6: git status novamente ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge git">5</span><code>git status</code> — de novo</h2>
+            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></div>
+                <div class="ln out">Changes not staged for commit:</div>
+                <div class="ln out">&nbsp;&nbsp;modified: arquivo.txt</div></div>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">relação direta com o diagrama</span></div>
+            <div id="g-etapa6"></div>
+            <script>paint('g-etapa6', { active:'wt', wt:[{name:'arquivo.txt', status:'modified', content:['Olá','Git']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
+            <p class="small-text">"Modified, not staged" é só o Git descrevendo em palavras a diferença entre <strong>Working Tree</strong> e <strong>Staging Area</strong> que já víamos no diagrama.</p>
+        </section>
+
+        <!-- ===================== Etapa 7: git diff / git diff --staged ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge git">6</span><code>git diff</code> e <code>git diff --staged</code></h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git diff</span></div></div>
+                    <p class="small-text">Compara <strong>Working Tree</strong> × <strong>Staging</strong>:</p>
+                    <div class="diffbox">
+                        <div class="dhead">Working Tree vs Staging</div>
+                        <div class="diffline ctx">Olá</div>
+                        <div class="diffline add">Git</div>
+                    </div>
+                </div>
+                <div class="col-text">
+                    <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git diff --staged</span></div></div>
+                    <p class="small-text">Compara <strong>Staging</strong> × <strong>último commit</strong>:</p>
+                    <div class="diffbox empty-diff">
+                        <div class="dhead">Staging vs C1</div>
+                        <div class="diffline ctx">(sem diferenças — nada novo foi preparado ainda)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tip-box">Guarde essa regra: <code>git diff</code> olha para a <strong>esquerda</strong> do modelo (WT↔Staging); <code>git diff --staged</code> olha para o <strong>meio</strong> (Staging↔commit).</div>
+        </section>
+
+        <!-- ===================== Repositório remoto: introdução ===================== -->
+        <section class="compact">
+            <h2>Adicionando o Repositório Remoto</h2>
+            <p>Só depois que o modelo <strong>local</strong> está bem entendido, adicionamos uma quarta caixa: um repositório hospedado, por exemplo no GitHub, chamado por convenção de <code>origin</code>.</p>
+            <div id="g-remoto-intro"></div>
+            <script>paint('g-remoto-intro', { wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2']} });</script>
+            <p class="small-text" style="text-align:center;">O repositório local está <strong>um commit à frente</strong> (C3) do remoto — algo muito comum: você commitou localmente, mas ainda não enviou.</p>
+        </section>
+
+        <!-- ===================== git push (crossfade) ===================== -->
+        <section class="compact">
+            <h2><span class="step-badge git">7</span><code>git push</code></h2>
+            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git push origin main</span></div></div>
+            <div class="stackwrap" style="min-height:230px;">
+                <div class="stacked fragment fade-out" data-fragment-index="0">
+                    <div id="g-push-antes"></div>
+                    <script>paint('g-push-antes', { wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2']} });</script>
+                </div>
+                <div class="stacked fragment fade-in" data-fragment-index="0">
+                    <div id="g-push-depois"></div>
+                    <script>paint('g-push-depois', { active:'push', wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2','C3']} });</script>
+                </div>
+            </div>
+            <p class="small-text" style="text-align:center;">Clique para avançar: o commit C3 é replicado para o remoto e o ponteiro <strong>origin/main</strong> se move até ele.</p>
+        </section>
+
+        <!-- ===================== Git != GitHub ===================== -->
+        <section class="compact">
+            <h2>Git ≠ GitHub</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <h3 style="margin-top:0;">Git</h3>
+                    <ul class="icon-list">
+                        <li><span class="ic">▸</span>É o <strong>sistema de controle de versão</strong> em si.</li>
+                        <li><span class="ic">▸</span>Roda <strong>localmente</strong> no seu computador.</li>
+                        <li><span class="ic">▸</span>Funciona <strong>sem internet</strong> e sem nenhum serviço externo.</li>
+                    </ul>
+                </div>
+                <div class="col-text">
+                    <h3 style="margin-top:0;">GitHub / GitLab / Bitbucket</h3>
+                    <ul class="icon-list">
+                        <li><span class="ic">▸</span>São <strong>serviços de hospedagem</strong> de repositórios Git.</li>
+                        <li><span class="ic">▸</span>Adicionam colaboração: <em>pull requests</em>, <em>issues</em>, permissões.</li>
+                        <li><span class="ic">▸</span>São, no nosso diagrama, apenas <strong>uma forma</strong> de repositório remoto.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tip-box">Dá para usar Git a vida inteira sem nunca abrir o GitHub — e dá para usar GitHub hospedando qualquer coisa versionada com Git.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 3                                                              -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#2e7d32">
+            <div class="part-no">PARTE 3</div>
+            <h1>Uso Prático do Git</h1>
+            <p>Cada comando, o mesmo diagrama, um novo estado</p>
+        </section>
+
+        <!-- ===================== Padrao comando -> resultado -> diagrama ===================== -->
+        <section class="compact" style="text-align:center;">
+            <h2>O Padrão desta Parte</h2>
+            <p style="text-align:left;">A partir de agora, cada slide segue a mesma estrutura — comando digitado, efeito no terminal, e consequência no modelo conceitual:</p>
+            <div class="term" style="max-width:520px; margin:10px auto;"><div class="ln"><span class="prompt">$</span> <span class="cmd">git add arquivo.txt</span></div></div>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">alteração animada</span></div>
+            <div class="formula-box" style="max-width:520px; margin:10px auto; text-align:center;">Working Tree · Staging · Repositório Local · Remoto</div>
+            <p class="small-text">comando → resultado → efeito interno no Git</p>
+        </section>
+
+        <!-- ===================== Preparando o ambiente ===================== -->
+        <section class="compact">
+            <h2>Preparando o Ambiente</h2>
+            <p><strong>Verificar a instalação:</strong></p>
+            <pre><code class="language-bash" data-trim>git --version</code></pre>
+            <p><strong>Configurar identidade</strong> (usada em todo commit que você fizer):</p>
+            <pre><code class="language-bash" data-trim>git config --global user.name "Seu Nome"
+git config --global user.email "seu.email@exemplo.com"
+git config --list</code></pre>
+            <div class="tip-box">A configuração <code>--global</code> vale para todos os repositórios do seu usuário. Sem <code>--global</code>, vale só para o repositório atual.</div>
+        </section>
+
+        <!-- ===================== git init ===================== -->
+        <section class="compact">
+            <h2><code>git init</code></h2>
+            <pre><code class="language-bash" data-trim>mkdir meu-projeto &amp;&amp; cd meu-projeto
+git init</code></pre>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-init"></div>
+            <script>paint('g-init', { active:'local', wt:[], stage:[], local:{commits:[], branch:'main'} });</script>
+            <p class="small-text">Cria a pasta oculta <code>.git</code> — o Repositório Local nasce vazio, mas já pronto para receber commits.</p>
+        </section>
+
+        <!-- ===================== git status ===================== -->
+        <section class="compact">
+            <h2><code>git status</code></h2>
+            <pre><code class="language-bash" data-trim>echo "Olá" &gt; arquivo.txt
+git status</code></pre>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-p-status"></div>
+            <script>paint('g-p-status', { active:'wt', wt:[{name:'arquivo.txt', status:'untracked'}], stage:[], local:{commits:[], branch:'main'} });</script>
+            <p class="small-text"><code>git status</code> nunca muda o estado — ele só <strong>fotografa e descreve</strong> o diagrama atual.</p>
+        </section>
+
+        <!-- ===================== git add ===================== -->
+        <section class="compact">
+            <h2><code>git add</code></h2>
+            <pre><code class="language-bash" data-trim>git add arquivo.txt
+# ou, para todos os arquivos alterados:
+git add .</code></pre>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-p-add"></div>
+            <script>paint('g-p-add', { active:'add', wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:[], branch:'main'} });</script>
+        </section>
+
+        <!-- ===================== git commit ===================== -->
+        <section class="compact">
+            <h2><code>git commit</code></h2>
+            <pre><code class="language-bash" data-trim>git commit -m "Mensagem descrevendo a mudança"</code></pre>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-p-commit"></div>
+            <script>paint('g-p-commit', { active:'commit', wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1'], branch:'main'} });</script>
+            <div class="tip-box">Mensagens de commit boas descrevem <strong>o quê</strong> e, se necessário, <strong>por quê</strong> — quem lê o histórico depois agradece.</div>
+        </section>
+
+        <!-- ===================== git log ===================== -->
+        <section class="compact">
+            <h2><code>git log</code></h2>
+            <pre><code class="language-bash" data-trim>git log
+git log --oneline
+git log --oneline --graph --all</code></pre>
+            <div class="term"><div class="ln out">c3f9a2e (HEAD -&gt; main) Adiciona controle de versão</div>
+                <div class="ln out">7b1d44a Adiciona linha "Git"</div>
+                <div class="ln out">a01e5c0 Adiciona arquivo inicial</div></div>
+            <p class="small-text"><code>git log</code> é a janela para o <strong>Repositório Local</strong>: mostra exatamente a cadeia C1 ← C2 ← C3 que vimos no diagrama, do mais novo para o mais antigo.</p>
+        </section>
+
+        <!-- ===================== git branch ===================== -->
+        <section class="compact">
+            <h2><code>git branch</code></h2>
+            <pre><code class="language-bash" data-trim>git branch feature-login
+git branch          # lista os branches locais</code></pre>
+            <div class="term"><div class="ln"><span class="prompt">$</span> main:     </div>
+                <div class="chain" style="justify-content:flex-start;"><div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode">C2</div><span class="clink">&larr;</span><div class="cnode">C3</div></div>
+                <div class="ptrs">main · HEAD → C3 &nbsp;&nbsp;·&nbsp;&nbsp; <b>feature-login</b> → C3 (recém-criado, aponta para o mesmo commit)</div>
+            </div>
+            <div class="tip-box"><code>git branch nome</code> apenas <strong>cria um novo ponteiro</strong> apontando para o commit atual — não copia arquivos, não demora, não "pesa". É por isso que branches no Git são baratos.</div>
+        </section>
+
+        <!-- ===================== git switch / checkout ===================== -->
+        <section class="compact">
+            <h2><code>git switch</code> / <code>git checkout</code></h2>
+            <pre><code class="language-bash" data-trim>git switch feature-login
+# forma mais antiga, ainda muito usada:
+git checkout feature-login</code></pre>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-switch"></div>
+            <script>paint('g-switch', { active:'checkout', wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'feature-login'} });</script>
+            <p class="small-text">O que muda é apenas o que <strong>HEAD</strong> aponta e o conteúdo copiado de volta para o <strong>Working Tree</strong> — a seta de volta que vimos no diagrama completo.</p>
+        </section>
+
+        <!-- ===================== git merge ===================== -->
+        <section class="compact">
+            <h2><code>git merge</code></h2>
+            <pre><code class="language-bash" data-trim>git switch main
+git merge feature-login</code></pre>
+            <div class="term" style="text-align:center;">
+                <div class="ln out">main:            C1 &larr; C2 &larr; C3 &larr;&larr;&larr;&larr;&larr;&larr; M</div>
+                <div class="ln out">feature-login:              C3 &larr; C4 &nbsp;&nbsp;&nbsp;↗</div>
+            </div>
+            <p class="small-text" style="text-align:center;">O merge cria um novo commit <strong>M</strong> que tem <strong>dois pais</strong> — o último commit de <code>main</code> e o último de <code>feature-login</code> — unindo as duas histórias.</p>
+            <div class="tip-box">Se ninguém mais mexeu em <code>main</code> desde que o branch foi criado, o Git pode fazer um <strong>fast-forward</strong>: só empurra o ponteiro de <code>main</code> para a frente, sem criar commit de merge.</div>
+        </section>
+
+        <!-- ===================== git remote / clone ===================== -->
+        <section class="compact">
+            <h2><code>git remote</code> e <code>git clone</code></h2>
+            <p><strong>Ligar um repositório local a um remoto existente:</strong></p>
+            <pre><code class="language-bash" data-trim>git remote add origin https://github.com/usuario/repositorio.git
+git remote -v</code></pre>
+            <p><strong>Ou começar já a partir de um remoto:</strong></p>
+            <pre><code class="language-bash" data-trim>git clone https://github.com/usuario/repositorio.git</code></pre>
+            <div class="tip-box"><code>git clone</code> baixa o histórico inteiro e já cria o vínculo <code>origin</code> automaticamente — equivale a criar as quatro caixas do diagrama de uma vez, a partir do remoto.</div>
+        </section>
+
+        <!-- ===================== git fetch / pull ===================== -->
+        <section class="compact">
+            <h2><code>git fetch</code> vs <code>git pull</code></h2>
+            <pre><code class="language-bash" data-trim>git fetch origin   # so atualiza origin/main, sem tocar no seu main
+git pull origin main   # equivale a: git fetch + git merge</code></pre>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-fetch"></div>
+            <script>paint('g-fetch', { active:'fetch', wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2'], branch:'main'}, remote:{commits:['C1','C2','C3']} });</script>
+            <div class="warn-box"><code>git fetch</code> é seguro: só traz novidades do remoto sem mexer no seu Working Tree. <code>git pull</code> vai além — já tenta integrar (merge) essas novidades no seu branch atual.</div>
+        </section>
+
+        <!-- ===================== git push (recap) ===================== -->
+        <section class="compact">
+            <h2><code>git push</code> — recapitulando</h2>
+            <pre><code class="language-bash" data-trim>git push origin main</code></pre>
+            <div class="flow-down"><span class="arrow">↓</span><span class="lbl">efeito no modelo</span></div>
+            <div id="g-p-push"></div>
+            <script>paint('g-p-push', { active:'push', wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2','C3']} });</script>
+            <p class="small-text">Fecha o ciclo completo: <code>add</code> → <code>commit</code> → <code>push</code>. É a mesma seta para a direita, do início ao fim da oficina.</p>
+        </section>
+
+        <!-- ===================== Diagrama completo bidirecional ===================== -->
+        <section class="compact">
+            <h2>O Diagrama Completo — nos Dois Sentidos</h2>
+            <div id="g-completo"></div>
+            <script>paint('g-completo', { wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2','C3']} });</script>
+            <div class="legend">
+                <span class="k"><span class="dotstat untracked"></span> não rastreado</span>
+                <span class="k"><span class="dotstat modified"></span> modificado</span>
+                <span class="k"><span class="dotstat staged"></span> preparado</span>
+                <span class="k"><span class="dotstat clean"></span> sincronizado</span>
+            </div>
+            <p style="text-align:center; margin-top:10px;">
+                <strong>Ida:</strong> <code>add</code> → <code>commit</code> → <code>push</code> &nbsp;&nbsp;·&nbsp;&nbsp;
+                <strong>Volta:</strong> <code>fetch</code>/<code>pull</code> e <code>checkout</code>/<code>switch</code>/<code>restore</code>
+            </p>
+        </section>
+
+        <!-- ===================== Resultado didático esperado ===================== -->
+        <section class="compact" style="text-align:center;">
+            <h2>O Modelo Mental que Fica</h2>
+            <div class="formula-box" style="max-width:640px; margin:16px auto; text-align:left; font-size:0.95em;">
+                Working Tree &nbsp;<span class="git-highlight">— add →</span>&nbsp; Staging &nbsp;<span class="git-highlight">— commit →</span>&nbsp; Repositório Local &nbsp;<span class="git-highlight">— push →</span>&nbsp; Repositório Remoto
+            </div>
+            <p style="max-width:700px; margin:20px auto; text-align:left;">A partir deste modelo, comandos como <code>status</code>, <code>diff</code>, <code>add</code>, <code>commit</code>, <code>branch</code>, <code>switch</code>, <code>merge</code>, <code>fetch</code>, <code>pull</code> e <code>push</code> deixam de ser operações isoladas para decorar — e passam a ser <strong>movimentos dentro de um mapa que você já entende</strong>.</p>
+        </section>
+
+        <!-- ===================== Encerramento ===================== -->
+        <section style="text-align:center;">
+            <h1 style="font-size:2.2em; border:none;">Mãos à obra!</h1>
+            <p style="font-size:1.1em; color:#555;">Oficina de Git — do modelo conceitual aos comandos</p>
+            <div style="margin-top:50px;">
+                <p><strong>Romulo de Aguiar Beninca</strong></p>
+                <p class="small-text">IFSC</p>
+            </div>
+            <p style="margin-top:36px; font-size:0.9em; color:#888;">Perguntas?</p>
+        </section>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        transition: 'fade',
+        slideNumber: 'c/t',
+        width: 1100,
+        height: 800,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 1.5,
+        plugins: [ RevealHighlight ]
+    });
+
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', () => setTimeout(() => window.print(), 800));
+    }
+
+    // Velocidade compartilhada por todas as animações da apresentação, controlada
+    // pelo seekbar fixo ao lado do botão de PDF (0.25x a 2.5x, padrão 1x)
+    let globalAnimSpeed = 1;
+    (function () {
+        const slider = document.getElementById('globalAnimSpeed'), label = document.getElementById('globalAnimSpeedLabel');
+        if (!slider) return;
+        function update() {
+            globalAnimSpeed = parseFloat(slider.value);
+            if (label) label.textContent = globalAnimSpeed.toFixed(2) + 'x';
+        }
+        slider.addEventListener('input', update);
+        update();
+    })();
+
+    // Revela, em sequência, os elementos ".seq-item" dentro de um slide — roda uma vez ao
+    // entrar no slide e para no estado final (não repete). Usado nos slides de motivação.
+    function buildStaggerReveal(rootId, opts) {
+        const root = document.getElementById(rootId);
+        if (!root) return { start() {}, stop() {} };
+        const items = Array.from(root.querySelectorAll('.seq-item'));
+        const stepMs = (opts && opts.stepMs) || 1400;
+        let cancelled = true, timeoutId = null;
+        function schedule(fn, ms) { timeoutId = setTimeout(() => { if (!cancelled) fn(); }, ms / globalAnimSpeed); }
+        function showFrom(idx) {
+            if (cancelled) return;
+            if (idx >= items.length) return; // fim: fica exibido, sem repetir
+            items[idx].classList.add('shown');
+            schedule(() => showFrom(idx + 1), stepMs);
+        }
+        function reset() { items.forEach(el => el.classList.remove('shown')); showFrom(0); }
+        return {
+            start() { if (cancelled) { cancelled = false; reset(); } },
+            stop() { cancelled = true; if (timeoutId) clearTimeout(timeoutId); }
+        };
+    }
+    (function () {
+        const reveals = {
+            'slide-motivation-time': buildStaggerReveal('slide-motivation-time'),
+            'slide-motivation-team': buildStaggerReveal('slide-motivation-team'),
+            'slide-motivation-merge': buildStaggerReveal('slide-motivation-merge', { stepMs: 1600 })
+        };
+        function syncToSlide(slide) {
+            Object.keys(reveals).forEach(id => {
+                if (slide && slide.id === id) reveals[id].start(); else reveals[id].stop();
+            });
+        }
+        Reveal.on('slidechanged', event => syncToSlide(event.currentSlide));
+        Reveal.on('ready', event => syncToSlide(event.currentSlide));
+    })();
+
+    // --- Animação: patches convergindo para Linus e sendo mergiados (slide "O contexto: o kernel Linux") ---
+    (function () {
+        const canvas = document.getElementById('linuxCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        const CENTER = { x: 450, y: 190 };
+        const patches = [
+            { src: { x: 125, y: 60 },  ctrl: { x: 330, y: 30 },  color: '#2980b9', label: 'PATCH 1', ctxLine: 'function login(user){',  addLine: "if(!user.active) return false;" },
+            { src: { x: 775, y: 60 },  ctrl: { x: 570, y: 30 },  color: '#27ae60', label: 'PATCH 2', ctxLine: 'function getData(){',    addLine: 'const json = data.json();' },
+            { src: { x: 125, y: 320 }, ctrl: { x: 330, y: 350 }, color: '#8e44ad', label: 'PATCH 3', ctxLine: 'function save(item){',    addLine: 'database.save(item);' },
+            { src: { x: 775, y: 320 }, ctrl: { x: 570, y: 350 }, color: '#f39c12', label: 'PATCH 4', ctxLine: 'function logout(){',      addLine: "localStorage.removeItem('token');" }
+        ];
+        // Fases sequenciais (ms) — um patch de cada vez, ritmo lento de leitura
+        const TYPE_DUR = 1800, HOLD_DUR = 500, FLIGHT_DUR = 2200;
+        const PATCH_DUR = TYPE_DUR + HOLD_DUR + FLIGHT_DUR;
+        const GAP = 400;                       // pausa entre um patch e o próximo
+        const SLOT = PATCH_DUR + GAP;          // fatia de tempo de cada patch no ciclo
+        const ARRIVALS = patches.map((p, i) => i * SLOT + PATCH_DUR);
+        const FINISH_T = ARRIVALS[ARRIVALS.length - 1] + 600; // roda uma vez e para (com o painel completo)
+
+        function quadPoint(p0, p1, p2, t) {
+            const mt = 1 - t;
+            return { x: mt * mt * p0.x + 2 * mt * t * p1.x + t * t * p2.x, y: mt * mt * p0.y + 2 * mt * t * p1.y + t * t * p2.y };
+        }
+        function roundRect(c, x, y, w, h, r) {
+            c.beginPath();
+            c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
+            c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+        }
+        function drawGuide(p) {
+            ctx.beginPath(); ctx.moveTo(p.src.x, p.src.y);
+            ctx.quadraticCurveTo(p.ctrl.x, p.ctrl.y, CENTER.x, CENTER.y);
+            ctx.strokeStyle = p.color; ctx.globalAlpha = 0.12; ctx.lineWidth = 2; ctx.setLineDash([4, 5]);
+            ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+        }
+        function drawArrowHead(pt, angle, color) {
+            const len = 8;
+            ctx.beginPath(); ctx.moveTo(pt.x, pt.y);
+            ctx.lineTo(pt.x - len * Math.cos(angle - Math.PI / 7), pt.y - len * Math.sin(angle - Math.PI / 7));
+            ctx.lineTo(pt.x - len * Math.cos(angle + Math.PI / 7), pt.y - len * Math.sin(angle + Math.PI / 7));
+            ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+        }
+        function drawChip(pt, color, label) {
+            ctx.save(); ctx.translate(pt.x, pt.y);
+            ctx.font = 'bold 11px Consolas, Menlo, monospace';
+            const w = ctx.measureText(label).width + 16, h = 19;
+            roundRect(ctx, -w / 2, -h / 2, w, h, 5);
+            ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.lineWidth = 1.6; ctx.strokeStyle = color; ctx.stroke();
+            ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(label, 0, 1);
+            ctx.restore();
+        }
+        function drawPulse(ts) {
+            const period = 2200, t = (ts % period) / period;
+            ctx.beginPath(); ctx.arc(CENTER.x, CENTER.y, 16 + t * 28, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(46,125,50,${(1 - t) * 0.45})`; ctx.lineWidth = 2; ctx.stroke();
+        }
+        // Ponto de ancoragem da caixinha de código: um pouco à frente do dev, na direção do centro
+        function boxAnchor(p) {
+            const dx = CENTER.x - p.src.x, dy = CENTER.y - p.src.y, len = Math.hypot(dx, dy);
+            return { x: p.src.x + (dx / len) * 82, y: p.src.y + (dy / len) * 82 };
+        }
+        // Caixa de código sendo digitada (fase "typing"/"hold") — texto completo some quando typedFrac >= 1
+        function drawCodeBox(p, typedFrac, ts) {
+            ctx.font = '11px Consolas, Menlo, monospace';
+            const addText = '+ ' + p.addLine;
+            const w = Math.max(ctx.measureText(p.ctxLine).width, ctx.measureText(addText).width) + 20;
+            const h = 40;
+            const anchor = boxAnchor(p);
+            const totalChars = p.ctxLine.length + addText.length;
+            const shown = Math.floor(typedFrac * totalChars);
+            const shownLine1 = p.ctxLine.slice(0, Math.min(shown, p.ctxLine.length));
+            const shownLine2 = addText.slice(0, Math.max(0, shown - p.ctxLine.length));
+            const typingLine1 = shown < p.ctxLine.length;
+            const typingLine2 = shown >= p.ctxLine.length && shown < totalChars;
+            const cursorOn = Math.floor(ts / 400) % 2 === 0;
+
+            ctx.save(); ctx.translate(anchor.x - w / 2, anchor.y - h / 2);
+            roundRect(ctx, 0, 0, w, h, 6);
+            ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.lineWidth = 1.6; ctx.strokeStyle = p.color; ctx.stroke();
+            ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+            ctx.fillStyle = '#48566b';
+            ctx.fillText(shownLine1 + (typingLine1 && cursorOn ? '_' : ''), 10, 14);
+            ctx.fillStyle = p.color;
+            ctx.fillText(shownLine2 + (typingLine2 && cursorOn ? '_' : ''), 10, 28);
+            ctx.restore();
+        }
+        // Painel "código unificado" abaixo da foto de Linus: acumula uma linha por patch já mergiado
+        function drawMergedPanel(cycleT) {
+            ctx.font = '10.5px Consolas, Menlo, monospace';
+            let shown = 0;
+            for (let i = 0; i < ARRIVALS.length; i++) if (cycleT >= ARRIVALS[i]) shown = i + 1;
+            let maxW = 0;
+            patches.forEach(p => { maxW = Math.max(maxW, ctx.measureText(p.addLine).width); });
+            const panelW = maxW + 44, headerH = 17, rowH = 15, padY = 5;
+            const panelH = headerH + padY * 2 + patches.length * rowH;
+            const px = CENTER.x - panelW / 2, py = 250;
+
+            ctx.save();
+            roundRect(ctx, px, py, panelW, panelH, 7);
+            ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.lineWidth = 1.4; ctx.strokeStyle = '#d7dee8'; ctx.stroke();
+
+            ctx.save();
+            roundRect(ctx, px, py, panelW, headerH, 7);
+            ctx.clip();
+            ctx.fillStyle = '#1b2b45'; ctx.fillRect(px, py, panelW, headerH + 7);
+            ctx.restore();
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px Consolas, Menlo, monospace';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('CÓDIGO UNIFICADO', px + panelW / 2, py + headerH / 2 + 1);
+
+            ctx.font = '10.5px Consolas, Menlo, monospace';
+            ctx.textAlign = 'left';
+            for (let i = 0; i < patches.length; i++) {
+                const rowY = py + headerH + padY + i * rowH + rowH / 2;
+                if (i < shown) {
+                    const recentness = cycleT - ARRIVALS[i];
+                    if (recentness >= 0 && recentness < 500) {
+                        const a = 1 - recentness / 500;
+                        ctx.fillStyle = `rgba(46,125,50,${a * 0.28})`;
+                        ctx.fillRect(px + 2, rowY - rowH / 2, panelW - 4, rowH);
+                    }
+                    ctx.beginPath(); ctx.arc(px + 11, rowY, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = patches[i].color; ctx.fill();
+                    ctx.fillStyle = '#3a4658';
+                    ctx.fillText(patches[i].addLine, px + 19, rowY + 1);
+                } else {
+                    ctx.fillStyle = '#c3cad6';
+                    ctx.fillText('···', px + 19, rowY + 1);
+                }
+            }
+            ctx.restore();
+        }
+
+        let raf = null, lastTs = null, vt = 0;
+        function frame(ts) {
+            if (lastTs === null) lastTs = ts;
+            vt += (ts - lastTs) * globalAnimSpeed;
+            lastTs = ts;
+            const finished = vt >= FINISH_T;
+            const cycleT = finished ? FINISH_T : vt; // roda uma vez só, sem repetir
+            ctx.clearRect(0, 0, W, H);
+            patches.forEach(drawGuide);
+            drawPulse(vt);
+            patches.forEach((p, i) => {
+                const localT = cycleT - i * SLOT;
+                if (localT < 0 || localT >= PATCH_DUR) return; // fora do seu slot: nada a desenhar
+                if (localT < TYPE_DUR) {
+                    // Fase 1: código sendo digitado na caixinha, perto do desenvolvedor
+                    drawCodeBox(p, localT / TYPE_DUR, vt);
+                } else if (localT < TYPE_DUR + HOLD_DUR) {
+                    // Fase 2: patch pronto, pausa breve antes de sair voando
+                    drawCodeBox(p, 1, vt);
+                } else {
+                    // Fase 3: o patch viaja até Linus
+                    const tf = (localT - TYPE_DUR - HOLD_DUR) / FLIGHT_DUR;
+                    if (tf < 0.18) {
+                        ctx.save(); ctx.globalAlpha = 1 - tf / 0.18; drawCodeBox(p, 1, vt); ctx.restore();
+                    }
+                    let alpha = 1;
+                    if (tf < 0.1) alpha = tf / 0.1; else if (tf > 0.84) alpha = (1 - tf) / 0.16;
+                    const pt = quadPoint(p.src, p.ctrl, CENTER, tf);
+                    const nt = quadPoint(p.src, p.ctrl, CENTER, Math.min(tf + 0.01, 1));
+                    const angle = Math.atan2(nt.y - pt.y, nt.x - pt.x);
+                    ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+                    ctx.beginPath(); ctx.moveTo(p.src.x, p.src.y);
+                    const steps = 20;
+                    for (let k = 1; k <= steps; k++) {
+                        const q = quadPoint(p.src, p.ctrl, CENTER, (k / steps) * tf);
+                        ctx.lineTo(q.x, q.y);
+                    }
+                    ctx.strokeStyle = p.color; ctx.lineWidth = 2.2; ctx.stroke();
+                    drawArrowHead(pt, angle, p.color);
+                    drawChip(pt, p.color, p.label);
+                    ctx.restore();
+                }
+            });
+            drawMergedPanel(cycleT);
+            raf = finished ? null : requestAnimationFrame(frame);
+        }
+        function play() {
+            if (raf) cancelAnimationFrame(raf);
+            lastTs = null; vt = 0;
+            raf = requestAnimationFrame(frame);
+        }
+        function pause() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+        function syncToSlide(slide) {
+            if (slide && slide.id === 'slide-linux-context') play(); else pause();
+        }
+        Reveal.on('slidechanged', event => syncToSlide(event.currentSlide));
+        Reveal.on('ready', event => syncToSlide(event.currentSlide));
+    })();
+
+    // --- Terminal digitado: comandos "plumbing" de 2006 (slide "Nascimento do Git") ---
+    (function () {
+        const PLUMBING_LINES = [
+            { type: 'cmd', text: 'git init-db' },
+            { type: 'out', text: 'Initialized empty Git repository in .git/' },
+            { type: 'cmd', text: 'echo "Olá, Git" > readme.txt' },
+            { type: 'cmd', text: 'git update-index --add readme.txt' },
+            { type: 'cmd', text: 'tree=$(git write-tree)' },
+            { type: 'cmd', text: 'commit=$(echo "primeiro commit" | git commit-tree $tree)' },
+            { type: 'cmd', text: 'git update-ref refs/heads/master $commit' },
+            { type: 'out', text: '# repositório criado, arquivo preparado e primeiro commit gravado' }
+        ];
+        const CHAR_MS = 60, CMD_PAUSE = 900, OUT_PAUSE = 1100;
+
+        function buildTypedTerminal(id, lines) {
+            const root = document.getElementById(id);
+            if (!root) return { start() {}, stop() {} };
+            let cancelled = true, timeoutId = null;
+
+            function schedule(fn, ms) { timeoutId = setTimeout(() => { if (!cancelled) fn(); }, ms / globalAnimSpeed); }
+            function clearAndBegin() { root.innerHTML = ''; typeLine(0); }
+            function typeLine(idx) {
+                if (cancelled) return;
+                if (idx >= lines.length) { return; } // fim: fica parado no estado final
+                const line = lines[idx];
+                const row = document.createElement('div');
+                row.className = 'ln';
+                if (line.type === 'out') {
+                    row.innerHTML = '<span class="out"></span>';
+                    row.querySelector('.out').textContent = line.text;
+                    root.appendChild(row);
+                    schedule(() => typeLine(idx + 1), OUT_PAUSE);
+                    return;
+                }
+                row.innerHTML = '<span class="prompt">$</span> <span class="cmd typed"></span><span class="cursor">▌</span>';
+                root.appendChild(row);
+                const target = row.querySelector('.typed');
+                const cursor = row.querySelector('.cursor');
+                let charI = 0;
+                (function typeChar() {
+                    if (cancelled) return;
+                    if (charI <= line.text.length) {
+                        target.textContent = line.text.slice(0, charI);
+                        charI++;
+                        schedule(typeChar, CHAR_MS);
+                    } else {
+                        cursor.remove();
+                        schedule(() => typeLine(idx + 1), CMD_PAUSE);
+                    }
+                })();
+            }
+            return {
+                start() { if (cancelled) { cancelled = false; clearAndBegin(); } },
+                stop() { cancelled = true; if (timeoutId) clearTimeout(timeoutId); }
+            };
+        }
+
+        const plumbingTerm = buildTypedTerminal('term-plumbing-lines', PLUMBING_LINES);
+        function syncToSlide(slide) {
+            if (slide && slide.id === 'slide-git-birth') plumbingTerm.start(); else plumbingTerm.stop();
+        }
+        Reveal.on('slidechanged', event => syncToSlide(event.currentSlide));
+        Reveal.on('ready', event => syncToSlide(event.currentSlide));
+    })();
+</script>
+</body>
+</html>
