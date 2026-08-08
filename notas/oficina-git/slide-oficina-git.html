@@ -111,6 +111,15 @@
         .term .prompt { color:#7ee787; }
         .term .cmd { color:#fff; font-weight:700; }
         .term .out { color:#9aa4b2; }
+        /* saída colorida, como um terminal com cores do Git */
+        .term .out.add  { color:#7ee787; }
+        .term .out.rm   { color:#ff7b72; }
+        .term .out.meta { color:#8a93a8; font-weight:700; }
+        .term .out.hunk { color:#a5a3ff; }
+        .term .out.ok   { color:#7ee787; }
+        .term .out.warn { color:#e3b341; }
+        .term .out.path { color:#ff9d8a; }
+        .term .out.dim  { color:#6a7280; font-style:italic; }
         .term .cursor { color:#7ee787; animation: blinkCursor 0.9s steps(1) infinite; }
         @keyframes blinkCursor { 50% { opacity:0; } }
         .term-lines .ln { min-height:1.5em; }
@@ -119,14 +128,158 @@
            do título, e o terminal vem depois — assim, ao avançar os slides, o aluno vê
            as caixas mudarem de estado sem que elas saltem pela tela. A altura do bloco
            do terminal é reservada para que o diagrama não se desloque. */
-        .step-slide .stage-diagram { min-height:150px; margin:2px 0 6px; }
-        .step-slide .stage-term { min-height:112px; }
-        .step-slide .stage-term .term { margin:4px 0; }
-        .step-slide .flow-up { text-align:center; margin:2px 0 4px; }
-        .step-slide .flow-up .arrow { font-size:1.3em; color:var(--git-orange); line-height:1; font-weight:700; }
-        .step-slide .flow-up .lbl { display:block; font-size:0.42em; color:#7a8497; font-weight:700;
-            letter-spacing:.5px; text-transform:uppercase; margin-top:-2px; }
+        .step-slide .stage-diagram { min-height:150px; margin:0; }
+        .step-slide .stage-diagram .gitmodel { margin:0; }
+        /* terminal com histórico acumulado: altura fixa e rolagem, para o diagrama
+           acima não se deslocar conforme os comandos se somam */
+        .step-slide .stage-term { min-height:250px; max-height:250px; overflow-y:auto; }
+        .step-slide .stage-term .term { margin:0; font-size:0.74em; line-height:1.5em; }
+        /* seta bem colada: liga o comando ao efeito sem vão */
+        .step-slide .flow-up { text-align:center; margin:-4px 0 -2px; line-height:1; }
+        .step-slide .flow-up .arrow { font-size:1em; color:var(--git-orange); line-height:.9; font-weight:700; }
+        .step-slide .flow-up .lbl { display:block; font-size:0.38em; color:#7a8497; font-weight:700;
+            letter-spacing:.5px; text-transform:uppercase; margin-top:-4px; }
         .step-slide > p.small-text { margin-top:4px; }
+        /* pulso na caixa/seta que acabou de mudar de estado */
+        @keyframes pulseBox {
+            0%   { box-shadow:0 0 0 0 rgba(240,80,51,0.45); }
+            70%  { box-shadow:0 0 0 12px rgba(240,80,51,0); }
+            100% { box-shadow:0 0 0 0 rgba(240,80,51,0); }
+        }
+        .pulseBox { animation: pulseBox .85s ease-out; }
+        /* linha sendo digitada dentro da caixa do Working Tree */
+        .gbox .file .wtnew { color:var(--git-orange); font-weight:800; opacity:1; }
+        .gbox .file .wtcursor { color:var(--git-orange); animation: blinkCursor .8s steps(1) infinite; }
+        /* linha que acabou de entrar na região (mostrada como "+linha") */
+        .gbox .file .addedline { color:#1b5e20; font-weight:800; }
+
+        /* Faixa entre o diagrama e o terminal no slide dos diffs: mostra QUAL par de
+           regiões o comando está comparando, alinhado com as caixas correspondentes. */
+        .diff-probe { min-height:26px; margin:0; }
+        /* espelha .gitmodel .boxes (gap 2px + colunas de seta de 64px) para que os
+           marcadores caiam exatamente sob as caixas comparadas */
+        .diff-probe .probe-row { display:flex; align-items:stretch; gap:2px; }
+        .diff-probe .cell { flex:1; min-width:0; }
+        .diff-probe .gap { width:64px; flex-shrink:0; }
+        .diff-probe .span { border:2px dashed var(--git-orange); border-top:none; border-radius:0 0 8px 8px;
+            height:9px; margin:0 6px; }
+        .diff-probe .span.quiet { border-color:#c3ccd8; }
+        .diff-probe .cap { text-align:center; font-size:0.5em; font-weight:800; letter-spacing:.4px;
+            text-transform:uppercase; color:var(--git-orange); margin-top:3px; }
+        .diff-probe .cap.quiet { color:#8a93a8; }
+        /* mais altura para o terminal neste slide: a saída do diff é longa */
+        #slide-diff .stage-term { min-height:400px; max-height:400px; }
+        #slide-branch .stage-term { min-height:450px; max-height:450px; }
+        #slide-wbranch .stage-term { min-height:330px; max-height:330px; }
+
+        /* ===== Slide animado de branches ===== */
+        .branch-stage { background:linear-gradient(180deg,#fafcff 0%,#f3f7fb 100%);
+            border:1px solid #dde5ee; border-radius:12px; box-shadow:0 3px 14px rgba(30,50,80,0.10);
+            padding:6px 10px; margin:2px 0 4px; }
+        /* a ilustração não precisa da largura toda: limitá-la reduz também a altura
+           renderizada (o SVG escala proporcionalmente), sobrando espaço ao terminal */
+        .branch-stage svg { width:100%; max-width:720px; height:auto; display:block; margin:0 auto; }
+        /* commits */
+        .brnode circle { fill:#eef2f7; stroke:#6b7d99; stroke-width:2.5; transition:fill .4s, stroke .4s; }
+        .brnode text { font-size:13px; font-weight:800; fill:#48566b; text-anchor:middle; }
+        .brnode.main circle    { fill:#e8f0fb; stroke:#2980b9; }
+        .brnode.feature circle { fill:#f3e8fb; stroke:var(--git-purple); }
+        .brnode.merge circle   { fill:#fff6f2; stroke:var(--git-orange); stroke-width:3; }
+        .brnode.appear { animation: cardIn .45s ease-out; }
+        /* arestas entre commits */
+        .bredge { fill:none; stroke:#aab3c0; stroke-width:2.5; }
+        .bredge.main    { stroke:#2980b9; }
+        .bredge.feature { stroke:var(--git-purple); }
+        .bredge.merge   { stroke:var(--git-orange); }
+        .bredge.grow    { stroke-dasharray:200; stroke-dashoffset:200; animation: growLine .55s ease-out forwards; }
+        @keyframes growLine { to { stroke-dashoffset:0; } }
+        /* rótulos de branch (os "ponteiros") */
+        .brptr rect { rx:5; stroke-width:2; transition:none; }
+        .brptr text { font-size:12px; font-weight:800; text-anchor:middle; }
+        .brptr.main rect    { fill:#e8f0fb; stroke:#2980b9; }
+        .brptr.main text    { fill:#1c5680; }
+        .brptr.feature rect { fill:#f3e8fb; stroke:var(--git-purple); }
+        .brptr.feature text { fill:#6b2f8f; }
+        .brptr.head rect    { fill:#fff6f2; stroke:var(--git-orange); }
+        .brptr.head text    { fill:var(--git-orange); }
+        .brptr.moving { transition: transform .6s cubic-bezier(.4,1.3,.6,1); }
+        .brlane { font-size:11px; font-weight:800; fill:#aab3c0; letter-spacing:.6px; text-transform:uppercase; }
+
+        /* Antes do `git init`: as regiões do Git ainda não existem. Ficam invisíveis
+           mas ocupando espaço, para que o layout não salte quando surgirem. */
+        .gbox.ghost, .arrowcol.ghost, .backrow.ghost { opacity:0; visibility:hidden; }
+        .gitmodel .gbox, .gitmodel .arrowcol, .gitmodel .backrow {
+            transition: opacity .5s ease, visibility .5s; }
+        /* a pasta de trabalho fica em evidência enquanto é a única coisa que existe */
+        .gitmodel.no-repo .gbox.wt { border-color:#c3ccd8; }
+
+        /* Animação de fundo do slide "Git como solução": um repositório vivo */
+        .repo-anim { margin:10px auto 0; max-width:1040px; }
+        .repo-anim canvas { width:100%; height:auto; display:block; }
+
+        /* Ramo bifurcado dentro da caixa do Repositório Local.
+           As duas linhas usam colunas de mesma largura, então o ramo cai exatamente
+           sobre o commit de onde saiu. */
+        .forkwrap { margin:4px 0 2px; }
+        /* o ramo é uma linha própria acima da cadeia; o deslocamento horizontal é
+           calculado por medição em gmAlignForks() */
+        /* a linha do ramo é uma camada: cada peça recebe seu `left` por medição,
+           então nenhuma empurra a outra e o commit cai na coluna exata do irmão */
+        .forkwrap { position:relative; }
+        .forkwrap .forkline { position:relative; height:30px; }
+        .forkwrap .forkline > * { position:absolute; top:50%; transform:translateY(-50%); }
+        .forkwrap .forknodes { display:flex; align-items:center; gap:3px; white-space:nowrap; z-index:2; }
+        .forkwrap .chain { margin-top:0; position:relative; z-index:2; }
+        /* camada das ligações do ramo, por baixo dos nós */
+        .forkwrap .forksvg { position:absolute; inset:0; width:100%; height:100%;
+            pointer-events:none; overflow:visible; z-index:1; }
+        .forkwrap .fkpath { fill:none; stroke-width:2.5; stroke-linecap:round; }
+        .forkwrap .fkpath.up   { stroke:var(--git-purple); }
+        .forkwrap .fkpath.down { stroke:var(--git-orange); }
+        /* commit do ramo: mantém o roxo mesmo quando é o mais recente (.new) */
+        .cnode.fork, .cnode.fork.new { background:var(--git-purple); }
+        /* destaque de "acabou de nascer" sem trocar a cor do ramo */
+        .cnode.fork.new { box-shadow:0 0 0 3px rgba(142,68,173,0.28), 0 2px 5px rgba(0,0,0,0.2); }
+        .forklbl { font-size:0.5em; font-weight:800; color:var(--git-purple);
+            text-transform:uppercase; letter-spacing:.4px; margin-left:3px; white-space:nowrap; }
+
+        /* conteúdo "fotografado" pelo commit mais recente, dentro do Repositório Local */
+        .csnap { margin-top:5px; text-align:center; }
+        .csnap-head { font-size:0.5em; font-weight:800; letter-spacing:.4px; text-transform:uppercase;
+            color:#8a93a8; margin-bottom:2px; }
+        .csnap-file { display:inline-block; background:#fff; border:1.5px solid #c3ccd8; border-radius:3px;
+            box-shadow:0 1px 4px rgba(30,50,80,0.12); padding:3px 8px 4px; text-align:left; min-width:74px; }
+        .csnap-file .sname { display:block; font-size:7px; font-weight:800; color:#8a93a8;
+            border-bottom:1px solid #eef2f7; margin-bottom:2px; padding-bottom:1px; }
+        .csnap-file .sline { font-family:monospace; font-size:10px; line-height:1.45; color:#3a4658; white-space:nowrap; }
+
+        /* Working Tree: o arquivo desenhado como uma folha de papel, com a orelha
+           dobrada e linhas de texto — em vez de um rótulo [linha / linha]. */
+        .filedoc { display:flex; align-items:flex-start; gap:7px; margin:4px 0 2px; }
+        .filedoc .sheet { position:relative; width:132px; min-height:74px; background:#fff;
+            border:1.5px solid #c3ccd8; border-radius:3px; box-shadow:0 2px 5px rgba(30,50,80,0.14);
+            padding:17px 7px 7px; flex-shrink:0; }
+        /* orelha dobrada no canto superior direito */
+        .filedoc .sheet::after { content:""; position:absolute; top:-1px; right:-1px;
+            border-width:0 16px 16px 0; border-style:solid; border-color:#eef2f7 #f6f8fb; border-radius:0 0 0 3px;
+            box-shadow:-1px 1px 0 #c3ccd8; }
+        /* faixa do nome do arquivo, no topo da folha */
+        .filedoc .sheet .fname { position:absolute; top:3px; left:5px; right:19px; font-size:8px;
+            font-weight:800; color:#8a93a8; letter-spacing:.2px; white-space:nowrap; overflow:hidden; }
+        .filedoc .sheet .tline { font-family:monospace; font-size:11px; line-height:1.5; color:#3a4658;
+            white-space:nowrap; overflow:hidden; }
+        .filedoc .sheet .tline.typing { color:var(--git-orange); font-weight:700; }
+        .filedoc .sheet .tline.just-in { color:#1b5e20; font-weight:800; }
+        .filedoc .sheet .tline .wtcursor { color:var(--git-orange); animation: blinkCursor .8s steps(1) infinite; }
+        .filedoc .sheet.empty-doc .tline { color:#c3ccd8; font-style:italic; }
+        /* estado do arquivo, ao lado da folha */
+        .filedoc .meta { display:flex; flex-direction:column; gap:2px; padding-top:2px; min-width:0; }
+        .filedoc .meta .nm { font-size:0.62em; font-family:monospace; color:#3a4658; }
+        .filedoc .meta .badge { display:inline-flex; align-items:center; gap:4px; font-size:0.54em; font-weight:700; }
+        .filedoc .meta .badge.untracked { color:#5b6577; }
+        .filedoc .meta .badge.modified  { color:#a3590c; }
+        .filedoc .meta .badge.staged    { color:#1b5e20; }
+        .filedoc .meta .badge.clean     { color:#48566b; }
 
         /* Seta de fluxo comando -> efeito -> diagrama */
         .flow-down { text-align:center; margin: 4px 0; }
@@ -248,6 +401,8 @@
         .clink { color:#aab3c0; font-weight:800; font-size:0.8em; }
         .ptrs { text-align:center; font-size:0.6em; color:#48566b; }
         .ptrs b { color: var(--git-orange); }
+        /* quando há vários ramos listados, só o que tem HEAD fica em destaque */
+        .ptrs b:not(.on-head):not(:only-child) { color:#8a93a8; font-weight:700; }
 
         .arrowcol { display:flex; align-items:center; justify-content:center; width:64px; flex-shrink:0; }
         .arr { font-size:0.56em; text-align:center; color:#aab3c0; font-weight:700; line-height:1.25em; transition: color .3s, transform .3s; }
@@ -422,21 +577,189 @@
 <script>
     function gmFile(f, forceStatus) {
         const st = forceStatus || f.status;
-        const label = f.content ? ` <span style="opacity:.65">[${f.content.join(' / ')}]</span>` : '';
+        // `typing`: índice da linha de `content` que está sendo digitada, e quantos
+        // caracteres dela já foram escritos. Usado na animação do Working Tree.
+        // `added`: índices das linhas que ENTRARAM agora (mostradas como "+linha"),
+        // para evidenciar que a operação acrescentou algo em vez de recriar tudo.
+        let label = '';
+        if (f.content) {
+            const parts = f.content.map((c, i) => {
+                if (f.typing && f.typing.line === i) {
+                    const shown = c.slice(0, f.typing.chars);
+                    const cur = f.typing.chars < c.length ? '<span class="wtcursor">▌</span>' : '';
+                    return `<span class="wtnew">${shown}${cur}</span>`;
+                }
+                if (f.added && f.added.indexOf(i) !== -1) {
+                    return `<span class="addedline">+${c}</span>`;
+                }
+                return c;
+            });
+            label = ` <span style="opacity:.65">[${parts.join(' / ')}]</span>`;
+        }
         return `<div class="file ${st}"><span class="dotstat ${st}"></span>${f.name}${label}</div>`;
+    }
+    // Desenha o arquivo como uma folha de papel com o texto dentro. `typing`, quando
+    // presente, mostra uma das linhas sendo digitada (com cursor).
+    function gmFileDoc(f, forceStatus) {
+        const st = forceStatus || f.status;
+        const rotulo = { untracked: 'não rastreado', modified: 'modificado',
+                         staged: 'preparado', clean: 'sincronizado' }[st] || st;
+        const linhas = (f.content || []).map((c, i) => {
+            if (f.typing && f.typing.line === i) {
+                const shown = c.slice(0, f.typing.chars);
+                const cur = f.typing.chars < c.length ? '<span class="wtcursor">▌</span>' : '';
+                return `<div class="tline typing">${shown}${cur}</div>`;
+            }
+            // linha que acabou de entrar nesta região (ex.: recém-preparada no add)
+            if (f.added && f.added.indexOf(i) !== -1) {
+                return `<div class="tline just-in">+${c}</div>`;
+            }
+            return `<div class="tline">${c}</div>`;
+        });
+        const corpo = linhas.length ? linhas.join('') : '<div class="tline">(vazio)</div>';
+        return `<div class="filedoc">
+            <div class="sheet${linhas.length ? '' : ' empty-doc'}">
+                <div class="fname">${f.name}</div>${corpo}
+            </div>
+            <div class="meta">
+                <span class="nm">${f.name}</span>
+                <span class="badge ${st}"><span class="dotstat ${st}"></span>${rotulo}</span>
+            </div>
+        </div>`;
     }
     function gmEmpty(msg) { return `<div class="empty">${msg || '(vazio)'}</div>`; }
     function gmChain(commits, opts) {
         opts = opts || {};
         if (!commits || !commits.length) return gmEmpty('nenhum commit ainda');
-        const newest = commits[commits.length - 1];
+        const newest = opts.newest || commits[commits.length - 1];
         let parts = [];
         commits.forEach((c, i) => {
             if (i > 0) parts.push('<span class="clink">&larr;</span>');
             const isNew = opts.newBadge && c === newest;
             parts.push(`<div class="cnode${opts.remote ? ' remote' : ''}${isNew ? ' new' : ''}">${c}</div>`);
         });
-        return `<div class="chain">${parts.join('')}</div>`;
+        let html = `<div class="chain">${parts.join('')}</div>`;
+
+        // `opts.fork` = { from, commits, label, mergedInto }: ramo que saiu da linha
+        // principal. Para que o ramo caia EXATAMENTE sobre a coluna certa, as duas
+        // linhas são montadas como uma grade de colunas iguais (nó + elo), em vez de
+        // um deslocamento fixo — a cadeia é centralizada e mudaria de posição a cada
+        // commit novo.
+        if (opts.fork) {
+            // A cadeia principal é desenhada normalmente; o ramo é sobreposto com
+            // posição ABSOLUTA e alinhado por medição depois da renderização
+            // (data-fork-*), o que dispensa supor larguras de nó/elo no CSS.
+            const idxFrom = commits.indexOf(opts.fork.from);
+            const nodes = opts.fork.commits.map((c, i) =>
+                (i ? '<span class="clink">&larr;</span>' : '') +
+                `<div class="cnode fork${opts.newBadge && c === newest ? ' new' : ''}">${c}</div>`).join('');
+            const idxMerge = opts.fork.mergedInto ? commits.indexOf(opts.fork.mergedInto) : -1;
+
+            // O ramo é posicionado de forma ABSOLUTA sobre a cadeia: cada peça recebe
+            // seu `left` por medição em gmAlignForks(), para que o commit do ramo caia
+            // exatamente na mesma coluna do seu irmão na linha principal.
+            // As ligações do ramo (subida a partir do pai e descida até o merge) são
+            // desenhadas em SVG por cima de tudo, para que sejam linhas de verdade
+            // ligando os nós — um glifo "╯" não atravessaria a distância.
+            html = `<div class="forkwrap" data-fork-from="${idxFrom}" data-fork-merge="${idxMerge}">
+                        <svg class="forksvg" preserveAspectRatio="none"><path class="fkpath up"/>` +
+                        (idxMerge >= 0 ? '<path class="fkpath down"/>' : '') + `</svg>
+                        <div class="forkline">
+                            <span class="forknodes">${nodes}</span>` +
+                            (opts.fork.label ? `<span class="forklbl">${opts.fork.label}</span>` : '') +
+                        `</div>
+                        ${html}
+                    </div>`;
+        }
+        // `opts.snapshot`: conteúdo guardado pelo commit mais recente, exibido como um
+        // arquivinho dentro da caixa — deixa explícito o que o commit "fotografou".
+        if (opts.snapshot) {
+            const linhas = opts.snapshot.content.map(l => `<div class="sline">${l}</div>`).join('');
+            html += `<div class="csnap">
+                <div class="csnap-head">${newest} guarda</div>
+                <div class="csnap-file"><span class="sname">${opts.snapshot.name}</span>${linhas}</div>
+            </div>`;
+        }
+        return html;
+    }
+    // Alinha o ramo bifurcado sobre os commits certos da cadeia principal. Mede as
+    // posições reais dos nós, então funciona independentemente de fonte ou zoom.
+    // Deve ser chamada depois de inserir o HTML no documento.
+    function gmAlignForks(root) {
+        (root || document).querySelectorAll('.forkwrap').forEach(wrap => {
+            const chain = wrap.querySelector('.chain');
+            const linha = wrap.querySelector('.forkline');
+            if (!chain || !linha) return;
+            const nos = chain.querySelectorAll('.cnode');
+            const from = parseInt(wrap.dataset.forkFrom, 10);
+            const merge = parseInt(wrap.dataset.forkMerge, 10);
+            if (!nos.length || !(from >= 0) || from >= nos.length) return;
+
+            const base = wrap.getBoundingClientRect();
+            const cFrom = nos[from].getBoundingClientRect();
+
+            // Onde colocar o 1º commit do ramo:
+            //  - se o IRMÃO (commit seguinte na linha principal) já existe, na coluna dele
+            //    — os dois são filhos do mesmo pai e ficam lado a lado;
+            //  - se ainda não existe, DIRETAMENTE ACIMA do pai, para não sair da caixa.
+            const irmao = nos[from + 1];
+            const xNo = irmao
+                ? (irmao.getBoundingClientRect().left - base.left)
+                : (cFrom.left - base.left);
+
+            const grupo = linha.querySelector('.forknodes');
+            const lbl   = linha.querySelector('.forklbl');
+            if (grupo) {
+                grupo.style.left = xNo + 'px';
+                void grupo.offsetWidth;      // força o layout antes de medir de novo
+            }
+
+            // --- ligações desenhadas em SVG, de centro a centro ---
+            const svg = wrap.querySelector('.forksvg');
+            if (svg && grupo) {
+                svg.setAttribute('viewBox', `0 0 ${base.width} ${base.height}`);
+                const cy = (r) => (r.top + r.bottom) / 2 - base.top;   // centro vertical
+                const cx = (r) => (r.left + r.right) / 2 - base.left;
+                const rRamo = grupo.querySelector('.cnode').getBoundingClientRect();
+                const yRamo = cy(rRamo), yLinha = cy(cFrom);
+                const raio = rRamo.width / 2;
+
+                // sobe do commit de origem (C3) até o commit do ramo (C4)
+                const up = svg.querySelector('.fkpath.up');
+                const x1 = cx(cFrom), y1 = yLinha - raio;
+                const x2 = cx(rRamo) - (irmao ? raio : 0), y2 = yRamo + raio;
+                up.setAttribute('d', irmao
+                    ? `M${x1} ${y1} C ${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`
+                    : `M${x1} ${y1} L ${x1} ${y2}`);
+
+                // desce do último commit do ramo até o commit de merge (M)
+                const dn = svg.querySelector('.fkpath.down');
+                if (dn) {
+                    if (merge >= 0 && merge < nos.length) {
+                        const rM = nos[merge].getBoundingClientRect();
+                        const ultimo = grupo.querySelectorAll('.cnode');
+                        const rU = ultimo[ultimo.length - 1].getBoundingClientRect();
+                        const ax = cx(rU) + raio, ay = cy(rU);
+                        const bx = cx(rM), by = cy(rM) - raio;
+                        dn.setAttribute('d',
+                            `M${ax} ${ay} C ${(ax + bx) / 2} ${ay}, ${bx} ${(ay + by) / 2}, ${bx} ${by}`);
+                        dn.style.display = '';
+                    } else {
+                        dn.style.display = 'none';
+                    }
+                }
+            }
+            // Rótulo do ramo, logo após a última peça — mas sem sair da caixa: se não
+            // couber à direita, vai para a esquerda do commit do ramo.
+            if (lbl && grupo) {
+                const g = grupo.getBoundingClientRect();
+                const x = (g.right - base.left) + 10;
+                const w = lbl.getBoundingClientRect().width;
+                lbl.style.left = (x + w <= base.width)
+                    ? x + 'px'
+                    : Math.max(0, (g.left - base.left) - w - 8) + 'px';
+            }
+        });
     }
     function gmBox(cls, title, inner, active) {
         return `<div class="gbox ${cls}${active === cls ? ' active' : ''}"><h5>${title}</h5>${inner}</div>`;
@@ -446,18 +769,42 @@
     }
     // Motor principal: recebe um estado e devolve o HTML do diagrama de 3 ou 4 regioes
     function gitModel(state) {
-        const wtInner = (state.wt && state.wt.length) ? state.wt.map(f => gmFile(f)).join('') : gmEmpty();
-        const stageInner = (state.stage && state.stage.length) ? state.stage.map(f => gmFile(f, 'staged')).join('') : gmEmpty();
+        // `state.docWt` desenha o Working Tree como uma folha de papel com o texto
+        // dentro (usado no slide animado); os demais slides seguem com a linha simples.
+        const renderWt = state.docWt ? gmFileDoc : gmFile;
+        const wtInner = (state.wt && state.wt.length) ? state.wt.map(f => renderWt(f)).join('') : gmEmpty();
+        // A Staging guarda uma CÓPIA do arquivo, então é desenhada do mesmo jeito que
+        // o Working Tree — o que muda entre as duas é o conteúdo, não a representação.
+        const stageInner = (state.stage && state.stage.length)
+            ? state.stage.map(f => renderWt(f, 'staged')).join('') : gmEmpty();
         const localBranch = (state.local && state.local.branch) || 'main';
-        const localInner = gmChain(state.local ? state.local.commits : [], { newBadge: true }) +
-            (state.local && state.local.commits && state.local.commits.length ? `<div class="ptrs"><b>${localBranch}</b> · HEAD</div>` : '');
+        const localInner = gmChain(state.local ? state.local.commits : [],
+                { newBadge: true, snapshot: state.local && state.local.snapshot,
+                  fork: state.local && state.local.fork,
+                  newest: state.local && state.local.newest }) +
+            (state.local && state.local.commits && state.local.commits.length
+                // `state.local.branches`: lista de ramos a exibir, marcando com HEAD
+                // aquele em que estamos — usado no slide que cria um branch.
+                ? (state.local.branches
+                    ? `<div class="ptrs">${state.local.branches.map(b =>
+                        `<b class="${b.head ? 'on-head' : ''}">${b.name}</b>${b.head ? ' ← HEAD' : ''}`).join(' · ')}</div>`
+                    : `<div class="ptrs"><b>${localBranch}</b> · HEAD</div>`)
+                : '');
 
-        let html = `<div class="gitmodel"><div class="boxes">`;
-        html += gmBox('wt', 'Working Tree', wtInner, state.active);
-        html += gmArrow('git add', state.active === 'add');
-        html += gmBox('stage', 'Staging (Index)', stageInner, state.active);
-        html += gmArrow('git commit', state.active === 'commit');
-        html += gmBox('local', 'Repositório Local (.git)', localInner, state.active);
+        // `state.noRepo`: antes do `git init` só existe a pasta de trabalho. As outras
+        // regiões ficam invisíveis (mas ocupando o mesmo espaço, para o layout não
+        // saltar quando elas surgirem).
+        const semRepo = !!state.noRepo;
+        const oculto = semRepo ? ' ghost' : '';
+
+        let html = `<div class="gitmodel${semRepo ? ' no-repo' : ''}"><div class="boxes">`;
+        html += gmBox('wt', semRepo ? 'Pasta do projeto' : 'Working Tree', wtInner, state.active);
+        html += `<div class="arrowcol${oculto}">` +
+                `<div class="arr${state.active === 'add' ? ' active' : ''}">git add<br>&rarr;</div></div>`;
+        html += gmBox('stage' + oculto, 'Staging (Index)', stageInner, state.active);
+        html += `<div class="arrowcol${oculto}">` +
+                `<div class="arr${state.active === 'commit' ? ' active' : ''}">git commit<br>&rarr;</div></div>`;
+        html += gmBox('local' + oculto, 'Repositório Local (.git)', localInner, state.active);
         if (state.remote) {
             const remoteInner = gmChain(state.remote.commits, { remote: true, newBadge: true }) +
                 (state.remote.commits.length ? `<div class="ptrs"><b>origin/${localBranch}</b></div>` : '');
@@ -465,7 +812,7 @@
             html += gmBox('remote', 'Repositório Remoto (origin)', remoteInner, state.active);
         }
         html += `</div>`;
-        html += `<div class="backrow"><span class="arr${state.active === 'checkout' ? ' active' : ''}">&larr; git checkout / switch / restore</span>`;
+        html += `<div class="backrow${oculto}"><span class="arr${state.active === 'checkout' ? ' active' : ''}">&larr; git checkout / switch / restore</span>`;
         if (state.remote) html += `<span class="arr${state.active === 'fetch' ? ' active' : ''}">&larr; git fetch / pull</span>`;
         html += `</div></div>`;
         return html;
@@ -473,7 +820,7 @@
     function paint(id, state) {
         document.addEventListener('DOMContentLoaded', function () {
             const el = document.getElementById(id);
-            if (el) el.innerHTML = gitModel(state);
+            if (el) { el.innerHTML = gitModel(state); gmAlignForks(el); }
         });
     }
 </script>
@@ -944,6 +1291,9 @@
             <h2 style="border:none;">Git como solução</h2>
             <p style="font-size:1.2em; max-width:800px; margin:20px auto 6px;">O Git não guarda "arquivos com nomes diferentes" nem exige juntar mudanças à mão. Ele registra a <span class="highlight">história de evolução de um projeto</span> — um estado registrado de cada vez — e sabe como combinar, de forma confiável, o trabalho de várias pessoas no mesmo arquivo.</p>
             <p class="small-text">É exatamente esse modelo que construímos, peça por peça, na Parte 2.</p>
+            <div class="repo-anim">
+                <canvas id="repoCanvas" width="1040" height="330"></canvas>
+            </div>
         </section>
 
         <!-- =================================================================== -->
@@ -1008,83 +1358,25 @@
             </ul>
         </section>
 
-        <!-- ===================== Construção progressiva — Etapa 1 e 2 ===================== -->
-        <section class="compact step-slide">
-            <h2><span class="step-badge git">1</span>Working Tree + <code>git status</code></h2>
-            <div class="stage-diagram">
-                <div id="g-etapa1"></div>
-                <script>paint('g-etapa1', { active:'wt', wt:[{name:'arquivo.txt', status:'untracked', content:['Olá']}], stage:[], local:{commits:[]} });</script>
+        <!-- ===================== Fluxo completo, passo a passo (animado) ===================== -->
+        <section class="compact step-slide" id="slide-flow">
+            <h2>O ciclo do Git na prática</h2>
+            <div class="stage-diagram" id="flowDiagram"></div>
+            <div class="flow-up"><span class="arrow">↑</span><span class="lbl" id="flowArrowLbl">efeito no modelo</span></div>
+            <div class="stage-term" id="flowTerm"></div>
+            <div class="story-ctrl">
+                <button id="flowPrev" type="button">◀ voltar</button>
+                <button id="flowNext" type="button" class="primary">avançar ▶</button>
+                <button id="flowAll" type="button">executar até o fim</button>
+                <button id="flowReset" type="button">recomeçar</button>
+                <span class="pos" id="flowPos"></span>
             </div>
-            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
-            <div class="stage-term">
-                <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></div>
-                    <div class="ln out">Untracked files:</div>
-                    <div class="ln out">&nbsp;&nbsp;arquivo.txt</div></div>
-            </div>
-            <p class="small-text">Criamos um arquivo. Ele existe no disco, mas o Git <strong>ainda não sabe</strong> que ele deve fazer parte da história do projeto.</p>
-        </section>
-
-        <!-- ===================== Etapa 3: git add ===================== -->
-        <section class="compact step-slide">
-            <h2><span class="step-badge git">2</span><code>git add</code></h2>
-            <div class="stage-diagram">
-                <div id="g-etapa3"></div>
-                <script>paint('g-etapa3', { active:'add', wt:[{name:'arquivo.txt', status:'clean', content:['Olá']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:[]} });</script>
-            </div>
-            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
-            <div class="stage-term">
-                <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git add arquivo.txt</span></div></div>
-            </div>
-            <p class="small-text">O arquivo continua no Working Tree — apenas uma <strong>cópia do seu estado atual</strong> passa a existir na Staging Area, preparada para o próximo commit.</p>
-        </section>
-
-        <!-- ===================== Etapa 4: git commit ===================== -->
-        <section class="compact step-slide">
-            <h2><span class="step-badge git">3</span><code>git commit</code></h2>
-            <div class="stage-diagram">
-                <div id="g-etapa4"></div>
-                <script>paint('g-etapa4', { active:'commit', wt:[{name:'arquivo.txt', status:'clean', content:['Olá']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
-            </div>
-            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
-            <div class="stage-term">
-                <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git commit -m "Adiciona arquivo inicial"</span></div></div>
-            </div>
-            <p class="small-text">Nasce o commit <strong>C1</strong>. <code>main</code> e <code>HEAD</code> passam a apontar para ele. A Staging Area volta a "espelhar" exatamente o que está no último commit.</p>
-        </section>
-
-        <!-- ===================== Etapa 5: edição do arquivo ===================== -->
-        <section class="compact step-slide">
-            <h2><span class="step-badge git">4</span>Editando o arquivo</h2>
-            <div class="stage-diagram">
-                <div id="g-etapa5"></div>
-                <script>paint('g-etapa5', { active:'wt', wt:[{name:'arquivo.txt', status:'modified', content:['Olá','Git']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
-            </div>
-            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
-            <div class="stage-term">
-                <div class="term"><div class="ttl">arquivo.txt (editado)</div><div class="ln">Olá</div><div class="ln">Git</div></div>
-            </div>
-            <p class="small-text">Repare: <strong>três versões diferentes</strong> convivem agora — Working Tree <code>[Olá, Git]</code>, Staging <code>[Olá]</code> e o commit C1 <code>[Olá]</code>. Essa diferença é o coração do modelo do Git.</p>
-        </section>
-
-        <!-- ===================== Etapa 6: git status novamente ===================== -->
-        <section class="compact step-slide">
-            <h2><span class="step-badge git">5</span><code>git status</code> — de novo</h2>
-            <div class="stage-diagram">
-                <div id="g-etapa6"></div>
-                <script>paint('g-etapa6', { active:'wt', wt:[{name:'arquivo.txt', status:'modified', content:['Olá','Git']}], stage:[{name:'arquivo.txt', content:['Olá']}], local:{commits:['C1'], branch:'main'} });</script>
-            </div>
-            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">relação direta com o diagrama</span></div>
-            <div class="stage-term">
-                <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git status</span></div>
-                    <div class="ln out">Changes not staged for commit:</div>
-                    <div class="ln out">&nbsp;&nbsp;modified: arquivo.txt</div></div>
-            </div>
-            <p class="small-text">"Modified, not staged" é só o Git descrevendo em palavras a diferença entre <strong>Working Tree</strong> e <strong>Staging Area</strong> que já víamos no diagrama.</p>
+            <p class="small-text" id="flowCaption" style="text-align:center; margin-top:4px; min-height:2.6em;"></p>
         </section>
 
         <!-- ===================== Etapa 7: git diff / git diff --staged ===================== -->
         <section class="compact">
-            <h2><span class="step-badge git">6</span><code>git diff</code> e <code>git diff --staged</code></h2>
+            <h2><code>git diff</code> e <code>git diff --staged</code></h2>
             <div class="two-col">
                 <div class="col-text">
                     <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git diff</span></div></div>
@@ -1107,6 +1399,60 @@
             <div class="tip-box">Guarde essa regra: <code>git diff</code> olha para a <strong>esquerda</strong> do modelo (WT↔Staging); <code>git diff --staged</code> olha para o <strong>meio</strong> (Staging↔commit).</div>
         </section>
 
+        <!-- ===================== git diff na prática (animado) ===================== -->
+        <section class="compact step-slide" id="slide-diff">
+            <h2>Os dois <code>diff</code> na prática</h2>
+            <div class="stage-diagram" id="diffDiagram"></div>
+            <div class="diff-probe" id="diffProbe"></div>
+            <div class="stage-term" id="diffTerm"></div>
+            <div class="story-ctrl">
+                <button id="diffPrev" type="button">◀ voltar</button>
+                <button id="diffNext" type="button" class="primary">avançar ▶</button>
+                <button id="diffAll" type="button">executar até o fim</button>
+                <button id="diffReset" type="button">recomeçar</button>
+                <span class="pos" id="diffPos"></span>
+            </div>
+            <p class="small-text" id="diffCaption" style="text-align:center; margin-top:4px; min-height:2.6em;"></p>
+        </section>
+
+        <!-- ===================== Branches, de forma intuitiva (animado) ===================== -->
+        <section class="compact step-slide" id="slide-branch">
+            <h2>Branches: linhas do tempo paralelas</h2>
+            <div class="branch-stage">
+                <svg id="branchSvg" viewBox="0 0 900 215" role="img"
+                     aria-label="Animação de branches: um ramo nasce de main como um rótulo, ganha commits próprios, main avança em paralelo e um merge une as duas histórias">
+                    <g id="brEdges"></g>
+                    <g id="brNodes"></g>
+                    <g id="brPtrs"></g>
+                </svg>
+            </div>
+            <div class="stage-term" id="branchTerm"></div>
+            <div class="story-ctrl">
+                <button id="branchPrev" type="button">◀ voltar</button>
+                <button id="branchNext" type="button" class="primary">avançar ▶</button>
+                <button id="branchAll" type="button">executar até o fim</button>
+                <button id="branchReset" type="button">recomeçar</button>
+                <span class="pos" id="branchPos"></span>
+            </div>
+            <p class="small-text" id="branchCaption" style="text-align:center; margin-top:4px; min-height:2.6em;"></p>
+        </section>
+
+        <!-- ===================== Branch no modelo das 4 regiões (animado) ===================== -->
+        <section class="compact step-slide" id="slide-wbranch">
+            <h2>Um branch no repositório que já temos</h2>
+            <div class="stage-diagram" id="wbDiagram"></div>
+            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
+            <div class="stage-term" id="wbTerm"></div>
+            <div class="story-ctrl">
+                <button id="wbPrev" type="button">◀ voltar</button>
+                <button id="wbNext" type="button" class="primary">avançar ▶</button>
+                <button id="wbAll" type="button">executar até o fim</button>
+                <button id="wbReset" type="button">recomeçar</button>
+                <span class="pos" id="wbPos"></span>
+            </div>
+            <p class="small-text" id="wbCaption" style="text-align:center; margin-top:4px; min-height:2.6em;"></p>
+        </section>
+
         <!-- ===================== Repositório remoto: introdução ===================== -->
         <section class="compact">
             <h2>Adicionando o Repositório Remoto</h2>
@@ -1118,7 +1464,7 @@
 
         <!-- ===================== git push (crossfade) ===================== -->
         <section class="compact">
-            <h2><span class="step-badge git">7</span><code>git push</code></h2>
+            <h2><code>git push</code></h2>
             <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git push origin main</span></div></div>
             <div class="stackwrap" style="min-height:230px;">
                 <div class="stacked fragment fade-out" data-fragment-index="0">
@@ -2461,6 +2807,1208 @@ git pull origin main   # equivale a: git fetch + git merge</code></pre>
         }
         Reveal.on('slidechanged', syncToSlide);
         Reveal.on('ready', syncToSlide);
+    })();
+
+    // --- Slide "Do arquivo ao commit — passo a passo" ---
+    // As antigas etapas 1..5 (status → add → commit → editar → status) viraram estados
+    // de um único slide. O diagrama fica fixo no topo e só muda de estado; o terminal
+    // abaixo mostra o comando que causou aquela transição.
+    (function () {
+        const root = document.getElementById('slide-flow');
+        if (!root) return;
+
+        const diagEl = document.getElementById('flowDiagram');
+        const termEl = document.getElementById('flowTerm');
+        const capEl  = document.getElementById('flowCaption');
+        const posEl  = document.getElementById('flowPos');
+        const lblEl  = document.getElementById('flowArrowLbl');
+        const btnPrev  = document.getElementById('flowPrev');
+        const btnNext  = document.getElementById('flowNext');
+        const btnAll   = document.getElementById('flowAll');
+        const btnReset = document.getElementById('flowReset');
+
+        // Cada passo: estado do modelo (mesmo formato de paint/gitModel), o bloco de
+        // terminal que o provocou e a explicação.
+        const T = (lines) => '<div class="term">' + lines + '</div>';
+        const CMD = (c) => `<div class="ln"><span class="prompt">$</span> <span class="cmd">${c}</span></div>`;
+        // Saída: aceita 'texto' ou ['texto','classe'] — a classe colore a linha
+        // (add = verde, rm = vermelho, meta/hunk/dim = tons auxiliares).
+        const OUT = (o) => Array.isArray(o)
+            ? `<div class="ln out ${o[1]}">${o[0]}</div>`
+            : `<div class="ln out">${o}</div>`;
+
+        // `entry` é o que AQUELE passo acrescenta ao terminal — o histórico é a soma
+        // das entradas dos passos já percorridos, como num terminal de verdade.
+        const STEPS = [
+            {
+                lbl: 'efeito no modelo',
+                cmd: 'git init', out: [['Initialized empty Git repository in .git/', 'ok']],
+                model: { docWt: true, active: 'wt',
+                         wt: [{ name: 'arquivo.txt', status: 'untracked', content: ['Olá'] }],
+                         stage: [], local: { commits: [] } },
+                cap: '<code>git init</code> cria o diretório <code>.git</code> — e é aí que nascem a <b>Staging Area</b> e o <b>Repositório Local</b>.'
+            },
+            {
+                lbl: 'efeito no modelo',
+                cmd: 'git status', out: [['Untracked files:', 'warn'], ['&nbsp;&nbsp;arquivo.txt', 'path']],
+                model: { docWt: true, active: 'wt', wt: [{ name: 'arquivo.txt', status: 'untracked', content: ['Olá'] }],
+                         stage: [], local: { commits: [] } },
+                cap: 'O arquivo existe no disco, mas o Git <b>ainda não sabe</b> que ele faz parte da história do projeto.'
+            },
+            {
+                lbl: 'efeito no modelo',
+                cmd: 'git add arquivo.txt', out: [],
+                model: { docWt: true, active: 'add', wt: [{ name: 'arquivo.txt', status: 'clean', content: ['Olá'] }],
+                         stage: [{ name: 'arquivo.txt', content: ['Olá'] }], local: { commits: [] } },
+                cap: 'O arquivo continua no Working Tree — apenas uma <b>cópia do seu estado atual</b> passa a existir na Staging Area.'
+            },
+            {
+                lbl: 'efeito no modelo',
+                cmd: 'git commit -m "Adiciona arquivo inicial"', out: [['[main C1] Adiciona arquivo inicial', 'ok'], ['&nbsp;1 file changed, 1 insertion(+)', 'dim']],
+                model: { docWt: true, active: 'commit', wt: [{ name: 'arquivo.txt', status: 'clean', content: ['Olá'] }],
+                         stage: [{ name: 'arquivo.txt', content: ['Olá'] }],
+                         local: { commits: ['C1'], branch: 'main', snapshot: { name: 'arquivo.txt', content: ['Olá'] } } },
+                cap: 'Nasce o commit <b>C1</b>, guardando o <code>arquivo.txt</code> com o conteúdo <code>Olá</code>. <code>main</code> e <code>HEAD</code> apontam para ele.'
+            },
+            {
+                lbl: 'efeito no modelo',
+                cmd: 'echo "Git" >> arquivo.txt', out: [],
+                // a segunda linha é digitada ao vivo dentro da caixa do Working Tree
+                typeLine: { line: 1, text: 'Git' },
+                model: { docWt: true, active: 'wt', wt: [{ name: 'arquivo.txt', status: 'modified', content: ['Olá', 'Git'] }],
+                         stage: [{ name: 'arquivo.txt', content: ['Olá'] }],
+                         local: { commits: ['C1'], branch: 'main', snapshot: { name: 'arquivo.txt', content: ['Olá'] } } },
+                cap: 'Agora <b>três versões</b> convivem — Working Tree <code>[Olá, Git]</code>, Staging <code>[Olá]</code> e C1 <code>[Olá]</code>. Esse é o coração do modelo.'
+            },
+            {
+                lbl: 'relação direta com o diagrama',
+                cmd: 'git status', out: [['Changes not staged for commit:', 'warn'], ['&nbsp;&nbsp;modified: arquivo.txt', 'path']],
+                model: { docWt: true, active: 'wt', wt: [{ name: 'arquivo.txt', status: 'modified', content: ['Olá', 'Git'] }],
+                         stage: [{ name: 'arquivo.txt', content: ['Olá'] }],
+                         local: { commits: ['C1'], branch: 'main', snapshot: { name: 'arquivo.txt', content: ['Olá'] } } },
+                cap: '"Modified, not staged" é o Git <b>descrevendo em palavras</b> a diferença entre Working Tree e Staging que o diagrama já mostrava.'
+            },
+            {
+                lbl: 'efeito no modelo',
+                cmd: 'git add arquivo.txt', out: [],
+                model: { docWt: true, active: 'add', wt: [{ name: 'arquivo.txt', status: 'clean', content: ['Olá', 'Git'] }],
+                         // só a linha nova entra: destacada como "+Git"
+                         stage: [{ name: 'arquivo.txt', content: ['Olá', 'Git'], added: [1] }],
+                         local: { commits: ['C1'], branch: 'main', snapshot: { name: 'arquivo.txt', content: ['Olá'] } } },
+                cap: 'Novo <code>git add</code>: só a linha nova entra — a Staging registra <code>+Git</code> sobre o que já vinha de C1.'
+            },
+            {
+                lbl: 'efeito no modelo',
+                cmd: 'git commit -m "Acrescenta a linha Git"', out: [['[main C2] Acrescenta a linha Git', 'ok'], ['&nbsp;1 file changed, 1 insertion(+)', 'dim']],
+                model: { docWt: true, active: 'commit', wt: [{ name: 'arquivo.txt', status: 'clean', content: ['Olá', 'Git'] }],
+                         stage: [{ name: 'arquivo.txt', content: ['Olá', 'Git'] }],
+                         local: { commits: ['C1', 'C2'], branch: 'main', snapshot: { name: 'arquivo.txt', content: ['Olá', 'Git'] } } },
+                cap: 'Nasce o <b>C2</b>, filho de C1. As três regiões voltam a mostrar o mesmo conteúdo — <b>ciclo completo</b>: editar → add → commit.'
+            }
+        ];
+
+        // Estado inicial: arquivo no disco, Git ainda sem nada — o mesmo do passo 1,
+        // porém sem destaque nem terminal, para servir de ponto de partida neutro.
+        // Estado inicial: uma pasta com um arquivo e NENHUM repositório ainda —
+        // Staging e Repositório Local só aparecem depois do `git init`.
+        const START = { docWt: true, noRepo: true,
+                        wt: [{ name: 'arquivo.txt', status: 'untracked', content: ['Olá'] }],
+                        stage: [], local: { commits: [] } };
+
+        let idx = -1, autoTimer = null, typeTimer = null;
+
+        function stopTyping() { if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; } }
+
+        // Desenha o diagrama. Se `typing` vier preenchido, a linha indicada do
+        // Working Tree é mostrada parcialmente (efeito de digitação).
+        function paintDiagram(st, typing) {
+            let model = st ? st.model : START;
+            if (typing) {
+                // clona só o necessário para injetar o estado de digitação
+                model = Object.assign({}, model, {
+                    wt: model.wt.map(f => Object.assign({}, f, { typing }))
+                });
+            }
+            diagEl.innerHTML = gitModel(model);
+            gmAlignForks(diagEl);
+        }
+
+        function pulse() {
+            diagEl.querySelectorAll('.gbox.active, .arr.active').forEach(b => {
+                b.classList.remove('pulseBox'); void b.offsetWidth; b.classList.add('pulseBox');
+            });
+        }
+
+        // Monta o HTML do terminal. `upTo` é o índice do último passo a exibir;
+        // `partial`, quando presente, corta o comando desse passo no caractere n
+        // (efeito de digitação) e omite a saída, que só aparece ao "executar".
+        function termHTML(upTo, partial) {
+            let html = '';
+            for (let i = 0; i <= upTo; i++) {
+                const s = STEPS[i];
+                const último = i === upTo;
+                const texto = (último && partial) ? s.cmd.slice(0, partial.chars) : s.cmd;
+                const cur = (último && partial && partial.chars < s.cmd.length)
+                    ? '<span class="cursor">▌</span>' : '';
+                // escapa &, < e > para que comandos como `echo "x" >> f` apareçam
+                // literalmente — e para que cortar no meio nunca quebre a marcação
+                const esc = texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                html += CMD(esc + cur);
+                if (!(último && partial)) html += s.out.map(o => OUT(o)).join('');
+            }
+            return html ? T(html) : '';
+        }
+
+        function paintTerm(upTo, partial) {
+            termEl.innerHTML = termHTML(upTo, partial);
+            termEl.scrollTop = termEl.scrollHeight;
+        }
+
+        // Anima o passo atual: digita o comando → mostra a saída e o efeito no modelo
+        // → se o passo edita o arquivo, digita a linha nova dentro do Working Tree.
+        function playStep(st) {
+            const total = st.cmd.length;
+            let n = 0;
+            paintTerm(idx, { chars: 0 });
+            paintDiagram(prevStep(), null);   // o modelo só muda depois do comando rodar
+
+            (function typeCmd() {
+                n++;
+                paintTerm(idx, { chars: n });
+                if (n < total) {
+                    typeTimer = setTimeout(typeCmd, 45 / globalAnimSpeed);
+                    return;
+                }
+                // "Enter": some o cursor, sai a saída e o modelo reage
+                typeTimer = setTimeout(() => {
+                    paintTerm(idx, null);
+                    if (st.typeLine) {
+                        const { line, text } = st.typeLine;
+                        let k = 0;
+                        paintDiagram(st, { line, chars: 0 });
+                        (function typeFile() {
+                            k++;
+                            paintDiagram(st, { line, chars: k });
+                            if (k < text.length) {
+                                typeTimer = setTimeout(typeFile, 90 / globalAnimSpeed);
+                            } else {
+                                typeTimer = setTimeout(() => {
+                                    paintDiagram(st, null); pulse(); typeTimer = null;
+                                }, 300 / globalAnimSpeed);
+                            }
+                        })();
+                    } else {
+                        paintDiagram(st, null); pulse(); typeTimer = null;
+                    }
+                }, 380 / globalAnimSpeed);
+            })();
+        }
+
+        // Estado do modelo imediatamente ANTES do passo atual (para o diagrama só
+        // reagir depois que o comando termina de ser digitado).
+        function prevStep() { return idx > 0 ? STEPS[idx - 1] : null; }
+
+        function render(animate) {
+            stopTyping();
+            const st = idx >= 0 ? STEPS[idx] : null;
+
+            lblEl.textContent = st ? st.lbl : 'efeito no modelo';
+            capEl.innerHTML = st ? st.cap
+                : 'Clique em <b>avançar</b> para percorrer o ciclo completo, do arquivo solto até o <b>segundo commit</b>.';
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx < 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled  = idx >= STEPS.length - 1;
+
+            if (animate && st) { playStep(st); return; }
+
+            // sem animação (voltar, recomeçar, entrar no slide): tudo já resolvido
+            paintTerm(idx, null);
+            paintDiagram(st, null);
+        }
+
+        function stopAuto() {
+            if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+            stopTyping();
+        }
+        function go(to, animate) {
+            idx = Math.max(-1, Math.min(STEPS.length - 1, to));
+            render(animate);
+        }
+        function next()  { stopAuto(); go(idx + 1, true); }
+        function prev()  { stopAuto(); go(idx - 1, false); }
+        function reset() { stopAuto(); go(-1, false); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1, true);
+                autoTimer = setTimeout(tick, 2900 / globalAnimSpeed);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', reset);
+
+        // →/← percorrem os passos antes de trocar de slide (como fragments nativos).
+        document.addEventListener('keydown', ev => {
+            if (Reveal.getCurrentSlide() !== root) return;
+            if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+            const FWD  = ev.key === 'ArrowRight' || ev.key === 'ArrowDown' || ev.key === 'PageDown';
+            const BACK = ev.key === 'ArrowLeft'  || ev.key === 'ArrowUp'   || ev.key === 'PageUp';
+            if (!FWD && !BACK) return;
+            if (FWD && idx < STEPS.length - 1) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); next();
+            } else if (BACK && idx >= 0) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); prev();
+            }
+        }, true);
+
+        function syncToSlide(event) {
+            const slide = event.currentSlide;
+            if (slide !== root) { stopAuto(); return; }
+            const cameFromAhead = event.previousSlide &&
+                root.compareDocumentPosition(event.previousSlide) & Node.DOCUMENT_POSITION_FOLLOWING;
+            stopAuto();
+            go(cameFromAhead ? STEPS.length - 1 : -1, false);
+        }
+        Reveal.on('slidechanged', syncToSlide);
+        Reveal.on('ready', syncToSlide);
+    })();
+
+    // --- Slide "Os dois diff na prática" ---
+    // Continua de onde o slide anterior parou (C1, C2 já criados) com uma nova edição,
+    // e roda os dois diffs nos momentos em que eles dão respostas DIFERENTES — que é
+    // justamente o que distingue `git diff` de `git diff --staged`.
+    (function () {
+        const root = document.getElementById('slide-diff');
+        if (!root) return;
+
+        const diagEl  = document.getElementById('diffDiagram');
+        const probeEl = document.getElementById('diffProbe');
+        const termEl  = document.getElementById('diffTerm');
+        const capEl   = document.getElementById('diffCaption');
+        const posEl   = document.getElementById('diffPos');
+        const btnPrev  = document.getElementById('diffPrev');
+        const btnNext  = document.getElementById('diffNext');
+        const btnAll   = document.getElementById('diffAll');
+        const btnReset = document.getElementById('diffReset');
+
+        const T   = (lines) => '<div class="term">' + lines + '</div>';
+        const CMD = (c) => `<div class="ln"><span class="prompt">$</span> <span class="cmd">${c}</span></div>`;
+        // Saída: aceita 'texto' ou ['texto','classe'] — a classe colore a linha
+        // (add = verde, rm = vermelho, meta/hunk/dim = tons auxiliares).
+        const OUT = (o) => Array.isArray(o)
+            ? `<div class="ln out ${o[1]}">${o[0]}</div>`
+            : `<div class="ln out">${o}</div>`;
+
+        // Ponto de partida: exatamente onde o slide anterior terminou (C1 ← C2).
+        const BASE = {
+            docWt: true,
+            wt:    [{ name: 'arquivo.txt', status: 'clean', content: ['Olá', 'Git'] }],
+            stage: [{ name: 'arquivo.txt', content: ['Olá', 'Git'] }],
+            local: { commits: ['C1', 'C2'], branch: 'main',
+                     snapshot: { name: 'arquivo.txt', content: ['Olá', 'Git'] } }
+        };
+        const clone = (o) => JSON.parse(JSON.stringify(o));
+
+        // Estados do arquivo ao longo do slide
+        const modificado = () => { const m = clone(BASE);
+            m.wt[0].status = 'modified'; m.wt[0].content = ['Olá', 'Git', 'e versionamento']; return m; };
+        const preparado  = () => { const m = modificado();
+            m.wt[0].status = 'clean';
+            m.stage[0].content = ['Olá', 'Git', 'e versionamento']; m.stage[0].added = [2]; return m; };
+
+        // Saída real de um `git diff` que acrescentou a terceira linha — as linhas
+        // "+" saem verdes e as "-"/cabeçalhos nos tons que o Git usa no terminal.
+        const DIFF_OUT = [
+            ['diff --git a/arquivo.txt b/arquivo.txt', 'meta'],
+            ['--- a/arquivo.txt', 'rm'],
+            ['+++ b/arquivo.txt', 'add'],
+            ['@@ -1,2 +1,3 @@', 'hunk'],
+            ['&nbsp;Olá', ''],
+            ['&nbsp;Git', ''],
+            ['+e versionamento', 'add']
+        ];
+
+        // probe: { span:'wt-stage'|'stage-local', label } — marca as duas caixas
+        // comparadas; o resultado do diff aparece na saída do terminal.
+        const STEPS = [
+            {
+                cmd: 'echo "e versionamento" >> arquivo.txt', out: [],
+                typeLine: { line: 2, text: 'e versionamento' },
+                model: modificado(), probe: null,
+                cap: 'Uma terceira linha entra no <b>Working Tree</b>. Staging e C2 continuam com <code>[Olá, Git]</code>.'
+            },
+            {
+                cmd: 'git diff', out: DIFF_OUT,
+                model: modificado(),
+                probe: { span: 'wt-stage', label: 'Working Tree × Staging' },
+                cap: '<code>git diff</code> compara <b>Working Tree × Staging</b> — e encontra a linha que ainda não foi preparada.'
+            },
+            {
+                cmd: 'git diff --staged', out: [['(nenhuma saída)', 'dim']],
+                model: modificado(),
+                probe: { span: 'stage-local', label: 'Staging × último commit' },
+                cap: 'Já <code>git diff --staged</code> compara <b>Staging × C2</b>: são idênticos, então <b>não há saída</b>.'
+            },
+            {
+                cmd: 'git add arquivo.txt', out: [],
+                model: preparado(), probe: null,
+                cap: 'Agora o <code>git add</code> leva a linha nova para a Staging Area.'
+            },
+            {
+                cmd: 'git diff', out: [['(nenhuma saída)', 'dim']],
+                model: preparado(),
+                probe: { span: 'wt-stage', label: 'Working Tree × Staging' },
+                cap: 'Os dois <b>trocaram de resposta</b>: agora Working Tree e Staging são iguais, e <code>git diff</code> não mostra nada.'
+            },
+            {
+                cmd: 'git diff --staged', out: DIFF_OUT,
+                model: preparado(),
+                probe: { span: 'stage-local', label: 'Staging × último commit' },
+                cap: '…e é o <code>--staged</code> que agora acusa a diferença: é ele quem mostra <b>o que entrará no próximo commit</b>.'
+            }
+        ];
+
+        let idx = -1, autoTimer = null, typeTimer = null;
+        function stopTyping() { if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; } }
+
+        function paintDiagram(model, typing) {
+            let m = model;
+            if (typing) {
+                m = Object.assign({}, m, { wt: m.wt.map(f => Object.assign({}, f, { typing })) });
+            }
+            diagEl.innerHTML = gitModel(m);
+            gmAlignForks(diagEl);
+        }
+
+        // Desenha a faixa que liga o comando ao par de caixas comparado.
+        function paintProbe(probe) {
+            if (!probe) { probeEl.innerHTML = ''; return; }
+            // Marca as DUAS caixas envolvidas: [WT | Staging] ou [Staging | Local].
+            const wtStage = probe.span === 'wt-stage';
+            const on = '<div class="span"></div>';
+            const row =
+                '<div class="probe-row">' +
+                  `<div class="cell">${wtStage ? on : ''}</div>` +
+                  '<div class="gap"></div>' +
+                  `<div class="cell">${on}</div>` +
+                  '<div class="gap"></div>' +
+                  `<div class="cell">${wtStage ? '' : on}</div>` +
+                '</div>';
+            // O resultado do diff não é repetido aqui: quem o mostra é a saída
+            // simulada do terminal, logo abaixo.
+            probeEl.innerHTML = row + `<div class="cap">${probe.label}</div>`;
+        }
+
+        function paintTerm(upTo, partial) {
+            let html = '';
+            for (let i = 0; i <= upTo; i++) {
+                const s = STEPS[i];
+                const último = i === upTo;
+                const texto = (último && partial) ? s.cmd.slice(0, partial.chars) : s.cmd;
+                const cur = (último && partial && partial.chars < s.cmd.length)
+                    ? '<span class="cursor">▌</span>' : '';
+                const esc = texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                html += CMD(esc + cur);
+                if (!(último && partial)) html += s.out.map(o => OUT(o)).join('');
+            }
+            termEl.innerHTML = html ? T(html) : '';
+            termEl.scrollTop = termEl.scrollHeight;
+        }
+
+        function pulse() {
+            diagEl.querySelectorAll('.gbox.active, .arr.active').forEach(b => {
+                b.classList.remove('pulseBox'); void b.offsetWidth; b.classList.add('pulseBox');
+            });
+        }
+
+        function playStep(st) {
+            const total = st.cmd.length;
+            let n = 0;
+            paintTerm(idx, { chars: 0 });
+            probeEl.innerHTML = '';                       // a resposta só vem depois do Enter
+            paintDiagram(idx > 0 ? STEPS[idx - 1].model : BASE, null);
+
+            (function typeCmd() {
+                n++;
+                paintTerm(idx, { chars: n });
+                if (n < total) { typeTimer = setTimeout(typeCmd, 45 / globalAnimSpeed); return; }
+                typeTimer = setTimeout(() => {
+                    paintTerm(idx, null);
+                    if (st.typeLine) {
+                        const { line, text } = st.typeLine;
+                        let k = 0;
+                        paintDiagram(st.model, { line, chars: 0 });
+                        (function typeFile() {
+                            k++;
+                            paintDiagram(st.model, { line, chars: k });
+                            if (k < text.length) {
+                                typeTimer = setTimeout(typeFile, 90 / globalAnimSpeed);
+                            } else {
+                                typeTimer = setTimeout(() => {
+                                    paintDiagram(st.model, null); paintProbe(st.probe); pulse(); typeTimer = null;
+                                }, 300 / globalAnimSpeed);
+                            }
+                        })();
+                    } else {
+                        paintDiagram(st.model, null); paintProbe(st.probe); pulse(); typeTimer = null;
+                    }
+                }, 380 / globalAnimSpeed);
+            })();
+        }
+
+        function render(animate) {
+            stopTyping();
+            const st = idx >= 0 ? STEPS[idx] : null;
+            capEl.innerHTML = st ? st.cap
+                : 'Retomamos de onde paramos (C1 ← C2) e usamos os dois <code>diff</code> para ver <b>onde</b> cada um olha.';
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx < 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled  = idx >= STEPS.length - 1;
+
+            if (animate && st) { playStep(st); return; }
+            paintTerm(idx, null);
+            paintDiagram(st ? st.model : BASE, null);
+            paintProbe(st ? st.probe : null);
+        }
+
+        function stopAuto() {
+            if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+            stopTyping();
+        }
+        function go(to, animate) {
+            idx = Math.max(-1, Math.min(STEPS.length - 1, to));
+            render(animate);
+        }
+        function next()  { stopAuto(); go(idx + 1, true); }
+        function prev()  { stopAuto(); go(idx - 1, false); }
+        function reset() { stopAuto(); go(-1, false); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1, true);
+                autoTimer = setTimeout(tick, 3200 / globalAnimSpeed);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', reset);
+
+        document.addEventListener('keydown', ev => {
+            if (Reveal.getCurrentSlide() !== root) return;
+            if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+            const FWD  = ev.key === 'ArrowRight' || ev.key === 'ArrowDown' || ev.key === 'PageDown';
+            const BACK = ev.key === 'ArrowLeft'  || ev.key === 'ArrowUp'   || ev.key === 'PageUp';
+            if (!FWD && !BACK) return;
+            if (FWD && idx < STEPS.length - 1) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); next();
+            } else if (BACK && idx >= 0) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); prev();
+            }
+        }, true);
+
+        function syncToSlide(event) {
+            const slide = event.currentSlide;
+            if (slide !== root) { stopAuto(); return; }
+            const cameFromAhead = event.previousSlide &&
+                root.compareDocumentPosition(event.previousSlide) & Node.DOCUMENT_POSITION_FOLLOWING;
+            stopAuto();
+            go(cameFromAhead ? STEPS.length - 1 : -1, false);
+        }
+        Reveal.on('slidechanged', syncToSlide);
+        Reveal.on('ready', syncToSlide);
+    })();
+
+    // --- Slide "Branches: linhas do tempo paralelas" ---
+    // Constrói o grafo de commits em duas faixas (main embaixo, feature em cima),
+    // mostrando que um branch é apenas um RÓTULO que anda, que HEAD diz onde estamos,
+    // e que o merge é um commit com dois pais.
+    (function () {
+        const root = document.getElementById('slide-branch');
+        if (!root) return;
+
+        const svg      = document.getElementById('branchSvg');
+        const edgesEl  = document.getElementById('brEdges');
+        const nodesEl  = document.getElementById('brNodes');
+        const ptrsEl   = document.getElementById('brPtrs');
+        const termEl   = document.getElementById('branchTerm');
+        const capEl    = document.getElementById('branchCaption');
+        const posEl    = document.getElementById('branchPos');
+        const btnPrev  = document.getElementById('branchPrev');
+        const btnNext  = document.getElementById('branchNext');
+        const btnAll   = document.getElementById('branchAll');
+        const btnReset = document.getElementById('branchReset');
+
+        const T   = (l) => '<div class="term">' + l + '</div>';
+        const CMD = (c) => `<div class="ln"><span class="prompt">$</span> <span class="cmd">${c}</span></div>`;
+        const OUT = (o) => Array.isArray(o)
+            ? `<div class="ln out ${o[1]}">${o[0]}</div>`
+            : `<div class="ln out">${o}</div>`;
+
+        // Geometria: duas faixas horizontais.
+        const LANE_MAIN = 140, LANE_FEAT = 68, X0 = 84, DX = 112, R = 19;
+        const POS = {                       // posição de cada commit no grafo
+            C1: { x: X0,          y: LANE_MAIN }, C2: { x: X0 + DX,     y: LANE_MAIN },
+            C3: { x: X0 + 2 * DX, y: LANE_MAIN }, C5: { x: X0 + 4 * DX, y: LANE_MAIN },
+            C4: { x: X0 + 3 * DX, y: LANE_FEAT },
+            M:  { x: X0 + 5 * DX, y: LANE_MAIN }
+        };
+        const LANE = { C1:'main', C2:'main', C3:'main', C5:'main', C4:'feature', M:'merge' };
+
+        // Estados: quais commits existem, quais arestas, onde estão os rótulos.
+        const S = (commits, edges, ptrs) => ({ commits, edges, ptrs });
+        const STEPS = [
+            {
+                cmd: 'git log --oneline', out: [['C3 C2 C1  (main)', 'dim']],
+                state: S(['C1','C2','C3'], [['C1','C2'],['C2','C3']],
+                         { main: 'C3', head: 'C3' }),
+                cap: 'Um histórico linear: três commits, e o rótulo <b>main</b> apontando para o último. <b>HEAD</b> diz onde estamos.'
+            },
+            {
+                cmd: 'git branch feature', out: [],
+                state: S(['C1','C2','C3'], [['C1','C2'],['C2','C3']],
+                         { main: 'C3', feature: 'C3', head: 'C3' }),
+                cap: 'Criar um branch é criar <b>outro rótulo no mesmo commit</b> — nada é copiado. Por isso é instantâneo.'
+            },
+            {
+                cmd: 'git switch feature', out: [['Switched to branch \'feature\'', 'ok']],
+                state: S(['C1','C2','C3'], [['C1','C2'],['C2','C3']],
+                         { main: 'C3', feature: 'C3', head: 'C3', headOn: 'feature' }),
+                cap: '<b>HEAD</b> passa a seguir <code>feature</code>: é isso que define em qual linha do tempo o próximo commit vai cair.'
+            },
+            {
+                cmd: 'git commit -m "Nova funcionalidade"', out: [['[feature C4] Nova funcionalidade', 'ok']],
+                state: S(['C1','C2','C3','C4'], [['C1','C2'],['C2','C3'],['C3','C4']],
+                         { main: 'C3', feature: 'C4', head: 'C4', headOn: 'feature' }),
+                cap: 'O commit <b>C4</b> nasce em <code>feature</code>, que avança. <code>main</code> <b>continua em C3</b>, intocado.'
+            },
+            {
+                cmd: 'git switch main', out: [['Switched to branch \'main\'', 'ok']],
+                state: S(['C1','C2','C3','C4'], [['C1','C2'],['C2','C3'],['C3','C4']],
+                         { main: 'C3', feature: 'C4', head: 'C3', headOn: 'main' }),
+                cap: 'Voltamos para <code>main</code>: os arquivos no disco voltam a ser os de <b>C3</b> — como se C4 não existisse.'
+            },
+            {
+                cmd: 'git commit -m "Corrige um bug"', out: [['[main C5] Corrige um bug', 'ok']],
+                state: S(['C1','C2','C3','C4','C5'], [['C1','C2'],['C2','C3'],['C3','C4'],['C3','C5']],
+                         { main: 'C5', feature: 'C4', head: 'C5', headOn: 'main' }),
+                cap: 'Agora as duas histórias <b>divergiram</b>: C4 em <code>feature</code>, C5 em <code>main</code>. Elas não se atrapalham.'
+            },
+            {
+                cmd: 'git merge feature', out: [['Merge made by the \'ort\' strategy.', 'ok'],
+                                                ['&nbsp;1 file changed, 1 insertion(+)', 'dim']],
+                state: S(['C1','C2','C3','C4','C5','M'],
+                         [['C1','C2'],['C2','C3'],['C3','C4'],['C3','C5'],['C5','M'],['C4','M']],
+                         { main: 'M', feature: 'C4', head: 'M', headOn: 'main' }),
+                cap: 'O <b>merge</b> cria um commit com <b>dois pais</b> (C5 e C4), reunindo as duas linhas do tempo em <code>main</code>.'
+            }
+        ];
+
+        let idx = -1, autoTimer = null, typeTimer = null;
+        function stopTyping() { if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; } }
+
+        // Caminho entre dois commits: reto na mesma faixa, curvo quando muda de faixa.
+        function edgePath(a, b) {
+            const p = POS[a], q = POS[b];
+            if (p.y === q.y) return `M${p.x + R} ${p.y} H ${q.x - R}`;
+            const mx = (p.x + q.x) / 2;
+            return `M${p.x + R * 0.7} ${p.y - (p.y > q.y ? R * 0.7 : -R * 0.7)} C ${mx} ${p.y}, ${mx} ${q.y}, ${q.x - R * 0.7} ${q.y + (p.y > q.y ? R * 0.7 : -R * 0.7)}`;
+        }
+
+        function draw(state, novos) {
+            novos = novos || {};
+            // faixas
+            edgesEl.innerHTML =
+                `<text class="brlane" x="8" y="${LANE_FEAT + 4}">feature</text>` +
+                `<text class="brlane" x="8" y="${LANE_MAIN + 4}">main</text>` +
+                state.edges.map(([a, b]) => {
+                    const cls = LANE[b] === 'feature' ? 'feature' : (b === 'M' ? 'merge' : 'main');
+                    const novo = novos.edge && novos.edge.some(e => e[0] === a && e[1] === b);
+                    return `<path class="bredge ${cls}${novo ? ' grow' : ''}" d="${edgePath(a, b)}"/>`;
+                }).join('');
+
+            nodesEl.innerHTML = state.commits.map(c => {
+                const p = POS[c];
+                const cls = LANE[c] + (novos.node === c ? ' appear' : '');
+                return `<g class="brnode ${cls}"><circle cx="${p.x}" cy="${p.y}" r="${R}"/>` +
+                       `<text x="${p.x}" y="${p.y + 5}">${c}</text></g>`;
+            }).join('');
+
+            // Rótulos. main fica ABAIXO do seu commit, feature ACIMA do dele, e o HEAD
+            // logo em seguida ao rótulo do ramo que está seguindo — nunca sobrepostos.
+            let html = '';
+            const H = 19;                                  // altura da etiqueta
+            const tag = (nome, cls, x, y, w) =>
+                `<g class="brptr ${cls} moving" transform="translate(${x - w / 2},${y})">` +
+                `<rect width="${w}" height="${H}" rx="5"/><text x="${w / 2}" y="14">${nome}</text></g>`;
+
+            const yMain = (p) => p.y + R + 6;              // faixa de baixo
+            const yFeat = (p) => p.y - R - 6 - H;          // faixa de cima
+
+            if (state.ptrs.main) {
+                const p = POS[state.ptrs.main];
+                html += tag('main', 'main', p.x, yMain(p), 50);
+            }
+            if (state.ptrs.feature) {
+                const p = POS[state.ptrs.feature];
+                html += tag('feature', 'feature', p.x, yFeat(p), 64);
+            }
+            if (state.ptrs.head) {
+                const p = POS[state.ptrs.head];
+                // Empilha logo abaixo/acima do rótulo do ramo correspondente.
+                const emFeature = state.ptrs.headOn === 'feature';
+                const y = emFeature ? yFeat(p) - H - 4 : yMain(p) + H + 4;
+                html += tag('HEAD', 'head', p.x, y, 52);
+            }
+            ptrsEl.innerHTML = html;
+        }
+
+        function paintTerm(upTo, partial) {
+            let html = '';
+            for (let i = 0; i <= upTo; i++) {
+                const s = STEPS[i];
+                const últ = i === upTo;
+                const txt = (últ && partial) ? s.cmd.slice(0, partial.chars) : s.cmd;
+                const cur = (últ && partial && partial.chars < s.cmd.length) ? '<span class="cursor">▌</span>' : '';
+                html += CMD(txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + cur);
+                if (!(últ && partial)) html += s.out.map(o => OUT(o)).join('');
+            }
+            termEl.innerHTML = html ? T(html) : '';
+            termEl.scrollTop = termEl.scrollHeight;
+        }
+
+        // o que este passo acrescenta em relação ao anterior (para animar só isso)
+        function novidades(i) {
+            if (i <= 0) return {};
+            const ant = STEPS[i - 1].state, at = STEPS[i].state;
+            const node = at.commits.find(c => ant.commits.indexOf(c) === -1);
+            const edge = at.edges.filter(([a, b]) =>
+                !ant.edges.some(([x, y]) => x === a && y === b));
+            return { node, edge };
+        }
+
+        function render(animate) {
+            stopTyping();
+            const st = idx >= 0 ? STEPS[idx] : null;
+            capEl.innerHTML = st ? st.cap
+                : 'Clique em <b>avançar</b>: um ramo nasce, ganha vida própria e volta a se juntar ao principal.';
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx < 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled  = idx >= STEPS.length - 1;
+
+            if (!st) {                       // estado inicial: só o histórico linear, sem terminal
+                paintTerm(-1, null);
+                draw(STEPS[0].state, {});
+                return;
+            }
+            if (!animate) { paintTerm(idx, null); draw(st.state, {}); return; }
+
+            // digita o comando; só depois o grafo reage
+            const total = st.cmd.length;
+            let n = 0;
+            paintTerm(idx, { chars: 0 });
+            draw(idx > 0 ? STEPS[idx - 1].state : STEPS[0].state, {});
+            (function type() {
+                n++;
+                paintTerm(idx, { chars: n });
+                if (n < total) { typeTimer = setTimeout(type, 45 / globalAnimSpeed); return; }
+                typeTimer = setTimeout(() => {
+                    paintTerm(idx, null);
+                    draw(st.state, novidades(idx));
+                    typeTimer = null;
+                }, 380 / globalAnimSpeed);
+            })();
+        }
+
+        function stopAuto() {
+            if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+            stopTyping();
+        }
+        function go(to, animate) {
+            idx = Math.max(-1, Math.min(STEPS.length - 1, to));
+            render(animate);
+        }
+        function next()  { stopAuto(); go(idx + 1, true); }
+        function prev()  { stopAuto(); go(idx - 1, false); }
+        function reset() { stopAuto(); go(-1, false); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1, true);
+                autoTimer = setTimeout(tick, 3000 / globalAnimSpeed);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', reset);
+
+        document.addEventListener('keydown', ev => {
+            if (Reveal.getCurrentSlide() !== root) return;
+            if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+            const FWD  = ev.key === 'ArrowRight' || ev.key === 'ArrowDown' || ev.key === 'PageDown';
+            const BACK = ev.key === 'ArrowLeft'  || ev.key === 'ArrowUp'   || ev.key === 'PageUp';
+            if (!FWD && !BACK) return;
+            if (FWD && idx < STEPS.length - 1) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); next();
+            } else if (BACK && idx >= 0) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); prev();
+            }
+        }, true);
+
+        function syncToSlide(event) {
+            const slide = event.currentSlide;
+            if (slide !== root) { stopAuto(); return; }
+            const cameFromAhead = event.previousSlide &&
+                root.compareDocumentPosition(event.previousSlide) & Node.DOCUMENT_POSITION_FOLLOWING;
+            stopAuto();
+            go(cameFromAhead ? STEPS.length - 1 : -1, false);
+        }
+        Reveal.on('slidechanged', syncToSlide);
+        Reveal.on('ready', syncToSlide);
+    })();
+
+    // --- Slide "Um branch no repositório que já temos" ---
+    // Retoma o diagrama das 4 regiões (slides 20 e 22) e mostra o que o branch do slide
+    // anterior significa AQUI: o mesmo repositório, dois rótulos, e o Working Tree
+    // trocando de conteúdo quando mudamos de ramo.
+    (function () {
+        const root = document.getElementById('slide-wbranch');
+        if (!root) return;
+
+        const diagEl = document.getElementById('wbDiagram');
+        const termEl = document.getElementById('wbTerm');
+        const capEl  = document.getElementById('wbCaption');
+        const posEl  = document.getElementById('wbPos');
+        const btnPrev  = document.getElementById('wbPrev');
+        const btnNext  = document.getElementById('wbNext');
+        const btnAll   = document.getElementById('wbAll');
+        const btnReset = document.getElementById('wbReset');
+
+        const T   = (l) => '<div class="term">' + l + '</div>';
+        const CMD = (c) => `<div class="ln"><span class="prompt">$</span> <span class="cmd">${c}</span></div>`;
+        const OUT = (o) => Array.isArray(o)
+            ? `<div class="ln out ${o[1]}">${o[0]}</div>`
+            : `<div class="ln out">${o}</div>`;
+
+        // Ponto de partida: o repositório dos slides anteriores, já com C1←C2←C3.
+        const TXT3 = ['Olá', 'Git', 'e versionamento'];
+        const modelo = (o) => Object.assign({
+            docWt: true,
+            wt:    [{ name: 'arquivo.txt', status: 'clean', content: TXT3 }],
+            stage: [{ name: 'arquivo.txt', content: TXT3 }],
+            local: { commits: ['C1', 'C2', 'C3'], branch: 'main',
+                     branches: [{ name: 'main', head: true }],
+                     snapshot: { name: 'arquivo.txt', content: TXT3 } }
+        }, o);
+        // `fork` e `newest` são opcionais: desenham o ramo bifurcado dentro da caixa
+        // e dizem qual commit deve receber o destaque de "mais novo".
+        const local = (commits, branches, snap, fork, newest) => ({
+            commits, branch: 'main', branches,
+            snapshot: { name: 'arquivo.txt', content: snap },
+            fork, newest
+        });
+        const RAMO = (commits) => ({ from: 'C3', commits, label: 'experimento' });
+
+        const TXT4  = ['Olá', 'Git', 'e versionamento', 'com branches'];      // ramo experimento
+        const TXT3B = ['Olá', 'Git', 'e versionamento', 'corrige um erro'];   // main, em paralelo
+        const TXTM  = ['Olá', 'Git', 'e versionamento', 'corrige um erro', 'com branches']; // merge
+        const STEPS = [
+            {
+                cmd: 'git branch experimento', out: [],
+                model: modelo({ local: local(['C1','C2','C3'],
+                    [{ name: 'main', head: true }, { name: 'experimento' }], TXT3) }),
+                cap: 'Nada mudou nas três regiões: <code>git branch</code> só criou <b>mais um rótulo</b> apontando para C3.'
+            },
+            {
+                cmd: 'git switch experimento', out: [['Switched to branch \'experimento\'', 'ok']],
+                model: modelo({ local: local(['C1','C2','C3'],
+                    [{ name: 'main' }, { name: 'experimento', head: true }], TXT3) }),
+                cap: 'O <b>HEAD</b> passou para <code>experimento</code>. Os arquivos continuam iguais — os dois ramos ainda apontam para C3.'
+            },
+            {
+                cmd: 'echo "com branches" >> arquivo.txt', out: [],
+                typeLine: { line: 3, text: 'com branches' },
+                model: modelo({
+                    wt: [{ name: 'arquivo.txt', status: 'modified', content: TXT4 }],
+                    local: local(['C1','C2','C3'],
+                        [{ name: 'main' }, { name: 'experimento', head: true }], TXT3) }),
+                cap: 'Editamos o arquivo <b>estando em <code>experimento</code></b>. A mudança vive só no Working Tree, por enquanto.'
+            },
+            {
+                cmd: 'git add arquivo.txt', out: [],
+                model: modelo({
+                    // o arquivo CONTINUA com a linha nova no disco: o add copia, não move
+                    wt:    [{ name: 'arquivo.txt', status: 'clean', content: TXT4 }],
+                    stage: [{ name: 'arquivo.txt', content: TXT4, added: [3] }],
+                    local: local(['C1','C2','C3'],
+                        [{ name: 'main' }, { name: 'experimento', head: true }], TXT3) }),
+                cap: 'A linha nova é <b>copiada</b> para a Staging — ela continua no Working Tree, que agora coincide com o que será commitado.'
+            },
+            {
+                cmd: 'git commit -m "Testa uma ideia"', out: [['[experimento C4] Testa uma ideia', 'ok'],
+                                                              ['&nbsp;1 file changed, 1 insertion(+)', 'dim']],
+                model: modelo({
+                    // as três regiões ficam iguais: o commit apenas gravou o que já
+                    // estava no Working Tree e na Staging
+                    wt:    [{ name: 'arquivo.txt', status: 'clean', content: TXT4 }],
+                    stage: [{ name: 'arquivo.txt', content: TXT4 }],
+                    local: local(['C1','C2','C3'],
+                        [{ name: 'main' }, { name: 'experimento', head: true }], TXT4,
+                        RAMO(['C4']), 'C4') }),
+                cap: 'Nasce <b>C4</b>, mas só <code>experimento</code> avança até ele. <code>main</code> <b>continua em C3</b>.'
+            },
+            {
+                cmd: 'git switch main', out: [['Switched to branch \'main\'', 'ok']],
+                model: modelo({
+                    wt:    [{ name: 'arquivo.txt', status: 'clean', content: TXT3 }],
+                    stage: [{ name: 'arquivo.txt', content: TXT3 }],
+                    local: local(['C1','C2','C3'],
+                        [{ name: 'main', head: true }, { name: 'experimento' }], TXT3,
+                        RAMO(['C4']), 'C3') }),
+                cap: 'Repare no <b>Working Tree</b>: a linha some do arquivo. Voltamos a C3 — o C4 continua guardado em <code>experimento</code>.'
+            },
+            {
+                cmd: 'echo "corrige um erro" >> arquivo.txt', out: [],
+                typeLine: { line: 3, text: 'corrige um erro' },
+                model: modelo({
+                    wt:    [{ name: 'arquivo.txt', status: 'modified', content: TXT3B }],
+                    stage: [{ name: 'arquivo.txt', content: TXT3 }],
+                    local: local(['C1','C2','C3'],
+                        [{ name: 'main', head: true }, { name: 'experimento' }], TXT3,
+                        RAMO(['C4']), 'C3') }),
+                cap: 'Enquanto isso, a vida em <code>main</code> continua: editamos o arquivo <b>aqui</b>, sem nada a ver com o ramo.'
+            },
+            {
+                cmd: 'git commit -am "Corrige um erro"', out: [['[main C5] Corrige um erro', 'ok'],
+                                                               ['&nbsp;1 file changed, 1 insertion(+)', 'dim']],
+                model: modelo({
+                    wt:    [{ name: 'arquivo.txt', status: 'clean', content: TXT3B }],
+                    stage: [{ name: 'arquivo.txt', content: TXT3B }],
+                    local: local(['C1','C2','C3','C5'],
+                        [{ name: 'main', head: true }, { name: 'experimento' }], TXT3B,
+                        RAMO(['C4']), 'C5') }),
+                cap: 'Nasce <b>C5</b> em <code>main</code> — a cadeia mostra a linha do ramo atual. Os dois <b>divergiram</b>: C4 e C5, ambos filhos de C3.'
+            },
+            {
+                cmd: 'git merge experimento', out: [['Merge made by the \'ort\' strategy.', 'ok'],
+                                                    ['&nbsp;1 file changed, 1 insertion(+)', 'dim']],
+                model: modelo({
+                    wt:    [{ name: 'arquivo.txt', status: 'clean', content: TXTM }],
+                    stage: [{ name: 'arquivo.txt', content: TXTM }],
+                    local: local(['C1','C2','C3','C5','M'],
+                        [{ name: 'main', head: true }, { name: 'experimento' }], TXTM,
+                        Object.assign(RAMO(['C4']), { mergedInto: 'M' }), 'M') }),
+                cap: 'Como os dois lados avançaram, o Git cria o commit <b>M</b> — com <b>dois pais</b> — e o arquivo passa a ter as duas mudanças.'
+            }
+        ];
+
+        let idx = -1, autoTimer = null, typeTimer = null;
+        function stopTyping() { if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; } }
+
+        function paintDiagram(model, typing) {
+            let m = model;
+            if (typing) m = Object.assign({}, m, { wt: m.wt.map(f => Object.assign({}, f, { typing })) });
+            diagEl.innerHTML = gitModel(m);
+            gmAlignForks(diagEl);
+        }
+        function pulse() {
+            diagEl.querySelectorAll('.gbox.active, .arr.active').forEach(b => {
+                b.classList.remove('pulseBox'); void b.offsetWidth; b.classList.add('pulseBox');
+            });
+        }
+        function paintTerm(upTo, partial) {
+            let html = '';
+            for (let i = 0; i <= upTo; i++) {
+                const s = STEPS[i];
+                const últ = i === upTo;
+                const txt = (últ && partial) ? s.cmd.slice(0, partial.chars) : s.cmd;
+                const cur = (últ && partial && partial.chars < s.cmd.length) ? '<span class="cursor">▌</span>' : '';
+                html += CMD(txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + cur);
+                if (!(últ && partial)) html += s.out.map(o => OUT(o)).join('');
+            }
+            termEl.innerHTML = html ? T(html) : '';
+            termEl.scrollTop = termEl.scrollHeight;
+        }
+
+        const INICIAL = modelo({});
+        function render(animate) {
+            stopTyping();
+            const st = idx >= 0 ? STEPS[idx] : null;
+            capEl.innerHTML = st ? st.cap
+                : 'O mesmo repositório dos slides anteriores (C1 ← C2 ← C3). Vamos abrir um ramo <b>sem sair daqui</b>.';
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx < 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled  = idx >= STEPS.length - 1;
+
+            if (!animate || !st) {
+                paintTerm(idx, null);
+                paintDiagram(st ? st.model : INICIAL, null);
+                return;
+            }
+            const total = st.cmd.length;
+            let n = 0;
+            paintTerm(idx, { chars: 0 });
+            paintDiagram(idx > 0 ? STEPS[idx - 1].model : INICIAL, null);
+            (function type() {
+                n++;
+                paintTerm(idx, { chars: n });
+                if (n < total) { typeTimer = setTimeout(type, 45 / globalAnimSpeed); return; }
+                typeTimer = setTimeout(() => {
+                    paintTerm(idx, null);
+                    if (st.typeLine) {
+                        const { line, text } = st.typeLine;
+                        let k = 0;
+                        paintDiagram(st.model, { line, chars: 0 });
+                        (function typeFile() {
+                            k++;
+                            paintDiagram(st.model, { line, chars: k });
+                            if (k < text.length) {
+                                typeTimer = setTimeout(typeFile, 90 / globalAnimSpeed);
+                            } else {
+                                typeTimer = setTimeout(() => {
+                                    paintDiagram(st.model, null); pulse(); typeTimer = null;
+                                }, 300 / globalAnimSpeed);
+                            }
+                        })();
+                    } else {
+                        paintDiagram(st.model, null); pulse(); typeTimer = null;
+                    }
+                }, 380 / globalAnimSpeed);
+            })();
+        }
+
+        function stopAuto() {
+            if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+            stopTyping();
+        }
+        function go(to, animate) {
+            idx = Math.max(-1, Math.min(STEPS.length - 1, to));
+            render(animate);
+        }
+        function next()  { stopAuto(); go(idx + 1, true); }
+        function prev()  { stopAuto(); go(idx - 1, false); }
+        function reset() { stopAuto(); go(-1, false); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1, true);
+                autoTimer = setTimeout(tick, 3000 / globalAnimSpeed);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', reset);
+
+        document.addEventListener('keydown', ev => {
+            if (Reveal.getCurrentSlide() !== root) return;
+            if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+            const FWD  = ev.key === 'ArrowRight' || ev.key === 'ArrowDown' || ev.key === 'PageDown';
+            const BACK = ev.key === 'ArrowLeft'  || ev.key === 'ArrowUp'   || ev.key === 'PageUp';
+            if (!FWD && !BACK) return;
+            if (FWD && idx < STEPS.length - 1) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); next();
+            } else if (BACK && idx >= 0) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); prev();
+            }
+        }, true);
+
+        function syncToSlide(event) {
+            const slide = event.currentSlide;
+            if (slide !== root) { stopAuto(); return; }
+            const cameFromAhead = event.previousSlide &&
+                root.compareDocumentPosition(event.previousSlide) & Node.DOCUMENT_POSITION_FOLLOWING;
+            stopAuto();
+            go(cameFromAhead ? STEPS.length - 1 : -1, false);
+        }
+        Reveal.on('slidechanged', syncToSlide);
+        Reveal.on('ready', syncToSlide);
+    })();
+
+    // --- Animação de fundo do slide "Git como solução" ---
+    // Um repositório "vivo": commits surgindo em três ramos, trechos de código voando
+    // até cada commit no momento em que ele é gravado, e merges reunindo os ramos.
+    // Ciclo de ~15s, em loop contínuo enquanto o slide estiver ativo.
+    (function () {
+        const canvas = document.getElementById('repoCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+
+        const CICLO = 15000;                     // duração do loop, em ms
+        const LANES = { main: 268, feat: 186, fix: 104 };
+        const COR = { main: '#2e7d32', feat: '#8e44ad', fix: '#2980b9', merge: '#f05033' };
+        const X0 = 118, DX = 116, R = 19;
+
+        // Roteiro: cada commit tem instante de nascimento (0..1 do ciclo), ramo,
+        // coluna, pais e o trecho de código que "entra" nele.
+        const COMMITS = [
+            { id:'a', t:0.00, lane:'main', col:0, pais:[],            code:'+ init()' },
+            { id:'b', t:0.07, lane:'main', col:1, pais:['a'],         code:'+ login(user)' },
+            { id:'c', t:0.15, lane:'feat', col:2, pais:['b'],         code:'+ validate()' },
+            { id:'d', t:0.24, lane:'main', col:2, pais:['b'],         code:'+ logger.info' },
+            { id:'e', t:0.32, lane:'feat', col:3, pais:['c'],         code:'+ retry(3)' },
+            { id:'f', t:0.40, lane:'fix',  col:3, pais:['d'],         code:'- bug #42' },
+            { id:'g', t:0.49, lane:'main', col:4, pais:['d','e'],     code:'merge feature', merge:true },
+            { id:'h', t:0.58, lane:'fix',  col:4, pais:['f'],         code:'+ test(case)' },
+            { id:'i', t:0.66, lane:'main', col:5, pais:['g'],         code:'+ cache.get' },
+            { id:'j', t:0.74, lane:'feat', col:5, pais:['g'],         code:'+ export()' },
+            { id:'k', t:0.82, lane:'main', col:6, pais:['i','h'],     code:'merge hotfix',  merge:true },
+            { id:'l', t:0.90, lane:'main', col:7, pais:['k','j'],     code:'merge feature', merge:true }
+        ];
+        const byId = {};
+        COMMITS.forEach(c => { c.x = X0 + c.col * DX; c.y = LANES[c.lane]; byId[c.id] = c; });
+
+        const APARECE = 0.030;   // fração do ciclo que o commit leva para surgir
+        const PATCH   = 0.055;   // duração do voo do trecho de código
+
+        function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+        function lerp(a, b, t) { return a + (b - a) * t; }
+        // retângulo arredondado (roundRect não existe em navegadores mais antigos)
+        function caixa(x, y, w, h, r) {
+            ctx.beginPath();
+            if (ctx.roundRect) { ctx.roundRect(x, y, w, h, r); return; }
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y,     x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x,     y + h, r);
+            ctx.arcTo(x,     y + h, x,     y,     r);
+            ctx.arcTo(x,     y,     x + w, y,     r);
+            ctx.closePath();
+        }
+
+        let rafId = null, cancelled = true, t0 = 0;
+
+        function frame(now) {
+            if (cancelled) return;
+            if (!t0) t0 = now;
+            // Avança até o fim do ciclo e para lá, deixando o repositório completo
+            // na tela — sem repetir.
+            const bruto = ((now - t0) / CICLO) * globalAnimSpeed;
+            const fim = bruto >= 1;
+            const p = fim ? 1 : bruto;
+
+            ctx.clearRect(0, 0, W, H);
+
+            // faixas de fundo, com o nome de cada ramo
+            ctx.font = '600 12px Segoe UI, sans-serif';
+            ctx.textAlign = 'left';
+            Object.keys(LANES).forEach(l => {
+                ctx.strokeStyle = 'rgba(150,165,185,0.20)';
+                ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(28, LANES[l]); ctx.lineTo(W - 20, LANES[l]); ctx.stroke();
+                ctx.fillStyle = 'rgba(120,135,155,0.55)';
+                ctx.fillText({ main:'main', feat:'feature', fix:'hotfix' }[l], 28, LANES[l] - 26);
+            });
+
+            // visibilidade de cada commit nesta fase
+            const vis = c => {
+                const d = p - c.t;
+                if (d < 0) return 0;
+                return Math.min(1, d / APARECE);
+            };
+
+            // arestas (desenhadas antes dos nós)
+            ctx.lineWidth = 2.5;
+            COMMITS.forEach(c => {
+                const v = vis(c);
+                if (!v) return;
+                c.pais.forEach(pid => {
+                    const a = byId[pid];
+                    if (!vis(a)) return;
+                    ctx.strokeStyle = c.merge ? COR.merge : COR[c.lane];
+                    ctx.globalAlpha = 0.30 + 0.55 * v;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x + R, a.y);
+                    if (a.y === c.y) {
+                        ctx.lineTo(lerp(a.x + R, c.x - R, v), c.y);
+                    } else {
+                        const mx = (a.x + c.x) / 2;
+                        const ex = lerp(a.x + R, c.x - R, v), ey = lerp(a.y, c.y, easeOut(v));
+                        ctx.bezierCurveTo(mx, a.y, mx, c.y, ex, ey);
+                    }
+                    ctx.stroke();
+                });
+            });
+            ctx.globalAlpha = 1;
+
+            // trechos de código voando até o commit que está nascendo
+            ctx.textAlign = 'center';
+            COMMITS.forEach(c => {
+                const d = p - c.t + PATCH;             // começa um pouco antes do commit
+                if (d < 0 || d > PATCH * 2) return;
+                const q = Math.min(1, d / (PATCH * 2));
+                const sobe = 1 - easeOut(q);
+                const y = c.y - 46 - sobe * 26;
+                const alpha = q < 0.15 ? q / 0.15 : (q > 0.75 ? (1 - q) / 0.25 : 1);
+                ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+                ctx.font = '700 12px Consolas, Menlo, monospace';
+                const w = ctx.measureText(c.code).width + 16;
+                ctx.fillStyle = c.code[0] === '-' ? 'rgba(255,238,240,0.95)' : 'rgba(230,255,237,0.95)';
+                ctx.strokeStyle = c.code[0] === '-' ? '#f0b3ab' : '#a5d6a7';
+                ctx.lineWidth = 1.5;
+                const bx = c.x - w / 2, by = y - 11;
+                caixa(bx, by, w, 21, 5); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = c.code[0] === '-' ? '#a3392b' : '#1b5e20';
+                ctx.fillText(c.code, c.x, y + 4);
+            });
+            ctx.globalAlpha = 1;
+
+            // nós
+            COMMITS.forEach(c => {
+                const v = vis(c);
+                if (!v) return;
+                const raio = R * (0.55 + 0.45 * easeOut(v));
+                ctx.globalAlpha = v;
+                ctx.fillStyle = c.merge ? COR.merge : COR[c.lane];
+                ctx.beginPath(); ctx.arc(c.x, c.y, raio, 0, Math.PI * 2); ctx.fill();
+                // brilho no instante do nascimento
+                if (v < 1) {
+                    ctx.strokeStyle = c.merge ? COR.merge : COR[c.lane];
+                    ctx.globalAlpha = (1 - v) * 0.5;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.arc(c.x, c.y, raio + (1 - v) * 16, 0, Math.PI * 2); ctx.stroke();
+                }
+                ctx.globalAlpha = v;
+                ctx.fillStyle = '#fff';
+                ctx.font = '800 11px Segoe UI, sans-serif';
+                ctx.fillText(c.merge ? 'M' : 'C', c.x, c.y + 4);
+            });
+            ctx.globalAlpha = 1;
+
+            if (fim) { cancelled = true; rafId = null; return; }  // congela no estado final
+            rafId = requestAnimationFrame(frame);
+        }
+
+        function start() {
+            if (!cancelled) return;
+            cancelled = false; t0 = 0;
+            rafId = requestAnimationFrame(frame);
+        }
+        function stop() {
+            cancelled = true;
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+        function syncToSlide(slide) {
+            if (slide && slide.contains(canvas)) start(); else stop();
+        }
+        Reveal.on('slidechanged', e => syncToSlide(e.currentSlide));
+        Reveal.on('ready', e => syncToSlide(e.currentSlide));
     })();
 
     // --- Animação: patches convergindo para Linus e sendo mergiados (slide "O contexto: o kernel Linux") ---
