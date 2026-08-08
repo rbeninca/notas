@@ -560,6 +560,39 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
         .anim-speed input[type="range"] { width:110px; accent-color: var(--git-orange); cursor:pointer; }
         .anim-speed .val { min-width:36px; color: var(--git-orange); font-weight:800; text-align:right; }
+
+        /* ===================== Questionarios reutilizaveis ===================== */
+        .quiz { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:10px; }
+        .quiz-question { background:#f8fafc; border:1px solid #d9e1ea; border-radius:10px; padding:12px;
+            box-shadow:0 3px 10px rgba(30,50,80,0.08); }
+        .quiz-question.correct { border-color:var(--ifsc-green); background:#f3faf4; animation:quizSuccess .55s ease-out; }
+        .quiz-number { color:var(--ifsc-green); font-size:.58em; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
+        .quiz-prompt { min-height:58px; margin:4px 0 8px !important; font-size:.68em; line-height:1.28; font-weight:700; color:#263548; }
+        .quiz-options { display:grid; gap:6px; }
+        .quiz-option { width:100%; border:2px solid #d7dee8; border-radius:7px; background:#fff; color:#344254;
+            padding:7px 9px; font:inherit; font-size:.56em; line-height:1.25; text-align:left; cursor:pointer;
+            transition:transform .16s ease, border-color .16s ease, background .16s ease; }
+        .quiz-option:hover:not(.wrong):not(.right) { transform:translateY(-1px); border-color:var(--accent-blue); background:#f5faff; }
+        .quiz-option.wrong { border-color:var(--accent-red); background:#fdf0ef; color:#8f2d22; cursor:help; animation:quizShake .35s ease; }
+        .quiz-option.right { border-color:var(--ifsc-green); background:#e8f5e9; color:var(--ifsc-dark); font-weight:800; cursor:default; }
+        .quiz-option:disabled { opacity:1; }
+        .quiz-result { min-height:20px; margin-top:7px; font-size:.51em; font-weight:800; color:var(--ifsc-green); }
+        .quiz-progress { margin:8px 0 0; text-align:right; color:#69788b; font-size:.55em; font-weight:700; }
+        @keyframes quizShake { 25% { transform:translateX(-5px); } 50% { transform:translateX(5px); } 75% { transform:translateX(-3px); } }
+        @keyframes quizSuccess { 50% { transform:scale(1.018); box-shadow:0 0 0 8px rgba(46,125,50,.12); } }
+
+        .quiz-modal { position:fixed; inset:0; z-index:3000; display:flex; align-items:center; justify-content:center;
+            background:rgba(17,27,39,.58); padding:24px; opacity:0; visibility:hidden; transition:opacity .2s ease, visibility .2s; }
+        .quiz-modal.open { opacity:1; visibility:visible; }
+        .quiz-modal-card { width:min(560px, 90vw); background:#fff; border-radius:12px; border-top:7px solid var(--accent-red);
+            padding:22px 26px; box-shadow:0 18px 55px rgba(0,0,0,.32); transform:translateY(14px) scale(.97);
+            transition:transform .2s ease; font-family:Arial, sans-serif; }
+        .quiz-modal.open .quiz-modal-card { transform:translateY(0) scale(1); }
+        .quiz-modal-card h3 { margin:0 0 8px; color:var(--accent-red); font-size:23px; }
+        .quiz-modal-card p { margin:0 0 18px; color:#344254; font-size:17px; line-height:1.45; }
+        .quiz-modal-close { float:right; border:0; border-radius:6px; padding:8px 15px; background:var(--ifsc-green);
+            color:#fff; font-size:15px; font-weight:800; cursor:pointer; }
+        @media print { .quiz-modal { display:none !important; } }
     </style>
 </head>
 <body>
@@ -1045,6 +1078,46 @@
             </div>
         </section>
 
+        <!-- ===================== 9. Questionario: sistemas centralizados ===================== -->
+        <section class="compact" id="slide-quiz-vcs-central">
+            <h2>Questionário — Sistemas Centralizados</h2>
+            <p>Escolha uma resposta em cada questão. Se errar, leia a explicação e tente novamente.</p>
+            <div class="quiz" data-quiz-id="vcs-centralizados">
+                <article class="quiz-question" data-question-id="historico-central">
+                    <div class="quiz-number">Questão 1 · objetiva</div>
+                    <p class="quiz-prompt">Onde fica o histórico principal em um sistema de controle de versão centralizado?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="cada-maquina" data-feedback="Nos sistemas centralizados, as máquinas dos desenvolvedores mantêm principalmente cópias de trabalho. O histórico principal pertence ao servidor central.">Em uma cópia completa na máquina de cada pessoa</button>
+                        <button class="quiz-option" data-option-id="servidor" data-correct="true">Em um servidor central compartilhado</button>
+                        <button class="quiz-option" data-option-id="arquivos" data-feedback="Arquivos numerados podem ser uma tentativa manual de guardar versões, mas não constituem o histórico de um sistema de controle de versão.">Em arquivos numerados enviados por e-mail</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="commit-offline">
+                    <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Sem conexão com o servidor, um desenvolvedor consegue registrar normalmente um commit no histórico central.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O commit precisa alcançar o repositório central. Sem conexão, a alteração pode ficar na cópia de trabalho, mas ainda não entra no histórico compartilhado.">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="servidor-indisponivel">
+                    <div class="quiz-number">Questão 3 · objetiva</div>
+                    <p class="quiz-prompt">Qual limitação decorre diretamente da dependência de um servidor central?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="arquivos-apagados" data-feedback="O modelo centralizado não apaga automaticamente os arquivos locais. O problema é perder acesso às operações que dependem do servidor.">Todos os arquivos locais são apagados</button>
+                        <button class="quiz-option" data-option-id="operacoes-indisponiveis" data-correct="true">Operações que dependem do histórico ficam indisponíveis</button>
+                        <button class="quiz-option" data-option-id="sem-equipe" data-feedback="Esses sistemas foram criados justamente para permitir trabalho em equipe. A limitação é a dependência do ponto central e da conexão com ele.">O trabalho em equipe se torna impossível</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div>
+            <div class="quiz-progress" aria-live="polite"></div>
+        </section>
+
         <!-- ===================== VCS distribuídos ===================== -->
         <section class="compact" id="slide-vcs-distributed">
             <h2>A resposta: sistemas distribuídos (DVCS)</h2>
@@ -1193,6 +1266,46 @@
                 </svg>
                 </div>
             </div>
+        </section>
+
+        <!-- ===================== Questionario: sistemas distribuidos ===================== -->
+        <section class="compact" id="slide-quiz-vcs-distributed">
+            <h2>Questionário — Sistemas Distribuídos</h2>
+            <p>Teste o modelo distribuído. As tentativas ficam salvas neste navegador.</p>
+            <div class="quiz" data-quiz-id="vcs-distribuidos">
+                <article class="quiz-question" data-question-id="conteudo-clone">
+                    <div class="quiz-number">Questão 1 · objetiva</div>
+                    <p class="quiz-prompt">O que cada desenvolvedor recebe ao clonar um repositório distribuído?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="arquivo-atual" data-feedback="Uma cópia apenas do estado atual é característica associada ao modelo centralizado apresentado. Em um DVCS, o clone também traz o histórico do projeto.">Somente a versão atual dos arquivos</button>
+                        <button class="quiz-option" data-option-id="historico-completo" data-correct="true">Uma cópia do repositório com seu histórico</button>
+                        <button class="quiz-option" data-option-id="atalho-servidor" data-feedback="O clone não é apenas um atalho para o servidor. Ele cria um repositório local que permite consultar o histórico e registrar commits sem conexão.">Apenas um atalho para o servidor central</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="trabalho-offline">
+                    <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Em um sistema distribuído, operações como commit, diff e consulta ao histórico podem funcionar sem conexão com a rede.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="Essas operações usam o repositório armazenado na própria máquina. A rede será necessária posteriormente para trocar commits com outros repositórios.">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="papel-servidor">
+                    <div class="quiz-number">Questão 3 · objetiva</div>
+                    <p class="quiz-prompt">Qual é o papel de um servidor em um sistema distribuído?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="unico-historico" data-feedback="O histórico não vive exclusivamente no servidor: cada clone possui seu próprio repositório. Isso elimina a dependência de um único dono técnico do histórico.">Ser o único lugar onde o histórico existe</button>
+                        <button class="quiz-option" data-option-id="todo-commit" data-feedback="Commits são registrados primeiro no repositório local e não precisam passar imediatamente por um servidor.">Autorizar e registrar obrigatoriamente todo commit</button>
+                        <button class="quiz-option" data-option-id="ponto-encontro" data-correct="true">Servir como ponto de encontro para sincronização</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div>
+            <div class="quiz-progress" aria-live="polite"></div>
         </section>
 
         <!-- ===================== Comparação centralizado x distribuído ===================== -->
@@ -1695,6 +1808,14 @@ git pull origin main   # equivale a: git fetch + git merge</code></pre>
             <p style="margin-top:36px; font-size:0.9em; color:#888;">Perguntas?</p>
         </section>
 
+</div>
+</div>
+
+<div class="quiz-modal" id="quizFeedbackModal" role="dialog" aria-modal="true" aria-labelledby="quizModalTitle" aria-describedby="quizModalText">
+    <div class="quiz-modal-card">
+        <h3 id="quizModalTitle">Ainda não</h3>
+        <p id="quizModalText"></p>
+        <button class="quiz-modal-close" type="button">Entendi, tentar novamente</button>
     </div>
 </div>
 
@@ -1745,6 +1866,103 @@ git pull origin main   # equivale a: git fetch + git merge</code></pre>
     if (window.location.search.indexOf('print-pdf') !== -1) {
         window.addEventListener('load', () => setTimeout(() => window.print(), 800));
     }
+
+    // Motor generico de questionarios. O HTML declara apenas ids, resposta correta e
+    // explicacoes; comportamento e persistencia ficam desacoplados do conteudo.
+    (function () {
+        const STORAGE_PREFIX = 'oficina-git.quiz.v1.';
+        const modal = document.getElementById('quizFeedbackModal');
+        const modalText = document.getElementById('quizModalText');
+        const modalClose = modal.querySelector('.quiz-modal-close');
+        let returnFocus = null;
+
+        function readState(quizId) {
+            try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + quizId)) || {}; }
+            catch (_) { return {}; }
+        }
+        function writeState(quizId, state) {
+            try { localStorage.setItem(STORAGE_PREFIX + quizId, JSON.stringify(state)); }
+            catch (_) { /* O questionario continua funcional se o armazenamento for bloqueado. */ }
+        }
+        function openFeedback(message, trigger) {
+            returnFocus = trigger;
+            modalText.textContent = message;
+            modal.classList.add('open');
+            modalClose.focus();
+        }
+        function closeFeedback() {
+            modal.classList.remove('open');
+            if (returnFocus) returnFocus.focus();
+        }
+        modalClose.addEventListener('click', closeFeedback);
+        modal.addEventListener('click', event => { if (event.target === modal) closeFeedback(); });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && modal.classList.contains('open')) {
+                event.stopPropagation();
+                closeFeedback();
+            }
+        }, true);
+
+        document.querySelectorAll('[data-quiz-id]').forEach(quiz => {
+            const quizId = quiz.dataset.quizId;
+            const state = readState(quizId);
+            const questions = Array.from(quiz.querySelectorAll('[data-question-id]'));
+            const progress = quiz.closest('section').querySelector('.quiz-progress');
+
+            function updateProgress() {
+                const hits = questions.filter(question => question.classList.contains('correct')).length;
+                progress.textContent = hits === questions.length
+                    ? 'Concluído: todas as respostas estão corretas.'
+                    : `${hits} de ${questions.length} questões concluídas`;
+            }
+
+            questions.forEach(question => {
+                const questionId = question.dataset.questionId;
+                const saved = state[questionId] || { wrong: [], correct: false };
+                const result = question.querySelector('.quiz-result');
+                const options = Array.from(question.querySelectorAll('.quiz-option'));
+
+                saved.wrong.forEach(optionId => {
+                    const option = options.find(item => item.dataset.optionId === optionId);
+                    if (option) option.classList.add('wrong');
+                });
+                if (saved.correct) {
+                    const right = options.find(item => item.dataset.correct === 'true');
+                    question.classList.add('correct');
+                    if (right) right.classList.add('right');
+                    options.forEach(item => item.disabled = !item.classList.contains('wrong'));
+                    result.textContent = '✓ Correto!';
+                }
+
+                options.forEach(option => option.addEventListener('click', event => {
+                    event.stopPropagation();
+                    if (option.classList.contains('wrong')) {
+                        openFeedback(option.dataset.feedback, option);
+                        return;
+                    }
+                    if (question.classList.contains('correct')) return;
+                    const current = state[questionId] || { wrong: [], correct: false };
+
+                    if (option.dataset.correct === 'true') {
+                        current.correct = true;
+                        question.classList.add('correct');
+                        option.classList.add('right');
+                        options.forEach(item => item.disabled = !item.classList.contains('wrong'));
+                        result.textContent = '✓ Correto! Muito bem.';
+                    } else {
+                        if (!current.wrong.includes(option.dataset.optionId)) current.wrong.push(option.dataset.optionId);
+                        option.classList.add('wrong');
+                        result.textContent = 'Essa tentativa foi marcada. Escolha outra alternativa.';
+                        openFeedback(option.dataset.feedback, option);
+                    }
+                    state[questionId] = current;
+                    writeState(quizId, state);
+                    updateProgress();
+                }));
+            });
+            updateProgress();
+        });
+    })();
 
     // Velocidade compartilhada por todas as animações da apresentação, controlada
     // pelo seekbar fixo ao lado do botão de PDF (0.25x a 2.5x, padrão 1x)
