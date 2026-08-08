@@ -563,8 +563,15 @@
 
         /* ===================== Questionarios reutilizaveis ===================== */
         .quiz { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:10px; }
-        .quiz-question { background:#f8fafc; border:1px solid #d9e1ea; border-radius:10px; padding:12px;
+        .quiz-question { position:relative; background:#f8fafc; border:1px solid #d9e1ea; border-radius:10px; padding:12px;
             box-shadow:0 3px 10px rgba(30,50,80,0.08); }
+        .quiz.quiz-inline { display:block; margin-top:6px; }
+        .quiz-inline .quiz-question { display:grid; grid-template-columns:1fr auto; align-items:center; column-gap:12px; padding:8px 12px; }
+        .quiz-inline .quiz-number { grid-column:1; }
+        .quiz-inline .quiz-prompt { grid-column:1; min-height:0; margin:2px 0 !important; }
+        .quiz-inline .quiz-options { grid-column:2; grid-row:1 / span 2; display:flex; min-width:190px; }
+        .quiz-inline .quiz-option { text-align:center; min-width:88px; }
+        .quiz-inline .quiz-result { grid-column:1 / -1; min-height:15px; margin-top:2px; }
         .quiz-question.correct { border-color:var(--ifsc-green); background:#f3faf4; animation:quizSuccess .55s ease-out; }
         .quiz-number { color:var(--ifsc-green); font-size:.58em; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
         .quiz-prompt { min-height:58px; margin:4px 0 8px !important; font-size:.68em; line-height:1.28; font-weight:700; color:#263548; }
@@ -577,6 +584,11 @@
         .quiz-option.right { border-color:var(--ifsc-green); background:#e8f5e9; color:var(--ifsc-dark); font-weight:800; cursor:default; }
         .quiz-option:disabled { opacity:1; }
         .quiz-result { min-height:20px; margin-top:7px; font-size:.51em; font-weight:800; color:var(--ifsc-green); }
+        .quiz-reset { position:absolute; top:7px; right:8px; border:0; border-radius:5px; background:transparent;
+            color:#758397; padding:3px 6px; font:inherit; font-size:.43em; font-weight:800; cursor:pointer;
+            transition:color .16s ease, background .16s ease; }
+        .quiz-reset:hover { color:var(--accent-red); background:#fdf0ef; }
+        .quiz-reset:focus-visible { outline:2px solid var(--accent-blue); outline-offset:2px; }
         .quiz-progress { margin:8px 0 0; text-align:right; color:#69788b; font-size:.55em; font-weight:700; }
         @keyframes quizShake { 25% { transform:translateX(-5px); } 50% { transform:translateX(5px); } 75% { transform:translateX(-3px); } }
         @keyframes quizSuccess { 50% { transform:scale(1.018); box-shadow:0 0 0 8px rgba(46,125,50,.12); } }
@@ -1304,6 +1316,7 @@
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
+
             </div>
             <div class="quiz-progress" aria-live="polite"></div>
         </section>
@@ -1452,6 +1465,27 @@
                     <p class="small-text" id="storyCaption" style="text-align:center; margin-top:6px; min-height:2.4em;"></p>
                 </div>
             </div>
+            <div class="quiz quiz-inline" data-quiz-id="modelo-commits">
+                <article class="quiz-question" data-question-id="conteudo-commit">
+                    <div class="quiz-number">Pergunta rápida · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Um commit contém apenas as diferenças e adições feitas em relação ao commit anterior.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="Conceitualmente, o Git registra cada commit como uma fotografia completa do estado do projeto. Ele pode usar deltas e compressão internamente para economizar espaço, mas isso é apenas um detalhe de armazenamento.">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="arvore-commit-c3">
+                    <div class="quiz-number">Pergunta rápida · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Para reconstruir o estado do projeto no commit C3, o Git precisa acessar a árvore de objetos referenciada por esse commit.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="C3 aponta para uma árvore que descreve os diretórios e arquivos daquele estado. O Git usa essa árvore e os objetos referenciados por ela para reconstruir o projeto. O branch apenas aponta para um commit e não contém os arquivos.">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div>
+            <div class="quiz-progress" aria-live="polite"></div>
         </section>
 
         <!-- ===================== As 4 regiões ===================== -->
@@ -1485,6 +1519,78 @@
                 <span class="pos" id="flowPos"></span>
             </div>
             <p class="small-text" id="flowCaption" style="text-align:center; margin-top:4px; min-height:2.6em;"></p>
+        </section>
+
+        <!-- ===================== 23. Questionario: regioes e ciclo do Git ===================== -->
+        <section class="compact" id="slide-quiz-git-regions-flow">
+            <h2>Questionário — Regiões e Ciclo do Git</h2>
+            <p>Relacione cada comando à região em que ele atua.</p>
+            <div class="quiz" data-quiz-id="regioes-fluxo-inicial-git">
+                <article class="quiz-question" data-question-id="arquivos-editados">
+                    <div class="quiz-number">Questão 1 · objetiva</div>
+                    <p class="quiz-prompt">Em qual região estão os arquivos que você vê e edita diretamente no disco?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="working-tree" data-correct="true">Working Tree</button>
+                        <button class="quiz-option" data-option-id="staging" data-feedback="A Staging Area guarda as mudanças selecionadas; ela não é o local onde você edita diretamente os arquivos.">Staging Area</button>
+                        <button class="quiz-option" data-option-id="git-dir" data-feedback="A pasta .git guarda os dados de controle de versão. Os arquivos visíveis e editáveis do projeto estão na Working Tree.">Pasta <code>.git</code></button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="efeito-git-add">
+                    <div class="quiz-number">Questão 2 · objetiva</div>
+                    <p class="quiz-prompt">No modelo apresentado, qual movimento representa o comando <code>git add</code>?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="wt-stage" data-correct="true">Working Tree → Staging Area</button>
+                        <button class="quiz-option" data-option-id="stage-wt" data-feedback="Esse é o sentido inverso. O git add seleciona mudanças da Working Tree e as coloca na Staging Area.">Staging Area → Working Tree</button>
+                        <button class="quiz-option" data-option-id="somente-wt" data-feedback="O arquivo continua existindo na Working Tree, mas o git add também registra sua versão selecionada na Staging Area.">Permanece somente na Working Tree</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="add-apaga-working-tree">
+                    <div class="quiz-number">Questão 3 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Depois de executar <code>git add</code>, a alteração deixa de existir na Working Tree.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O git add não move nem apaga o arquivo original. Ele registra na Staging Area uma versão das mudanças selecionadas, enquanto o arquivo continua na Working Tree.">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="papel-staging">
+                    <div class="quiz-number">Questão 4 · objetiva</div>
+                    <p class="quiz-prompt">Qual é o papel da Staging Area no ciclo apresentado?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="historico-definitivo" data-feedback="A Staging Area é temporária e pode ser alterada com novos comandos git add. Ela não representa um registro definitivo do histórico.">Guardar definitivamente todo o histórico</button>
+                        <button class="quiz-option" data-option-id="mudancas-selecionadas" data-correct="true">Guardar as mudanças selecionadas com <code>git add</code></button>
+                        <button class="quiz-option" data-option-id="editar-arquivos" data-feedback="Os arquivos são editados diretamente na Working Tree. A Staging Area recebe as mudanças selecionadas com git add.">Editar diretamente os arquivos do projeto</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="efeito-git-init">
+                    <div class="quiz-number">Questão 5 · objetiva</div>
+                    <p class="quiz-prompt">Qual é o principal efeito de executar <code>git init</code> em uma pasta?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="cria-git" data-correct="true">Criar a estrutura de controle na pasta <code>.git</code></button>
+                        <button class="quiz-option" data-option-id="apaga-arquivos" data-feedback="O git init não apaga os arquivos existentes. Ele adiciona à pasta a estrutura interna usada pelo Git.">Apagar os arquivos que já existem</button>
+                        <button class="quiz-option" data-option-id="seleciona-tudo" data-feedback="Criar a estrutura do Git não seleciona automaticamente os arquivos existentes. A seleção de mudanças é uma etapa separada.">Selecionar automaticamente todos os arquivos</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="status-altera-estado">
+                    <div class="quiz-number">Questão 6 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">O comando <code>git status</code> altera os arquivos ou a Staging Area ao mostrar a situação atual.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O git status é um comando de consulta: ele descreve o estado atual sem modificar os arquivos nem a Staging Area.">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div>
+            <div class="quiz-progress" aria-live="polite"></div>
         </section>
 
         <!-- ===================== Etapa 7: git diff / git diff --staged ===================== -->
@@ -1921,6 +2027,25 @@ git pull origin main   # equivale a: git fetch + git merge</code></pre>
                 const saved = state[questionId] || { wrong: [], correct: false };
                 const result = question.querySelector('.quiz-result');
                 const options = Array.from(question.querySelectorAll('.quiz-option'));
+                const reset = document.createElement('button');
+                reset.type = 'button';
+                reset.className = 'quiz-reset';
+                reset.textContent = '↶ Desfazer';
+                reset.setAttribute('aria-label', 'Desfazer respostas desta questão');
+                question.appendChild(reset);
+
+                reset.addEventListener('click', event => {
+                    event.stopPropagation();
+                    delete state[questionId];
+                    writeState(quizId, state);
+                    question.classList.remove('correct');
+                    options.forEach(option => {
+                        option.classList.remove('wrong', 'right');
+                        option.disabled = false;
+                    });
+                    result.textContent = '';
+                    updateProgress();
+                });
 
                 saved.wrong.forEach(optionId => {
                     const option = options.find(item => item.dataset.optionId === optionId);
