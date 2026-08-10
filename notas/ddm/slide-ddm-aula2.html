@@ -131,10 +131,10 @@
 
         /* ===================== Ciclo de vida da Activity (layout oficial Google, via SVG) ===================== */
         .lifecycle-wrap { display:flex; justify-content:center; margin: 10px 0; }
-        .lifecycle-svg { width:100%; max-width:660px; height:auto; overflow:visible; }
+        .lifecycle-svg { display:block; width:100%; max-width:560px; height:auto; overflow:visible; }
         .lc-node rect { stroke:rgba(0,0,0,0.12); stroke-width:1; }
-        .lc-node text { font-family:inherit; text-anchor:middle; fill:#25330f; font-weight:700; }
-        .lc-node text.lc-sub { font-weight:400; opacity:.82; }
+        .lc-node text { font-family:inherit; font-size:15px; text-anchor:middle; fill:#25330f; font-weight:700; }
+        .lc-node text.lc-sub { font-weight:400; font-size:12px; opacity:.82; }
         .lc-node.lc-destroyed text { fill:#333; }
         .lc-edge-path { fill:none; stroke:#333; stroke-width:1.6; marker-end:url(#lcArrow); }
         .lc-edge-label { font-family:inherit; font-size:11px; font-weight:700; fill:#2874a6; text-anchor:middle; }
@@ -259,11 +259,11 @@
         .lifecycle-sim { display:flex; flex-direction:column; gap:8px; }
         .lc-sim-toolbar { display:flex; flex-wrap:wrap; gap:6px; }
         .lc-sim-toolbar .ab-reset { margin-left:auto; }
-        .lc-sim-body { display:flex; gap:16px; align-items:flex-start; }
-        .lc-sim-phone { width:120px; flex-shrink:0; }
+        .lc-sim-body { display:flex; gap:14px; align-items:flex-start; }
+        .lc-sim-phone { width:110px; flex-shrink:0; }
         .lc-phone-inner {
-            min-height:200px; max-height:200px; display:flex; align-items:center; justify-content:center;
-            text-align:center; font-size:0.56em; font-weight:700; padding:10px; transition:background .3s;
+            min-height:170px; max-height:170px; display:flex; align-items:center; justify-content:center;
+            text-align:center; font-size:0.54em; font-weight:700; padding:8px; transition:background .3s;
         }
         .lc-phone-gone    { background:#1a1a1a; color:#777; }
         .lc-phone-visible { background:#eafff4; color:#0f9d58; }
@@ -272,10 +272,10 @@
         .lc-phone-rotate  { background:#eef6ff; color:#1a4a80; animation:lcSpin .8s linear; }
         @keyframes lcSpin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
 
-        .lc-sim-diagram { flex:1.4; margin:0; }
-        .lc-sim-diagram .lifecycle-svg { max-width:100%; }
+        .lc-sim-diagram { flex:1.6 1 0; min-width:0; margin:0; display:flex; justify-content:center; }
+        .lc-sim-diagram .lifecycle-svg { width:100%; max-width:420px; height:auto; }
 
-        .lc-sim-log { flex:1; min-width:190px; }
+        .lc-sim-log { flex:0 0 190px; min-width:150px; max-width:190px; }
         .lc-sim-state { font-size:0.66em; background:#f6faf6; border:1px solid #dfe9df; border-radius:7px; padding:7px 10px; }
         .lc-log { background:#1e1e2e; color:#e6e6e6; border-radius:8px; padding:8px 12px; min-height:150px; max-height:150px; overflow-y:auto; font-family:'Consolas','Menlo',monospace; font-size:0.62em; }
         .lc-log-line { padding:2px 0; animation:abPop .25s ease-out; }
@@ -309,8 +309,8 @@
             <div class="timeline android-tl">
                 <div class="stage"><div class="dot"></div><h4>1. Activities</h4><p>O que são, para que servem e como se ligam ao layout XML.</p></div>
                 <div class="stage"><div class="dot"></div><h4>2. Layouts</h4><p>ConstraintLayout, LinearLayout e a arte de organizar a tela.</p></div>
-                <div class="stage"><div class="dot"></div><h4>3. Inicialização</h4><p>Do boot ao fork() do Zygote: como um app nasce como processo.</p></div>
-                <div class="stage"><div class="dot"></div><h4>4. Ciclo de vida</h4><p>Os 7 callbacks que toda Activity atravessa, do nascimento à morte.</p></div>
+                <div class="stage"><div class="dot"></div><h4>3. Ciclo de vida</h4><p>Os 7 callbacks que toda Activity atravessa, do nascimento à morte.</p></div>
+                <div class="stage"><div class="dot"></div><h4>4. Inicialização</h4><p>Do boot ao fork() do Zygote: como um app nasce como processo.</p></div>
                 <div class="stage"><div class="dot"></div><h4>5. Na prática</h4><p>Observando o ciclo de vida no contador de cliques e salvando estado.</p></div>
             </div>
             <div class="tip-box"><strong>Objetivo do dia:</strong> entender <span class="android-highlight">por que</span> um app Android perde (ou não) o estado ao girar a tela — e o que fazer a respeito.</div>
@@ -484,10 +484,10 @@ protected void onCreate(Bundle savedInstanceState) {
             </div><div class="quiz-progress"></div></section>
 
         <!-- =================================================================== -->
-        <!-- PARTE 4 — CICLO DE VIDA                                              -->
+        <!-- PARTE 3 — CICLO DE VIDA                                              -->
         <!-- =================================================================== -->
         <section class="divider" data-background-color="#1b5e20">
-            <div class="part-no">PARTE 4</div>
+            <div class="part-no">PARTE 3</div>
             <h1>Ciclo de Vida da Activity</h1>
             <p>Do nascimento à destruição: os 7 callbacks fundamentais</p>
         </section>
@@ -731,10 +731,10 @@ protected void onCreate(Bundle savedInstanceState) {
             </div><div class="quiz-progress"></div></section>
 
         <!-- =================================================================== -->
-        <!-- PARTE 3 — INICIALIZAÇÃO DE UM APP ANDROID                            -->
+        <!-- PARTE 4 — INICIALIZAÇÃO DE UM APP ANDROID                            -->
         <!-- =================================================================== -->
         <section class="divider" data-background-color="#1b5e20">
-            <div class="part-no">PARTE 3</div>
+            <div class="part-no">PARTE 4</div>
             <h1>Como um App Nasce</h1>
             <p>Do toque no ícone ao primeiro processo rodando o seu código</p>
         </section>
