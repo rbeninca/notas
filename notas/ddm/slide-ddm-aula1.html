@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDM — Aula 1: História, Arquitetura e Primeiro App Android</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <!-- Highlight.js para realce de codigo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --ifsc-green:  #2e7d32;
+            --ifsc-dark:   #1b5e20;
+            --accent-red:  #c0392b;
+            --accent-gold: #f39c12;
+            --accent-blue: #2980b9;
+            --android-green: #3ddc84;
+            --android-dark:  #073042;
+            --kotlin-purple: #7f52ff;
+        }
+        .reveal h1, .reveal h2 { color: var(--ifsc-green); font-weight: 800; text-transform: uppercase; }
+        .reveal h2 { border-bottom: 3px solid var(--ifsc-green); display: inline-block; padding-bottom: 4px; margin: 0 0 8px; line-height: 1.15em; }
+        .reveal h3 { color: var(--ifsc-dark); }
+        .reveal section { text-align: left; padding: 0 18px 8px; }
+        .reveal section > *:first-child { margin-top: 0; }
+        .reveal .slides { padding: 0; }
+        .reveal .slides > section, .reveal .slides > section > section { padding-top: 0; top: 0 !important; }
+        .reveal section p { margin: 8px 0; }
+        .reveal section ul, .reveal section ol { margin: 8px 0; }
+
+        .reveal section.compact { font-size: 0.80em; }
+        .reveal section.compact li { margin: 5px 0; }
+
+        .reveal pre { width: 100%; box-shadow: 0 3px 12px rgba(0,0,0,0.18); font-size: 0.56em; margin: 8px 0; }
+        .reveal pre code { padding: 12px 16px; max-height: 420px; border-radius: 6px; }
+
+        .formula-box {
+            background: #f3faf4; padding: 12px 16px; border-left: 6px solid var(--ifsc-green);
+            border-radius: 4px; margin: 10px 0; font-size: 0.88em; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        }
+        .warn-box { background: #fdf3f2; border-left: 6px solid var(--accent-red); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+        .tip-box  { background: #fff8e8; border-left: 6px solid var(--accent-gold); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+        .android-box { background: #eafff4; border-left: 6px solid var(--android-green); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+
+        .highlight { color: var(--ifsc-green); font-weight: bold; }
+        .android-highlight { color: #0f9d58; font-weight: bold; }
+        .small-text { font-size: 0.72em; color: #666; }
+
+        table.tbl { width: 100%; font-size: 0.62em; border-collapse: collapse; margin-top: 10px; }
+        table.tbl th { background: var(--ifsc-green); color: white; padding: 8px; }
+        table.tbl td { border: 1px solid #ddd; padding: 6px 8px; vertical-align: top; }
+        table.tbl tr:nth-child(even) td { background: #f6faf6; }
+
+        .two-col { display: flex; align-items: flex-start; gap: 36px; }
+        .two-col .col-text { flex: 1; }
+        .two-col .col-img { flex: 1; text-align: center; }
+        .two-col .col-img img { max-width: 100%; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+        .two-col figcaption { font-size: 0.6em; color: #888; margin-top: 8px; }
+
+        .icon-list { list-style: none; margin-left: 0; }
+        .icon-list li { margin: 12px 0; padding-left: 4px; }
+        .icon-list .ic { color: var(--ifsc-green); margin-right: 8px; font-weight: 700; }
+
+        /* Timeline horizontal */
+        .timeline { position: relative; display: flex; justify-content: space-between; margin: 26px 0 14px; }
+        .timeline::before { content: ""; position: absolute; top: 12px; left: 4%; right: 4%; height: 3px; background: #cfe3cf; z-index: 0; }
+        .timeline .stage { position: relative; z-index: 1; flex: 1; text-align: center; padding: 0 6px; }
+        .timeline .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--ifsc-green); border: 4px solid #fff; box-shadow: 0 0 0 2px var(--ifsc-green); margin: 0 auto 12px; }
+        .timeline .stage h4 { color: #1a3b1a; font-size: 0.92em; font-weight: 700; margin: 0 0 6px; }
+        .timeline .stage p { font-size: 0.68em; color: #555; margin: 0; line-height: 1.3em; }
+        .timeline.android-tl .dot { background: var(--android-green); box-shadow: 0 0 0 2px var(--android-green); }
+        .timeline.android-tl::before { background: #cdf5e0; }
+
+        /* Etapa numerada (badge) */
+        .step-badge { display:inline-block; background: var(--ifsc-green); color:#fff; border-radius:50%;
+            width: 34px; height: 34px; line-height: 34px; text-align:center; font-weight:800; margin-right:10px; }
+        .step-badge.android { background: var(--android-dark); }
+
+        /* Barra fixa superior: controle de velocidade + botao PDF */
+        .topbar { position: fixed; top: 16px; right: 16px; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        @media print { .topbar { display: none !important; } }
+
+        #btnPdf { background: var(--ifsc-green);
+            color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: background 0.2s, transform 0.1s; }
+        #btnPdf:hover { background: var(--ifsc-dark); }
+        #btnPdf:active { transform: scale(0.96); }
+
+        .reveal .slide-number { background: var(--ifsc-green); color: #fff; font-size: 16px; padding: 4px 10px; border-radius: 4px; }
+        .pill { display:inline-block; background:#e8f5e9; color: var(--ifsc-dark); border-radius: 12px; padding: 2px 10px; font-size: 0.7em; font-weight:700; margin: 2px; }
+        .pill.android { background:#e3fcef; color: #0f9d58; }
+
+        /* ===================== Slides divisorios de secao ===================== */
+        .divider { text-align:center; }
+        .divider .part-no { font-size: 0.9em; letter-spacing: 3px; color: rgba(255,255,255,0.85); font-weight:700; }
+        .divider h1 { color:#fff !important; font-size: 2.2em; border:none; margin-top:6px; }
+        .divider p { color: rgba(255,255,255,0.9); font-size: 1.05em; }
+
+        /* ===================== Terminal mockup ===================== */
+        .term { background:#1e1e2e; color:#e6e6e6; border-radius:8px; padding:12px 16px; font-family: 'Consolas','Menlo',monospace;
+            font-size: 0.72em; box-shadow: 0 4px 14px rgba(0,0,0,0.28); margin: 8px 0; line-height:1.6em; }
+        .term .ttl { color:#8a93a8; font-size:0.72em; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+        .term .ln  { white-space:pre-wrap; }
+        .term .prompt { color:#7ee787; }
+        .term .cmd { color:#fff; font-weight:700; }
+        .term .out { color:#9aa4b2; }
+        .term .out.ok   { color:#7ee787; }
+        .term .out.warn { color:#e3b341; }
+        .term .out.dim  { color:#6a7280; font-style:italic; }
+
+        /* ===================== Diagrama de camadas (arquitetura Android) ===================== */
+        .layer-stack { display:flex; flex-direction:column; gap:5px; margin:12px 0 6px; }
+        .layer { border-radius:8px; padding:9px 16px; color:#fff; box-shadow:0 3px 10px rgba(0,0,0,0.15); }
+        .layer h4 { margin:0 0 3px; font-size:0.78em; letter-spacing:.3px; }
+        .layer p { margin:0; font-size:0.6em; opacity:.92; line-height:1.35em; }
+        .layer.l1 { background: linear-gradient(90deg,#0b3d24,#0f5132); }
+        .layer.l2 { background: linear-gradient(90deg,#12693f,#178f54); }
+        .layer.l3 { background: linear-gradient(90deg,#1a9c63,#22b877); }
+        .layer.l4 { background: linear-gradient(90deg,#2ecf8c,#3ddc84); color:#08321d; }
+        .layer.l4 h4 { color:#08321d; }
+        .layer.l5 { background: linear-gradient(90deg,#8be6bb,#c9f7de); color:#08321d; }
+        .layer.l5 h4 { color:#08321d; }
+
+        /* ===================== Arvore de arquivos (estrutura do projeto) ===================== */
+        .filetree { font-family:'Consolas','Menlo',monospace; font-size:0.68em; background:#f6faf6;
+            border:1px solid #dfe9df; border-radius:8px; padding:12px 16px; line-height:1.85em; }
+        .filetree .fd { color: var(--ifsc-dark); font-weight:700; }
+        .filetree .fx { color:#8a93a8; }
+        .filetree .fmanifest { color: var(--accent-red); font-weight:700; }
+        .filetree .fcode { color: var(--accent-blue); font-weight:700; }
+        .filetree .fxml { color:#a3590c; font-weight:700; }
+
+        /* Cartoes de comparacao (Java x Kotlin / XML x Compose) */
+        .compare { display:flex; gap:16px; margin:10px 0; }
+        .compare .card { flex:1; border-radius:10px; padding:12px 14px; box-shadow:0 3px 10px rgba(0,0,0,0.1); }
+        .compare .card h4 { margin:0 0 8px; font-size:0.85em; text-transform:uppercase; letter-spacing:.4px; }
+        .compare .card ul { margin:0; padding-left:18px; font-size:0.68em; line-height:1.55em; }
+        .compare .card.java { background:#fff4e8; border:1px solid #f3d9b0; }
+        .compare .card.java h4 { color:#a3590c; }
+        .compare .card.kotlin { background:#f2edff; border:1px solid #d6c8ff; }
+        .compare .card.kotlin h4 { color: var(--kotlin-purple); }
+        .compare .card.xml { background:#fff4e8; border:1px solid #f3d9b0; }
+        .compare .card.xml h4 { color:#a3590c; }
+        .compare .card.compose { background:#eafff4; border:1px solid #b7ecd2; }
+        .compare .card.compose h4 { color:#0f9d58; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <button id="btnPdf" title="Gerar PDF da apresentação" aria-label="Gerar PDF">📄 PDF</button>
+</div>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- ===================== 1. CAPA ===================== -->
+        <section style="text-align:center;">
+            <h1 style="font-size:2.0em;">Desenvolvimento para Dispositivos Móveis</h1>
+            <h2 style="border:none; color:#555; text-transform:none;">Aula 1 — Do histórico do Android ao primeiro app</h2>
+            <p style="font-size:1.0em;">História, arquitetura, criação de projeto e <span class="highlight">Hello World</span> até o <span class="android-highlight">contador de cliques</span></p>
+            <div style="margin-top:50px;">
+                <p><span class="pill">IFSC</span> <span class="pill android">Android</span> <span class="pill">ADS4 — DDM</span></p>
+                <p style="margin-top:20px;"><strong>Professor:</strong> Romulo de Aguiar Beninca</p>
+                <p class="small-text">Encontro 1 — 03/08/2026 · Lab. INFO 2</p>
+            </div>
+        </section>
+
+        <!-- ===================== 2. ROTEIRO ===================== -->
+        <section class="compact">
+            <h2>Roteiro da Aula</h2>
+            <div class="timeline android-tl">
+                <div class="stage"><div class="dot"></div><h4>1. História</h4><p>De onde o Android veio e como chegou a ser o SO móvel mais usado do mundo.</p></div>
+                <div class="stage"><div class="dot"></div><h4>2. Arquitetura</h4><p>As camadas que compõem o sistema, do kernel Linux até os apps.</p></div>
+                <div class="stage"><div class="dot"></div><h4>3. Criando um projeto</h4><p>Java ou Kotlin, interface em XML ou Compose, estrutura de pastas.</p></div>
+                <div class="stage"><div class="dot"></div><h4>4. Primeiro app</h4><p>Hello World, contador de cliques, modo desenvolvedor e ADB.</p></div>
+            </div>
+            <div class="tip-box"><strong>Objetivo do dia:</strong> sair da aula com o ambiente configurado, entendendo <span class="android-highlight">por que</span> o projeto Android é organizado do jeito que é — e com um app rodando no seu próprio celular.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 1 — HISTÓRIA                                                   -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 1</div>
+            <h1>História do Android</h1>
+            <p>De uma startup de câmeras digitais ao sistema operacional mais usado do planeta</p>
+        </section>
+
+        <section class="compact">
+            <h2>Antes do Android</h2>
+            <p>No início dos anos 2000 o mercado de celulares "inteligentes" já existia, mas era fragmentado e fechado:</p>
+            <ul class="icon-list">
+                <li><span class="ic">▸</span><strong>Symbian</strong> — dominante em aparelhos Nokia, mas fechado e difícil de desenvolver.</li>
+                <li><span class="ic">▸</span><strong>BlackBerry OS</strong> — focado em e-mail corporativo e teclado físico.</li>
+                <li><span class="ic">▸</span><strong>Windows Mobile / Palm OS</strong> — presentes, porém com interfaces pouco amigáveis.</li>
+                <li><span class="ic">▸</span><strong>iPhone (2007)</strong> — a Apple lança um SO fechado, de hardware único, e redefine o que se espera de um smartphone.</li>
+            </ul>
+            <div class="warn-box"><strong>O problema:</strong> não existia uma plataforma <em>aberta</em> que qualquer fabricante de hardware pudesse usar e qualquer desenvolvedor pudesse programar livremente.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Nascimento do Android</h2>
+            <div class="timeline android-tl">
+                <div class="stage"><div class="dot"></div><h4>2003</h4><p>Android Inc. é fundada (Andy Rubin e equipe), inicialmente pensando em câmeras digitais.</p></div>
+                <div class="stage"><div class="dot"></div><h4>2005</h4><p>Google compra a Android Inc., ainda sem anunciar publicamente os planos.</p></div>
+                <div class="stage"><div class="dot"></div><h4>2007</h4><p>Google anuncia a plataforma e forma a <strong>Open Handset Alliance</strong> — dezenas de fabricantes e operadoras.</p></div>
+                <div class="stage"><div class="dot"></div><h4>2008</h4><p>Primeiro celular comercial: <strong>T-Mobile G1 (HTC Dream)</strong>, com Android 1.0.</p></div>
+            </div>
+            <div class="android-box"><strong>A ideia central:</strong> um sistema operacional <span class="android-highlight">open source</span>, baseado em Linux, que qualquer fabricante poderia adotar sem pagar licença — o oposto do modelo fechado da Apple.</div>
+        </section>
+
+        <section class="compact">
+            <h2>A evolução das versões</h2>
+            <p class="small-text">Até o Android 9, cada versão principal ganhava o nome de uma sobremesa, em ordem alfabética.</p>
+            <table class="tbl">
+                <tr><th>Versão</th><th>Nome</th><th>Ano</th><th>Marco</th></tr>
+                <tr><td>1.0</td><td>—</td><td>2008</td><td>Primeiro lançamento comercial (G1)</td></tr>
+                <tr><td>1.5 – 2.3</td><td>Cupcake … Gingerbread</td><td>2009–2010</td><td>Teclado virtual, widgets, multitarefa</td></tr>
+                <tr><td>4.0</td><td>Ice Cream Sandwich</td><td>2011</td><td>Unifica a interface de celulares e tablets</td></tr>
+                <tr><td>5.0</td><td>Lollipop</td><td>2014</td><td>Introduz o <strong>Material Design</strong> e o runtime ART</td></tr>
+                <tr><td>6.0</td><td>Marshmallow</td><td>2015</td><td>Permissões concedidas em tempo de execução</td></tr>
+                <tr><td>10</td><td><span class="small-text">(nomes de doce descontinuados publicamente)</span></td><td>2019</td><td>Modo escuro, foco em privacidade</td></tr>
+                <tr><td>12</td><td>—</td><td>2021</td><td><strong>Material You</strong>, temas dinâmicos</td></tr>
+                <tr><td>13 – 15+</td><td>—</td><td>2022 → hoje</td><td>Mais privacidade, IA embarcada, foco em telas grandes</td></tr>
+            </table>
+        </section>
+
+        <section class="compact" style="text-align:center;">
+            <h2>O Android hoje</h2>
+            <p style="font-size:1.05em; margin-top:26px;">É o sistema operacional móvel <span class="android-highlight">mais usado do mundo</span>, presente em smartphones, tablets, TVs (Android TV), carros (Android Auto) e wearables (Wear OS).</p>
+            <div class="tip-box" style="max-width:760px; margin:24px auto 0; text-align:left;"><strong>Por isso estudamos Android:</strong> é a maior base instalada de dispositivos móveis do planeta — a plataforma com mais oportunidade para quem desenvolve aplicativos.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 2 — ARQUITETURA                                                -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 2</div>
+            <h1>Arquitetura do Android</h1>
+            <p>As camadas que transformam um kernel Linux em uma plataforma de apps</p>
+        </section>
+
+        <section class="compact">
+            <h2>Android em camadas</h2>
+            <div class="layer-stack">
+                <div class="layer l4"><h4>System Apps &amp; Apps de terceiros</h4><p>Telefone, Contatos, Câmera... e o app que você vai desenvolver.</p></div>
+                <div class="layer l3"><h4>Java API Framework</h4><p>Activity Manager, View System, Content Providers, Notification Manager — o que você usa direto no código.</p></div>
+                <div class="layer l2"><h4>Android Runtime (ART) + Bibliotecas Nativas C/C++</h4><p>ART executa o app; bibliotecas nativas cuidam de SQLite, OpenGL, WebKit, etc.</p></div>
+                <div class="layer l2" style="background:linear-gradient(90deg,#0f5132,#12693f);"><h4>Hardware Abstraction Layer (HAL)</h4><p>Traduz chamadas do framework para os drivers reais de câmera, sensores, bluetooth...</p></div>
+                <div class="layer l1"><h4>Kernel Linux</h4><p>Drivers, gerenciamento de memória e processos, segurança, energia.</p></div>
+            </div>
+            <p class="small-text" style="text-align:center; margin-top:4px;">Como desenvolvedor, você programa quase sempre na camada <strong>Java API Framework</strong> — as camadas de baixo já vêm prontas no sistema.</p>
+        </section>
+
+        <section class="compact">
+            <h2>Por que isso importa na prática?</h2>
+            <ul class="icon-list">
+                <li><span class="ic">▸</span><strong>Portabilidade:</strong> o mesmo APK roda em aparelhos de fabricantes diferentes porque todos implementam o mesmo HAL sobre hardwares distintos.</li>
+                <li><span class="ic">▸</span><strong>Sandbox de segurança:</strong> cada app roda em sua própria instância da ART com permissões isoladas — um app não acessa dados de outro sem permissão.</li>
+                <li><span class="ic">▸</span><strong>Reuso via Framework:</strong> classes como <code>Activity</code>, <code>View</code> e <code>Intent</code> escondem toda a complexidade das camadas de baixo.</li>
+            </ul>
+            <div class="tip-box"><strong>Fixando o conceito:</strong> quando você chama <code>startActivity()</code>, o pedido atravessa o Framework, passa pela ART, pode acionar o HAL (ex.: abrir a câmera) e, no fim, o Kernel Linux gerencia o processo de verdade.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 3 — CRIANDO UM PROJETO                                         -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 3</div>
+            <h1>Criando um Projeto Android</h1>
+            <p>Linguagem, interface e a estrutura de pastas do Android Studio</p>
+        </section>
+
+        <section class="compact">
+            <h2>Android Studio</h2>
+            <p>É a IDE oficial para desenvolvimento Android, mantida pelo Google e baseada no <strong>IntelliJ IDEA</strong>.</p>
+            <ul class="icon-list">
+                <li><span class="ic">▸</span>Gerencia o projeto com <strong>Gradle</strong> (build, dependências, variantes de build).</li>
+                <li><span class="ic">▸</span>Inclui emulador (<strong>AVD — Android Virtual Device</strong>) para testar sem um celular físico.</li>
+                <li><span class="ic">▸</span>Suporta as duas linguagens oficiais — <strong>Java</strong> e <strong>Kotlin</strong> — e as duas formas de interface — <strong>XML (Views)</strong> e <strong>Jetpack Compose</strong>.</li>
+            </ul>
+            <div class="tip-box"><strong>No assistente "New Project":</strong> você escolhe um template (ex.: Empty Views Activity ou Empty Activity/Compose), o nome do pacote, a linguagem e a versão mínima do Android suportada.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Linguagem: Java × Kotlin</h2>
+            <div class="compare">
+                <div class="card java">
+                    <h4>☕ Java</h4>
+                    <ul>
+                        <li>Linguagem original do Android desde 2008</li>
+                        <li>Mais verbosa: getters/setters, classes anônimas</li>
+                        <li>Sem null-safety no tipo — <code>NullPointerException</code> é comum</li>
+                        <li>Maior volume de tutoriais e código legado</li>
+                    </ul>
+                </div>
+                <div class="card kotlin">
+                    <h4>🎯 Kotlin</h4>
+                    <ul>
+                        <li>Linguagem <strong>oficialmente preferida</strong> pelo Google desde 2019</li>
+                        <li>Mais concisa: <code>data class</code>, inferência de tipo, lambdas</li>
+                        <li>Null-safety no próprio tipo (<code>String?</code>)</li>
+                        <li>100% interoperável com Java na mesma JVM</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="small-text" style="text-align:center;">Nesta disciplina começamos com <strong>Java</strong> para fixar os fundamentos (ciclo de vida, listeners, XML) — Kotlin fica como evolução natural depois.</p>
+        </section>
+
+        <section class="compact">
+            <h2>Interface: XML × Jetpack Compose</h2>
+            <div class="compare">
+                <div class="card xml">
+                    <h4>📄 XML (View System)</h4>
+                    <ul>
+                        <li>Layout descrito em arquivo <code>.xml</code>, separado do código</li>
+                        <li>Componentes acessados via <code>findViewById()</code></li>
+                        <li>Atualização de tela é manual (<code>setText()</code>, etc.)</li>
+                        <li>Modelo usado pela imensa maioria dos apps em produção hoje</li>
+                    </ul>
+                </div>
+                <div class="card compose">
+                    <h4>🧩 Jetpack Compose</h4>
+                    <ul>
+                        <li>Interface descrita em funções <code>@Composable</code>, em Kotlin</li>
+                        <li>Sem XML — a tela é código</li>
+                        <li>Recomposição automática quando o estado muda</li>
+                        <li>Abordagem moderna, recomendada pelo Google para projetos novos</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tip-box"><strong>Escolha da disciplina:</strong> começamos com XML porque expõe melhor a estrutura de um projeto Android e o ciclo de vida da Activity — a base que também sustenta o Compose.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Estrutura de um projeto Android</h2>
+            <div class="filetree">
+app/<br>
+&nbsp;&nbsp;<span class="fd">├─ manifests/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="fmanifest">AndroidManifest.xml</span><br>
+&nbsp;&nbsp;<span class="fd">├─ java/</span> <span class="fx">(ou kotlin/)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;└─ com.exemplo.meuapp/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="fcode">MainActivity.java</span><br>
+&nbsp;&nbsp;<span class="fd">├─ res/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├─ layout/ → <span class="fxml">activity_main.xml</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├─ values/ → strings.xml, colors.xml, themes.xml<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├─ drawable/ → ícones e imagens<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└─ mipmap/ → ícone do app<br>
+&nbsp;&nbsp;<span class="fd">└─ Gradle Scripts</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├─ build.gradle (Module :app)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└─ build.gradle (Project)
+            </div>
+            <table class="tbl" style="margin-top:14px;">
+                <tr><th>Peça</th><th>Papel</th></tr>
+                <tr><td><span class="fmanifest">AndroidManifest.xml</span></td><td>Declara as Activities, permissões, ícone, nome e tema do app — o "cartão de identidade" do aplicativo.</td></tr>
+                <tr><td><span class="fxml">XML de layout</span></td><td>Descreve <em>o que aparece na tela</em>: componentes visuais e sua disposição.</td></tr>
+                <tr><td><span class="fcode">Código Java/Kotlin</span></td><td>Descreve <em>o comportamento</em>: o que acontece quando o usuário interage.</td></tr>
+            </table>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 4 — PRIMEIRO APP                                               -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 4</div>
+            <h1>Primeiro App: Hello World → Contador de Cliques</h1>
+            <p>Da tela padrão do Android Studio a um app que reage ao toque</p>
+        </section>
+
+        <section class="compact">
+            <h2>Criando o projeto</h2>
+            <ol>
+                <li><span class="step-badge android">1</span>Android Studio → <strong>New Project</strong> → template <strong>Empty Views Activity</strong>.</li>
+                <li><span class="step-badge android">2</span>Definir nome do app, pacote (ex.: <code>com.exemplo.meuapp</code>), linguagem <strong>Java</strong> e <strong>Minimum SDK</strong>.</li>
+                <li><span class="step-badge android">3</span>Aguardar o Gradle sincronizar as dependências do projeto.</li>
+                <li><span class="step-badge android">4</span>Rodar (▶) em um <strong>emulador (AVD)</strong> ou em um <strong>celular físico</strong> com modo desenvolvedor ativo.</li>
+            </ol>
+            <div class="android-box">O próprio assistente já gera um projeto funcional: uma Activity, um layout XML e o texto <strong>"Hello World!"</strong> na tela.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Hello World — o que já vem pronto</h2>
+            <p class="small-text">Trecho do arquivo <code>res/layout/activity_main.xml</code>:</p>
+            <pre><code class="language-xml">&lt;TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Hello World!"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" /&gt;</code></pre>
+            <p class="small-text">Trecho do arquivo <code>MainActivity.java</code>:</p>
+            <pre><code class="language-java">public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main); // liga a Activity ao layout XML
+    }
+}</code></pre>
+        </section>
+
+        <section class="compact">
+            <h2>Evoluindo: contador de cliques (1/2)</h2>
+            <p>Passo 1 — damos um <code>id</code> ao <code>TextView</code> no XML e o associamos ao código com <code>findViewById()</code>:</p>
+            <pre><code class="language-xml">&lt;TextView
+    android:id="@+id/tvShowContador"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" /&gt;</code></pre>
+            <pre><code class="language-java">TextView tvShowContador;
+int contador = 0;
+
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    tvShowContador = findViewById(R.id.tvShowContador);
+    tvShowContador.setText(String.valueOf(contador));
+}</code></pre>
+        </section>
+
+        <section class="compact">
+            <h2>Evoluindo: contador de cliques (2/2)</h2>
+            <p>Passo 2 — um <code>OnClickListener</code> incrementa o contador a cada toque no texto:</p>
+            <pre><code class="language-java">tvShowContador.setOnClickListener(v -> {
+    contador++;                                   // incrementa
+    tvShowContador.setText(String.valueOf(contador)); // atualiza a tela
+});</code></pre>
+            <div class="tip-box"><strong>O que isso já demonstra:</strong> a ligação XML ↔ código (<code>findViewById</code>) e o modelo de eventos do Android (<code>View.OnClickListener</code>) — a base de qualquer interação em tela.</div>
+            <p class="small-text">Persistir esse valor entre rotações de tela e fechamento do app (<code>onSaveInstanceState</code>, <code>SharedPreferences</code>) é assunto da próxima aula, sobre ciclo de vida da Activity.</p>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 5 — ADB E MODO DESENVOLVEDOR                                   -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 5</div>
+            <h1>Modo Desenvolvedor e ADB</h1>
+            <p>Rodando o app em um celular de verdade</p>
+        </section>
+
+        <section class="compact">
+            <h2>Habilitando o Modo Desenvolvedor</h2>
+            <ol>
+                <li><span class="step-badge android">1</span>Abrir <strong>Configurações → Sobre o telefone</strong>.</li>
+                <li><span class="step-badge android">2</span>Tocar <strong>7 vezes seguidas</strong> em "Número da versão" (ou "Build number").</li>
+                <li><span class="step-badge android">3</span>O aparelho confirma: <em>"Agora você é um desenvolvedor!"</em></li>
+                <li><span class="step-badge android">4</span>Uma nova opção aparece em <strong>Configurações → Sistema → Opções do desenvolvedor</strong>.</li>
+            </ol>
+            <div class="warn-box"><strong>Atenção:</strong> essas opções expõem configurações avançadas do aparelho — não é necessário mexer em nada além da depuração USB para os fins da disciplina.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Depuração USB e ADB</h2>
+            <ol>
+                <li><span class="step-badge android">1</span>Em <strong>Opções do desenvolvedor</strong>, ativar <strong>Depuração USB</strong>.</li>
+                <li><span class="step-badge android">2</span>Conectar o celular ao computador via cabo USB.</li>
+                <li><span class="step-badge android">3</span>Autorizar a chave RSA do computador na caixa de diálogo que aparece no celular.</li>
+                <li><span class="step-badge android">4</span>O Android Studio (e o <strong>ADB</strong>) passam a enxergar o aparelho como destino de execução.</li>
+            </ol>
+            <div class="android-box"><strong>ADB — Android Debug Bridge:</strong> ferramenta de linha de comando que faz a ponte entre o computador e um dispositivo (real ou emulado): instala apps, lê logs, abre um shell no aparelho.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Comandos essenciais do ADB</h2>
+            <div class="term">
+                <div class="ttl">Terminal</div>
+                <div class="ln"><span class="prompt">$</span> <span class="cmd">adb devices</span></div>
+                <div class="ln out">List of devices attached</div>
+                <div class="ln out ok">R58N801ABCD    device</div>
+                <div class="ln">&nbsp;</div>
+                <div class="ln"><span class="prompt">$</span> <span class="cmd">adb install app-debug.apk</span></div>
+                <div class="ln out ok">Success</div>
+                <div class="ln">&nbsp;</div>
+                <div class="ln"><span class="prompt">$</span> <span class="cmd">adb logcat</span></div>
+                <div class="ln out dim">... fluxo contínuo de logs do sistema e do app ...</div>
+                <div class="ln">&nbsp;</div>
+                <div class="ln"><span class="prompt">$</span> <span class="cmd">adb shell</span></div>
+                <div class="ln out dim">abre um terminal dentro do próprio Android</div>
+            </div>
+            <p class="small-text">Na prática, o Android Studio chama o ADB automaticamente ao clicar em ▶ Run — mas saber os comandos ajuda a diagnosticar quando o dispositivo "não aparece".</p>
+        </section>
+
+        <section class="compact">
+            <h2>Emulador (AVD) × Dispositivo físico</h2>
+            <table class="tbl">
+                <tr><th></th><th>Emulador (AVD)</th><th>Dispositivo físico</th></tr>
+                <tr><td>Configuração</td><td>Device Manager do Android Studio, sem hardware extra</td><td>Modo desenvolvedor + Depuração USB</td></tr>
+                <tr><td>Desempenho</td><td>Mais lento, depende da máquina</td><td>Desempenho real do aparelho</td></tr>
+                <tr><td>Sensores/Câmera</td><td>Simulados</td><td>Reais</td></tr>
+                <tr><td>Uso recomendado</td><td>Testes rápidos e múltiplas versões de Android</td><td>Validação final e recursos de hardware</td></tr>
+            </table>
+        </section>
+
+        <!-- ===================== ENCERRAMENTO ===================== -->
+        <section class="compact">
+            <h2>Recapitulando</h2>
+            <ul class="icon-list">
+                <li><span class="ic">▸</span>O Android nasceu como plataforma <strong>aberta</strong> em 2008 e hoje é o SO móvel mais usado do mundo.</li>
+                <li><span class="ic">▸</span>Sua arquitetura em <strong>camadas</strong> vai do Kernel Linux ao Java API Framework, onde nós programamos.</li>
+                <li><span class="ic">▸</span>Um projeto combina <strong>linguagem</strong> (Java/Kotlin) + <strong>interface</strong> (XML/Compose), organizados em Manifest, código e recursos XML.</li>
+                <li><span class="ic">▸</span>Criamos o Hello World e evoluímos para um <strong>contador de cliques</strong>, ligando XML e código via <code>findViewById</code>.</li>
+                <li><span class="ic">▸</span>Habilitamos o <strong>modo desenvolvedor</strong> e usamos o <strong>ADB</strong> para rodar o app em um celular real.</li>
+            </ul>
+        </section>
+
+        <section style="text-align:center;">
+            <h2 style="border:none;">Próxima aula</h2>
+            <p style="font-size:1.1em; margin-top:20px;"><strong>Encontro 2 — 10/08/2026</strong></p>
+            <p style="font-size:1.05em;">Activities, layouts e <span class="highlight">ciclo de vida</span></p>
+            <p class="small-text" style="margin-top:30px;">Traga o app do contador pronto — vamos usá-lo para observar o ciclo de vida da Activity na prática.</p>
+        </section>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        transition: 'fade',
+        slideNumber: 'c/t',
+        width: 1100,
+        height: 800,
+        margin: 0.02,
+        minScale: 0.2,
+        maxScale: 1.5,
+        plugins: [ RevealHighlight ]
+    });
+
+    // Rede de segurança contra transbordamento: se o conteúdo de um slide passar da altura
+    // útil (800px), reduz progressivamente a fonte daquele slide até caber.
+    (function () {
+        const SLIDE_H = 800;
+        function fit(slide) {
+            if (!slide) return;
+            slide.style.fontSize = '';
+            let scale = 1;
+            for (let i = 0; i < 12 && slide.scrollHeight > SLIDE_H; i++) {
+                scale -= 0.04;
+                slide.style.fontSize = (scale * (slide.classList.contains('compact') ? 0.80 : 1)) + 'em';
+            }
+        }
+        Reveal.on('ready', e => fit(e.currentSlide));
+        Reveal.on('slidechanged', e => fit(e.currentSlide));
+        window.addEventListener('resize', () => fit(Reveal.getCurrentSlide()));
+    })();
+
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', () => setTimeout(() => window.print(), 800));
+    }
+</script>
+</body>
+</html>
