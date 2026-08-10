@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDM — Aula 2: Activities, Layouts e Ciclo de Vida</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <!-- Highlight.js para realce de codigo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --ifsc-green:  #2e7d32;
+            --ifsc-dark:   #1b5e20;
+            --accent-red:  #c0392b;
+            --accent-gold: #f39c12;
+            --accent-blue: #2980b9;
+            --android-green: #3ddc84;
+            --android-dark:  #073042;
+            --kotlin-purple: #7f52ff;
+        }
+        .reveal h1, .reveal h2 { color: var(--ifsc-green); font-weight: 800; text-transform: uppercase; }
+        .reveal h2 { border-bottom: 3px solid var(--ifsc-green); display: inline-block; padding-bottom: 4px; margin: 0 0 8px; line-height: 1.15em; }
+        .reveal h3 { color: var(--ifsc-dark); }
+        .reveal section { text-align: left; padding: 0 18px 8px; }
+        .reveal section > *:first-child { margin-top: 0; }
+        .reveal .slides { padding: 0; }
+        .reveal .slides > section, .reveal .slides > section > section { padding-top: 0; top: 0 !important; }
+        .reveal section p { margin: 8px 0; }
+        .reveal section ul, .reveal section ol { margin: 8px 0; }
+
+        .reveal section.compact { font-size: 0.80em; }
+        .reveal section.compact li { margin: 5px 0; }
+
+        .reveal pre { width: 100%; box-shadow: 0 3px 12px rgba(0,0,0,0.18); font-size: 0.56em; margin: 8px 0; }
+        .reveal pre code { padding: 12px 16px; max-height: 420px; border-radius: 6px; }
+
+        .formula-box {
+            background: #f3faf4; padding: 12px 16px; border-left: 6px solid var(--ifsc-green);
+            border-radius: 4px; margin: 10px 0; font-size: 0.88em; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        }
+        .warn-box { background: #fdf3f2; border-left: 6px solid var(--accent-red); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+        .tip-box  { background: #fff8e8; border-left: 6px solid var(--accent-gold); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+        .android-box { background: #eafff4; border-left: 6px solid var(--android-green); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+
+        .highlight { color: var(--ifsc-green); font-weight: bold; }
+        .android-highlight { color: #0f9d58; font-weight: bold; }
+        .small-text { font-size: 0.72em; color: #666; }
+
+        table.tbl { width: 100%; font-size: 0.62em; border-collapse: collapse; margin-top: 10px; }
+        table.tbl th { background: var(--ifsc-green); color: white; padding: 8px; }
+        table.tbl td { border: 1px solid #ddd; padding: 6px 8px; vertical-align: top; }
+        table.tbl tr:nth-child(even) td { background: #f6faf6; }
+
+        .two-col { display: flex; align-items: flex-start; gap: 36px; }
+        .two-col .col-text { flex: 1; }
+        .two-col .col-img { flex: 1; text-align: center; }
+        .two-col .col-img img { max-width: 100%; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+        .two-col .col-img img + img { margin-top: 10px; }
+        .two-col figcaption { font-size: 0.6em; color: #888; margin-top: 8px; }
+
+        .icon-list { list-style: none; margin-left: 0; }
+        .icon-list li { margin: 12px 0; padding-left: 4px; }
+        .icon-list .ic { color: var(--ifsc-green); margin-right: 8px; font-weight: 700; }
+
+        /* Timeline horizontal */
+        .timeline { position: relative; display: flex; justify-content: space-between; margin: 26px 0 14px; }
+        .timeline::before { content: ""; position: absolute; top: 12px; left: 4%; right: 4%; height: 3px; background: #cfe3cf; z-index: 0; }
+        .timeline .stage { position: relative; z-index: 1; flex: 1; text-align: center; padding: 0 6px; }
+        .timeline .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--ifsc-green); border: 4px solid #fff; box-shadow: 0 0 0 2px var(--ifsc-green); margin: 0 auto 12px; }
+        .timeline .stage h4 { color: #1a3b1a; font-size: 0.92em; font-weight: 700; margin: 0 0 6px; }
+        .timeline .stage p { font-size: 0.68em; color: #555; margin: 0; line-height: 1.3em; }
+        .timeline.android-tl .dot { background: var(--android-green); box-shadow: 0 0 0 2px var(--android-green); }
+        .timeline.android-tl::before { background: #cdf5e0; }
+
+        /* Etapa numerada (badge) */
+        .step-badge { display:inline-block; background: var(--ifsc-green); color:#fff; border-radius:50%;
+            width: 34px; height: 34px; line-height: 34px; text-align:center; font-weight:800; margin-right:10px; }
+        .step-badge.android { background: var(--android-dark); }
+
+        /* Barra fixa superior: controle de velocidade + botao PDF */
+        .topbar { position: fixed; top: 16px; right: 16px; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        @media print { .topbar { display: none !important; } }
+
+        #btnPdf { background: var(--ifsc-green);
+            color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: background 0.2s, transform 0.1s; }
+        #btnPdf:hover { background: var(--ifsc-dark); }
+        #btnPdf:active { transform: scale(0.96); }
+
+        .reveal .slide-number { background: var(--ifsc-green); color: #fff; font-size: 16px; padding: 4px 10px; border-radius: 4px; }
+        .pill { display:inline-block; background:#e8f5e9; color: var(--ifsc-dark); border-radius: 12px; padding: 2px 10px; font-size: 0.7em; font-weight:700; margin: 2px; }
+        .pill.android { background:#e3fcef; color: #0f9d58; }
+
+        /* ===================== Slides divisorios de secao ===================== */
+        .divider { text-align:center; }
+        .divider .part-no { font-size: 0.9em; letter-spacing: 3px; color: rgba(255,255,255,0.85); font-weight:700; }
+        .divider h1 { color:#fff !important; font-size: 2.2em; border:none; margin-top:6px; }
+        .divider p { color: rgba(255,255,255,0.9); font-size: 1.05em; }
+
+        /* ===================== Terminal mockup ===================== */
+        .term { background:#1e1e2e; color:#e6e6e6; border-radius:8px; padding:12px 16px; font-family: 'Consolas','Menlo',monospace;
+            font-size: 0.72em; box-shadow: 0 4px 14px rgba(0,0,0,0.28); margin: 8px 0; line-height:1.6em; }
+        .term .ttl { color:#8a93a8; font-size:0.72em; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+        .term .ln  { white-space:pre-wrap; }
+        .term .prompt { color:#7ee787; }
+        .term .cmd { color:#fff; font-weight:700; }
+        .term .out { color:#9aa4b2; }
+        .term .out.ok   { color:#7ee787; }
+        .term .out.warn { color:#e3b341; }
+        .term .out.dim  { color:#6a7280; font-style:italic; }
+
+        /* ===================== Arvore de arquivos (estrutura do projeto) ===================== */
+        .filetree { font-family:'Consolas','Menlo',monospace; font-size:0.68em; background:#f6faf6;
+            border:1px solid #dfe9df; border-radius:8px; padding:12px 16px; line-height:1.85em; }
+        .filetree .fd { color: var(--ifsc-dark); font-weight:700; }
+        .filetree .fx { color:#8a93a8; }
+        .filetree .fmanifest { color: var(--accent-red); font-weight:700; }
+        .filetree .fcode { color: var(--accent-blue); font-weight:700; }
+        .filetree .fxml { color:#a3590c; font-weight:700; }
+
+        /* Cartoes de comparacao */
+        .compare { display:flex; gap:16px; margin:10px 0; }
+        .compare .card { flex:1; border-radius:10px; padding:12px 14px; box-shadow:0 3px 10px rgba(0,0,0,0.1); }
+        .compare .card h4 { margin:0 0 8px; font-size:0.85em; text-transform:uppercase; letter-spacing:.4px; }
+        .compare .card ul { margin:0; padding-left:18px; font-size:0.68em; line-height:1.55em; }
+
+        /* ===================== Ciclo de vida da Activity (layout oficial Google, via SVG) ===================== */
+        .lifecycle-wrap { display:flex; justify-content:center; margin: 10px 0; }
+        .lifecycle-svg { width:100%; max-width:660px; height:auto; overflow:visible; }
+        .lc-node rect { stroke:rgba(0,0,0,0.12); stroke-width:1; }
+        .lc-node text { font-family:inherit; text-anchor:middle; fill:#25330f; font-weight:700; }
+        .lc-node text.lc-sub { font-weight:400; opacity:.82; }
+        .lc-node.lc-destroyed text { fill:#333; }
+        .lc-edge-path { fill:none; stroke:#333; stroke-width:1.6; marker-end:url(#lcArrow); }
+        .lc-edge-label { font-family:inherit; font-size:11px; font-weight:700; fill:#2874a6; text-anchor:middle; }
+        .lc-node { transition: transform .25s; transform-box: fill-box; transform-origin:center; }
+        .lc-node.lc-active rect { filter:drop-shadow(0 0 5px rgba(0,0,0,0.4)); }
+        .lc-node.lc-active { transform:scale(1.08); }
+        .lc-android-mark { opacity:.9; }
+
+        /* ===================== Cenarios (cards de fluxo) ===================== */
+        .scenario { display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap; }
+        .scenario .sc-step { background:#f6faf6; border:1px solid #dfe9df; border-radius:8px; padding:6px 12px; font-size:0.72em; font-weight:700; color:var(--ifsc-dark); }
+        .scenario .sc-arrow { color:#aaa; font-weight:700; }
+
+        /* ===================== Diagrama Activity/Layout ligacao ===================== */
+        .link-diagram { display:flex; align-items:center; justify-content:center; gap:18px; margin:16px 0; }
+        .link-box { border-radius:10px; padding:14px 20px; text-align:center; box-shadow:0 3px 10px rgba(0,0,0,0.12); font-size:0.78em; min-width:150px; }
+        .link-box h4 { margin:0 0 4px; font-size:1em; }
+        .link-box.xml { background:#fff4e8; border:1px solid #f3d9b0; color:#a3590c; }
+        .link-box.java { background:#eafff4; border:1px solid #b7ecd2; color:#0f9d58; }
+        .link-arrow { font-size:1.6em; color: var(--ifsc-green); }
+
+        /* ===================== Inicialização do app: Intent -> ActivityManager -> Zygote ===================== */
+        .init-flow { display:flex; flex-direction:column; align-items:center; gap:4px; margin:10px 0; }
+        .intent-box {
+            background:#1e1e2e; color:#e6e6e6; border-radius:8px; padding:10px 16px; font-family:'Consolas','Menlo',monospace;
+            font-size:0.68em; line-height:1.6em; box-shadow:0 4px 14px rgba(0,0,0,0.25); width:100%; max-width:520px;
+        }
+        .intent-box .k { color:#7ee787; font-weight:700; }
+        .intent-box .v { color:#e3b341; }
+        .intent-box .ttl { color:#8a93a8; text-transform:uppercase; letter-spacing:1px; font-size:0.85em; margin-bottom:4px; text-align:center; }
+        .init-arrow-v { font-size:1.4em; color: var(--ifsc-green); line-height:1; margin:2px 0; }
+        .init-box {
+            border-radius:9px; padding:8px 18px; font-weight:700; text-align:center; font-size:0.8em;
+            box-shadow:0 3px 10px rgba(0,0,0,0.15); min-width:200px;
+        }
+        .init-box.am { background:#dbe9fb; color:#1a4a80; border:1px solid #b7d3f2; }
+        .init-fork-row { display:flex; align-items:center; gap:10px; margin-top:4px; }
+        .init-proc { border:2px solid #333; border-radius:10px; padding:8px 14px; font-size:0.72em; text-align:left; background:#f6f6f6; }
+        .init-proc .pid { font-size:0.68em; color:#666; margin-bottom:4px; }
+        .init-proc .layer2 { background:#e5e5e5; border-radius:5px; padding:3px 8px; margin:2px 0; font-weight:700; text-align:center; }
+
+        /* ===================== Memoria Copy-on-Write ===================== */
+        .cow-wrap { display:flex; align-items:center; justify-content:center; gap:36px; margin:14px 0; flex-wrap:wrap; }
+        .mem-block { border:2px solid #333; border-radius:6px; width:120px; overflow:hidden; font-size:0.62em; }
+        .mem-seg { padding:14px 8px; text-align:center; }
+        .mem-seg.cow { background:#fdf0c9; border-top:2px solid #e0b93c; border-bottom:2px solid #e0b93c; font-weight:700; }
+        .mem-seg.shared { background:#fafafa; color:#888; min-height:60px; display:flex; align-items:center; justify-content:center; }
+        .mem-seg.proc0 { background:#eee; font-weight:700; }
+        .cow-procs { display:flex; flex-direction:column; gap:18px; }
+        .cow-proc-row { display:flex; align-items:center; gap:8px; }
+        .cow-proc-row .fork-label { font-size:0.65em; color:#999; font-style:italic; }
+        .phone-mini { display:flex; flex-direction:column; align-items:center; gap:4px; }
+        .phone-mini img { width:46px; }
+
+        /* Questionarios reutilizaveis */
+        .quiz { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; margin-top:9px; }
+        .quiz-question { position:relative; background:#f8fafc; border:1px solid #d9e1ea; border-radius:10px; padding:12px; box-shadow:0 3px 10px rgba(30,50,80,.08); }
+        .quiz-question.correct { border-color:var(--ifsc-green); background:#f3faf4; animation:quizSuccess .55s ease-out; }
+        .quiz-number { color:var(--ifsc-green); font-size:.56em; font-weight:800; text-transform:uppercase; letter-spacing:.6px; }
+        .quiz-prompt { min-height:55px; margin:4px 0 8px !important; padding-right:35px; color:#263548; font-size:.67em; line-height:1.26; font-weight:700; }
+        .quiz-options { display:grid; gap:6px; }
+        .quiz-option { width:100%; border:2px solid #d7dee8; border-radius:7px; background:#fff; color:#344254; padding:7px 9px; font:inherit; font-size:.55em; line-height:1.23; text-align:left; cursor:pointer; }
+        .quiz-option:hover:not(.wrong):not(.right) { border-color:var(--accent-blue); background:#f5faff; transform:translateY(-1px); }
+        .quiz-option.wrong { border-color:var(--accent-red); background:#fdf0ef; color:#8f2d22; cursor:help; animation:quizShake .35s ease; }
+        .quiz-option.right { border-color:var(--ifsc-green); background:#e8f5e9; color:var(--ifsc-dark); font-weight:800; }
+        .quiz-option:disabled { opacity:1; }
+        .quiz-result { min-height:19px; margin-top:6px; color:var(--ifsc-green); font-size:.49em; font-weight:800; }
+        .quiz-progress { margin-top:7px; text-align:right; color:#69788b; font-size:.52em; font-weight:700; }
+        .quiz-reset { position:absolute; top:7px; right:7px; border:0; border-radius:5px; background:transparent; color:#758397; padding:3px 5px; font:inherit; font-size:.4em; font-weight:800; cursor:pointer; }
+        .quiz-reset:hover { color:var(--accent-red); background:#fdf0ef; }
+        @keyframes quizShake { 25%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 75%{transform:translateX(-3px)} }
+        @keyframes quizSuccess { 50%{transform:scale(1.018);box-shadow:0 0 0 8px rgba(46,125,50,.12)} }
+        .quiz-modal { position:fixed; inset:0; z-index:3000; display:flex; align-items:center; justify-content:center; background:rgba(17,27,39,.58); padding:24px; opacity:0; visibility:hidden; transition:.2s; }
+        .quiz-modal.open { opacity:1; visibility:visible; }
+        .quiz-modal-card { width:min(560px,90vw); background:#fff; border-radius:12px; border-top:7px solid var(--accent-red); padding:22px 26px; box-shadow:0 18px 55px rgba(0,0,0,.32); font-family:Arial,sans-serif; }
+        .quiz-modal-card h3 { margin:0 0 8px; color:var(--accent-red); font-size:23px; }
+        .quiz-modal-card p { margin:0 0 18px; color:#344254; font-size:17px; line-height:1.45; }
+        .quiz-modal-close { float:right; border:0; border-radius:6px; padding:8px 15px; background:var(--ifsc-green); color:#fff; font-size:15px; font-weight:800; cursor:pointer; }
+        @media print { .quiz-modal{display:none!important} }
+
+        /* ===================== Simulação: montador de Activity ===================== */
+        .activity-builder { display:flex; flex-direction:column; gap:8px; }
+        .ab-toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:7px; }
+        .ab-toolbar-label { font-size:0.62em; font-weight:700; color:#666; margin-right:4px; }
+        .ab-add, .ab-reset {
+            border:1px solid #cfe3cf; background:#f6faf6; color:var(--ifsc-dark); border-radius:7px;
+            padding:6px 11px; font-size:0.62em; font-weight:700; cursor:pointer; transition:.15s;
+        }
+        .ab-add:hover { background:var(--ifsc-green); color:#fff; border-color:var(--ifsc-green); }
+        .ab-reset { border-color:#f3c9c4; background:#fdf3f2; color:var(--accent-red); margin-left:auto; }
+        .ab-reset:hover { background:var(--accent-red); color:#fff; }
+        .ab-body { display:flex; gap:20px; align-items:flex-start; }
+
+        .ab-phone { width:190px; flex-shrink:0; background:#111; border-radius:22px; padding:8px; box-shadow:0 10px 24px rgba(0,0,0,0.25); }
+        .ab-statusbar { height:14px; background:#111; border-radius:8px 8px 0 0; position:relative; }
+        .ab-statusbar::after { content:""; position:absolute; top:4px; left:50%; transform:translateX(-50%); width:36px; height:6px; background:#222; border-radius:4px; }
+        .ab-screen {
+            background:#fff; min-height:280px; border-radius:0 0 14px 14px; padding:10px 8px;
+            display:flex; flex-direction:column; align-items:center; gap:8px; overflow-y:auto; max-height:280px;
+        }
+        .ab-screen:empty::before { content:"toque em \201C+ View\201D para adicionar"; color:#bbb; font-size:0.55em; text-align:center; margin-top:110px; }
+        .ab-view { width:100%; border-radius:6px; font-size:0.6em; text-align:center; box-sizing:border-box; cursor:pointer; position:relative; animation:abPop .25s ease-out; }
+        .ab-view:hover .ab-view-remove { display:flex; }
+        .ab-view-remove {
+            display:none; position:absolute; top:-6px; right:-6px; width:16px; height:16px; border-radius:50%;
+            background:var(--accent-red); color:#fff; align-items:center; justify-content:center; font-size:10px; font-weight:700; cursor:pointer;
+        }
+        .ab-view.tv { background:#eef6ff; border:1px solid #cfe0f7; color:#1a4a80; padding:8px 6px; }
+        .ab-view.btn { background:var(--ifsc-green); color:#fff; padding:9px 6px; font-weight:700; box-shadow:0 2px 6px rgba(0,0,0,0.15); }
+        .ab-view.et { background:#fff; border:1px solid #999; padding:7px 8px; color:#888; text-align:left; }
+        .ab-view.iv { background:repeating-conic-gradient(#e0e0e0 0% 25%, #f0f0f0 0% 50%) 0 0/16px 16px; height:60px; display:flex; align-items:center; justify-content:center; color:#999; font-size:1.1em; }
+        @keyframes abPop { from{opacity:0; transform:scale(0.85);} to{opacity:1; transform:scale(1);} }
+
+        .ab-code { flex:1; min-width:0; }
+        .ab-code-tabs { display:flex; gap:4px; margin-bottom:4px; }
+        .ab-tab { border:1px solid #dfe9df; background:#f6faf6; color:#666; border-radius:6px 6px 0 0; padding:5px 12px; font-size:0.6em; font-weight:700; cursor:pointer; }
+        .ab-tab.active { background:#1e1e2e; color:#fff; border-color:#1e1e2e; }
+        .ab-pre { margin:0; max-height:280px; }
+        .ab-pre code { font-size:0.62em; }
+
+        /* ===================== Simulação: ciclo de vida interativo ===================== */
+        .lifecycle-sim { display:flex; flex-direction:column; gap:8px; }
+        .lc-sim-toolbar { display:flex; flex-wrap:wrap; gap:6px; }
+        .lc-sim-toolbar .ab-reset { margin-left:auto; }
+        .lc-sim-body { display:flex; gap:16px; align-items:flex-start; }
+        .lc-sim-phone { width:120px; flex-shrink:0; }
+        .lc-phone-inner {
+            min-height:200px; max-height:200px; display:flex; align-items:center; justify-content:center;
+            text-align:center; font-size:0.56em; font-weight:700; padding:10px; transition:background .3s;
+        }
+        .lc-phone-gone    { background:#1a1a1a; color:#777; }
+        .lc-phone-visible { background:#eafff4; color:#0f9d58; }
+        .lc-phone-covered { background:#fff8e8; color:#a3760c; }
+        .lc-phone-home    { background:#eef2f7; color:#556; }
+        .lc-phone-rotate  { background:#eef6ff; color:#1a4a80; animation:lcSpin .8s linear; }
+        @keyframes lcSpin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+        .lc-sim-diagram { flex:1.4; margin:0; }
+        .lc-sim-diagram .lifecycle-svg { max-width:100%; }
+
+        .lc-sim-log { flex:1; min-width:190px; }
+        .lc-sim-state { font-size:0.66em; background:#f6faf6; border:1px solid #dfe9df; border-radius:7px; padding:7px 10px; }
+        .lc-log { background:#1e1e2e; color:#e6e6e6; border-radius:8px; padding:8px 12px; min-height:150px; max-height:150px; overflow-y:auto; font-family:'Consolas','Menlo',monospace; font-size:0.62em; }
+        .lc-log-line { padding:2px 0; animation:abPop .25s ease-out; }
+        .lc-log-arrow { color:#7ee787; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <button id="btnPdf" title="Gerar PDF da apresentação" aria-label="Gerar PDF">📄 PDF</button>
+</div>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- ===================== 1. CAPA ===================== -->
+        <section style="text-align:center;">
+            <h1 style="font-size:2.0em;">Desenvolvimento para Dispositivos Móveis</h1>
+            <h2 style="border:none; color:#555; text-transform:none;">Aula 2 — Activities, Layouts e Ciclo de Vida</h2>
+            <p style="font-size:1.0em;">Do XML à tela: como o Android <span class="highlight">cria</span>, <span class="highlight">pausa</span> e <span class="highlight">destrói</span> uma Activity</p>
+            <div style="margin-top:50px;">
+                <p><span class="pill">IFSC</span> <span class="pill android">Android</span> <span class="pill">ADS4 — DDM</span></p>
+                <p style="margin-top:20px;"><strong>Professor:</strong> Romulo de Aguiar Beninca</p>
+                <p class="small-text">Encontro 2 — 10/08/2026 · Lab. INFO 2</p>
+            </div>
+        </section>
+
+        <!-- ===================== 2. ROTEIRO ===================== -->
+        <section class="compact">
+            <h2>Roteiro da Aula</h2>
+            <div class="timeline android-tl">
+                <div class="stage"><div class="dot"></div><h4>1. Activities</h4><p>O que são, para que servem e como se ligam ao layout XML.</p></div>
+                <div class="stage"><div class="dot"></div><h4>2. Layouts</h4><p>ConstraintLayout, LinearLayout e a arte de organizar a tela.</p></div>
+                <div class="stage"><div class="dot"></div><h4>3. Inicialização</h4><p>Do boot ao fork() do Zygote: como um app nasce como processo.</p></div>
+                <div class="stage"><div class="dot"></div><h4>4. Ciclo de vida</h4><p>Os 7 callbacks que toda Activity atravessa, do nascimento à morte.</p></div>
+                <div class="stage"><div class="dot"></div><h4>5. Na prática</h4><p>Observando o ciclo de vida no contador de cliques e salvando estado.</p></div>
+            </div>
+            <div class="tip-box"><strong>Objetivo do dia:</strong> entender <span class="android-highlight">por que</span> um app Android perde (ou não) o estado ao girar a tela — e o que fazer a respeito.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 1 — ACTIVITIES                                                 -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 1</div>
+            <h1>Activities</h1>
+            <p>A unidade básica de interface do Android</p>
+        </section>
+
+        <section class="compact">
+            <h2>O que é uma Activity?</h2>
+            <p>Uma <strong>Activity</strong> é um componente Android que <span class="android-highlight">geralmente representa uma tela</span> ou uma área de interação com o usuário.</p>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span>A <strong>maioria dos apps com interface gráfica</strong> possui pelo menos uma Activity — mas ela é só um dos componentes possíveis (existem também Service, BroadcastReceiver, ContentProvider...).</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Um app pode ter <strong>várias Activities</strong>: uma tela de login, uma de lista, uma de detalhes...</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Cada Activity precisa ser <strong>declarada</strong> no <code>AndroidManifest.xml</code> para existir.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Nos nossos exemplos, uma Activity será uma classe <strong>Java</strong> que <strong>estende</strong> <code>AppCompatActivity</code>.</li>
+            </ul>
+            <div class="android-box fragment fade-in">Relembrando a Aula 1: nosso <strong>contador de cliques</strong> já possui uma Activity — a <code>MainActivity</code>.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Simulação: montando uma Activity</h2>
+            <p class="small-text">Adicione componentes ao layout e veja o XML e o Java sendo gerados ao vivo — a mesma dupla XML ↔ código que você vai escrever no Android Studio.</p>
+            <div id="activity-builder" class="activity-builder">
+                <div class="ab-toolbar">
+                    <span class="ab-toolbar-label">Adicionar View:</span>
+                    <button type="button" class="ab-add" data-view="TextView">🔤 TextView</button>
+                    <button type="button" class="ab-add" data-view="Button">🔘 Button</button>
+                    <button type="button" class="ab-add" data-view="EditText">✏️ EditText</button>
+                    <button type="button" class="ab-add" data-view="ImageView">🖼️ ImageView</button>
+                    <button type="button" class="ab-reset">↺ Limpar</button>
+                </div>
+                <div class="ab-body">
+                    <div class="ab-phone">
+                        <div class="ab-statusbar"></div>
+                        <div class="ab-screen" id="ab-screen"></div>
+                    </div>
+                    <div class="ab-code">
+                        <div class="ab-code-tabs">
+                            <button type="button" class="ab-tab active" data-tab="xml">📄 activity_main.xml</button>
+                            <button type="button" class="ab-tab" data-tab="java">☕ MainActivity.java</button>
+                        </div>
+                        <pre class="ab-pre ab-pre-xml"><code id="ab-code-xml" class="language-xml"></code></pre>
+                        <pre class="ab-pre ab-pre-java" style="display:none;"><code id="ab-code-java" class="language-java"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Activity ↔ Layout: a ligação</h2>
+            <p>No modelo tradicional baseado em Views, a Activity não desenha a tela sozinha — ela carrega um layout XML e passa a controlá-lo.</p>
+            <div class="link-diagram">
+                <div class="link-box xml"><h4>📄 activity_main.xml</h4>Define <em>a interface</em>: botões, textos, posições</div>
+                <div class="link-arrow">⇄</div>
+                <div class="link-box java"><h4>☕ MainActivity.java</h4>Define <em>o comportamento</em>: cliques, lógica, dados</div>
+            </div>
+            <pre><code class="language-java">@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    setContentView(R.layout.activity_main);
+    // carrega o layout XML e o define como conteúdo da Activity
+}</code></pre>
+            <div class="tip-box"><strong>setContentView():</strong> carrega o layout e o define como conteúdo visual da Activity. No Jetpack Compose isso muda — não há XML nem <code>setContentView()</code>; usa-se <code>setContent { ... }</code>.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Declarando a Activity no Manifest</h2>
+            <p class="small-text">Toda Activity precisa aparecer em <code>AndroidManifest.xml</code> — é assim que o sistema Android sabe que ela existe:</p>
+            <pre><code class="language-xml">&lt;application ... &gt;
+    &lt;activity
+        android:name=".MainActivity"
+        android:exported="true"&gt;
+        &lt;intent-filter&gt;
+            &lt;action android:name="android.intent.action.MAIN" /&gt;
+            &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
+        &lt;/intent-filter&gt;
+    &lt;/activity&gt;
+&lt;/application&gt;</code></pre>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span><code>MAIN</code> + <code>LAUNCHER</code>: marca esta Activity como o <strong>ponto de entrada</strong> pelo launcher (ícone do app na tela inicial).</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Esse <code>intent-filter</code> <strong>não é obrigatório em toda Activity</strong> — todas precisam estar declaradas em <code>&lt;activity&gt;</code>, mas normalmente só uma recebe <code>MAIN</code> + <code>LAUNCHER</code>.</li>
+            </ul>
+            <div class="tip-box fragment fade-in">
+                <code>App</code><br>
+                &nbsp;├─ <code>MainActivity</code> <span class="small-text">← MAIN + LAUNCHER</span><br>
+                &nbsp;├─ <code>LoginActivity</code><br>
+                &nbsp;└─ <code>DetalhesActivity</code>
+            </div>
+        </section>
+
+        <section class="compact" id="quiz-parte-1"><h2>Questionário — Activities</h2><p>Revise a função da Activity e sua ligação com o layout e o Manifest.</p>
+            <div class="quiz" data-quiz-id="ddm-aula2-activities">
+                <article class="quiz-question" data-question-id="activity-tela"><div class="quiz-number">Questão 1 · verdadeiro ou falso</div><p class="quiz-prompt">Todo aplicativo Android precisa ter pelo menos uma Activity.</p><div class="quiz-options"><button class="quiz-option" data-option-id="f" data-correct="true">Falso</button><button class="quiz-option" data-option-id="v" data-feedback="Um app pode existir só com Service, BroadcastReceiver ou ContentProvider, sem nenhuma Activity. A maioria dos apps com interface gráfica tem ao menos uma, mas não é obrigatório para todo app.">Verdadeiro</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="set-content"><div class="quiz-number">Questão 2 · objetiva</div><p class="quiz-prompt">Qual método associa o XML à interface visível da Activity?</p><div class="quiz-options"><button class="quiz-option" data-option-id="set" data-correct="true"><code>setContentView()</code></button><button class="quiz-option" data-option-id="find" data-feedback="findViewById localiza uma View específica depois que o layout já foi carregado."><code>findViewById()</code></button><button class="quiz-option" data-option-id="log" data-feedback="Log.d escreve uma mensagem no Logcat; ele não carrega a interface."><code>Log.d()</code></button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="launcher"><div class="quiz-number">Questão 3 · objetiva</div><p class="quiz-prompt">O que identifica a tela inicial no Manifest?</p><div class="quiz-options"><button class="quiz-option" data-option-id="main-launcher" data-correct="true"><code>MAIN</code> + <code>LAUNCHER</code></button><button class="quiz-option" data-option-id="exported" data-feedback="android:exported controla se outros apps podem iniciar o componente; sozinho, não define a tela inicial."><code>android:exported</code></button><button class="quiz-option" data-option-id="layout" data-feedback="O arquivo de layout descreve a tela, mas a Activity inicial é marcada pelo intent-filter MAIN e LAUNCHER."><code>activity_main.xml</code></button></div><div class="quiz-result"></div></article>
+            </div><div class="quiz-progress"></div></section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 2 — LAYOUTS                                                    -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 2</div>
+            <h1>Layouts em XML</h1>
+            <p>Organizando componentes visuais na tela</p>
+        </section>
+
+        <section class="compact">
+            <h2>Views e ViewGroups</h2>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>View:</strong> um componente visual individual — <code>TextView</code>, <code>Button</code>, <code>ImageView</code>, <code>EditText</code>...</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>ViewGroup:</strong> um contêiner que organiza outras Views (inclusive outros ViewGroups) — é um layout.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Todo layout XML tem uma <strong>ViewGroup raiz</strong> que define como os filhos são posicionados.</li>
+            </ul>
+            <div class="tip-box fragment fade-in">Pense na tela como uma árvore: a ViewGroup raiz é o tronco, e cada View ou sub-layout é um galho.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Principais tipos de Layout</h2>
+            <div class="compare">
+                <div class="card xml fragment fade-up" style="background:#fff4e8; border:1px solid #f3d9b0;">
+                    <h4 style="color:#a3590c;">LinearLayout</h4>
+                    <ul>
+                        <li>Organiza filhos em <strong>uma linha</strong>, horizontal ou vertical</li>
+                        <li>Simples e previsível</li>
+                        <li>Fica lento com telas complexas (hierarquias aninhadas)</li>
+                    </ul>
+                </div>
+                <div class="card compose fragment fade-up" style="background:#eafff4; border:1px solid #b7ecd2;">
+                    <h4 style="color:#0f9d58;">ConstraintLayout</h4>
+                    <ul>
+                        <li>Posiciona Views por <strong>restrições (constraints)</strong> relativas umas às outras ou ao pai</li>
+                        <li>Hierarquia mais achatada — melhor performance</li>
+                        <li>Template padrão do Android Studio ("Empty Views Activity")</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="small-text" style="text-align:center;">Existem outros: <code>FrameLayout</code> (empilha views), <code>RelativeLayout</code> (mais antigo, similar ao ConstraintLayout).</p>
+        </section>
+
+        <section class="compact">
+            <h2>ConstraintLayout na prática</h2>
+            <p class="small-text">O layout do nosso contador de cliques usa constraints para centralizar o texto na tela:</p>
+            <pre><code class="language-xml">&lt;TextView
+    android:id="@+id/tvShowContador"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" /&gt;</code></pre>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span><code>constraintTop_toTopOf="parent"</code> — prende o topo da View ao topo do pai.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>As 4 constraints juntas <strong>centralizam</strong> a View, tanto horizontal quanto verticalmente.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Sem constraint em algum lado, a View "flutua" sem posição definida — erro comum de quem está começando.</li>
+            </ul>
+        </section>
+
+        <section class="compact" id="quiz-parte-2"><h2>Questionário — Layouts XML</h2><p>Revise Views, ViewGroups e posicionamento por constraints.</p>
+            <div class="quiz" data-quiz-id="ddm-aula2-layouts">
+                <article class="quiz-question" data-question-id="view-group"><div class="quiz-number">Questão 1 · objetiva</div><p class="quiz-prompt">Qual elemento organiza outras Views e pode ser a raiz do XML?</p><div class="quiz-options"><button class="quiz-option" data-option-id="group" data-correct="true">ViewGroup</button><button class="quiz-option" data-option-id="text" data-feedback="TextView é uma View individual usada para texto; não é o contêiner geral da árvore.">TextView</button><button class="quiz-option" data-option-id="activity" data-feedback="Activity controla a tela, mas a árvore do layout é formada por Views e ViewGroups.">Activity</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="linear"><div class="quiz-number">Questão 2 · verdadeiro ou falso</div><p class="quiz-prompt">LinearLayout organiza seus filhos em uma direção horizontal ou vertical.</p><div class="quiz-options"><button class="quiz-option" data-option-id="v" data-correct="true">Verdadeiro</button><button class="quiz-option" data-option-id="f" data-feedback="Essa é a característica central do LinearLayout: dispor os filhos sequencialmente em uma única direção.">Falso</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="constraints"><div class="quiz-number">Questão 3 · objetiva</div><p class="quiz-prompt">No exemplo, o que centraliza o TextView nos dois eixos?</p><div class="quiz-options"><button class="quiz-option" data-option-id="four" data-correct="true">Constraints nos quatro lados em relação ao pai</button><button class="quiz-option" data-option-id="width" data-feedback="wrap_content ajusta o tamanho ao conteúdo, mas não define sozinho a posição na tela."><code>wrap_content</code></button><button class="quiz-option" data-option-id="id" data-feedback="O id identifica a View; são as constraints que determinam sua posição."><code>android:id</code></button></div><div class="quiz-result"></div></article>
+            </div><div class="quiz-progress"></div></section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 4 — CICLO DE VIDA                                              -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 4</div>
+            <h1>Ciclo de Vida da Activity</h1>
+            <p>Do nascimento à destruição: os 7 callbacks fundamentais</p>
+        </section>
+
+        <section class="compact">
+            <h2>Por que existe um ciclo de vida?</h2>
+            <p>Um celular é diferente de um computador: chamadas chegam, o usuário troca de app, a bateria acaba, a tela gira. O Android precisa de um jeito de <strong>avisar sua Activity</strong> quando cada uma dessas coisas acontece.</p>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span>Liberar recursos (câmera, sensores, conexões) quando o app não está visível.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Salvar dados antes que o sistema mate o processo por falta de memória.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Retomar o estado exatamente de onde o usuário parou.</li>
+            </ul>
+            <div class="android-box fragment fade-in">O Android chama métodos específicos — os <strong>callbacks do ciclo de vida</strong> — em cada uma dessas transições. Sobrescrevê-los é como o app "escuta" essas mudanças.</div>
+        </section>
+
+        <section class="compact" style="text-align:center;">
+            <h2>Os 7 callbacks</h2>
+            <div class="lifecycle-wrap">
+                <svg class="lifecycle-svg" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="lcArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                            <path d="M0,0 L10,5 L0,10 Z" fill="#333"/>
+                        </marker>
+                    </defs>
+
+                    <!-- Arestas (desenhadas antes das caixas para ficarem por baixo) -->
+                    <path class="lc-edge-path fragment fade-in" d="M110,190 C140,160 155,145 168,128" />
+                    <text class="lc-edge-label fragment fade-in" x="112" y="155">onCreate()</text>
+
+                    <path class="lc-edge-path fragment fade-in" d="M255,95 C270,75 285,55 300,38" />
+                    <text class="lc-edge-label fragment fade-in" x="243" y="65">onStart()</text>
+
+                    <path class="lc-edge-path fragment fade-in" d="M370,95 C355,75 340,55 328,38" />
+                    <text class="lc-edge-label fragment fade-in" x="430" y="48">onResume()</text>
+
+                    <path class="lc-edge-path fragment fade-in" d="M348,50 C355,63 360,73 366,90" />
+                    <text class="lc-edge-label fragment fade-in" x="375" y="78">onPause()</text>
+
+                    <path class="lc-edge-path fragment fade-in" d="M414,127 C414,148 414,168 414,186" />
+                    <text class="lc-edge-label fragment fade-in" x="464" y="160">onStop()</text>
+
+                    <path class="lc-edge-path fragment fade-in" d="M412,220 C320,240 220,240 128,222" />
+                    <text class="lc-edge-label fragment fade-in" x="260" y="252">onRestart()</text>
+
+                    <path class="lc-edge-path fragment fade-in" d="M485,225 C500,235 512,242 520,248" />
+                    <text class="lc-edge-label fragment fade-in" x="548" y="222">onDestroy()</text>
+
+                    <!-- Estados -->
+                    <g class="lc-node fragment fade-up" data-lc="created">
+                        <rect x="0" y="167" width="120" height="46" rx="23" fill="#8bc34a"/>
+                        <text x="60" y="186">Created</text>
+                    </g>
+                    <g class="lc-node fragment fade-up" data-lc="started">
+                        <rect x="176" y="80" width="120" height="46" rx="23" fill="#9ccc4f"/>
+                        <text x="236" y="99">Started</text>
+                        <text class="lc-sub" x="236" y="114">(visible)</text>
+                    </g>
+                    <g class="lc-node fragment fade-up" data-lc="resumed">
+                        <rect x="262" y="0" width="120" height="46" rx="23" fill="#a8d857"/>
+                        <text x="322" y="19">Resumed</text>
+                        <text class="lc-sub" x="322" y="34">(visible)</text>
+                    </g>
+                    <g class="lc-node fragment fade-up" data-lc="paused">
+                        <rect x="354" y="80" width="120" height="46" rx="23" fill="#d4d84f"/>
+                        <text x="414" y="99">Paused</text>
+                        <text class="lc-sub" x="414" y="114">(partially visible)</text>
+                    </g>
+                    <g class="lc-node fragment fade-up" data-lc="stopped">
+                        <rect x="354" y="167" width="120" height="46" rx="23" fill="#ffb347"/>
+                        <text x="414" y="186">Stopped</text>
+                        <text class="lc-sub" x="414" y="201">(hidden)</text>
+                    </g>
+                    <g class="lc-node lc-destroyed fragment fade-up" data-lc="destroyed">
+                        <rect x="490" y="245" width="100" height="42" rx="6" fill="#dcdcdc"/>
+                        <text x="540" y="271">Destroyed</text>
+                    </g>
+                </svg>
+            </div>
+            <p class="small-text" style="margin-top:6px;">Fluxo típico: <code>onCreate → onStart → onResume</code> (visível e interativa) → <code>onPause → onStop</code> (some de vista) → <code>onDestroy</code> ou <code>onRestart → onStart</code> (volta).</p>
+        </section>
+
+        <section class="compact" style="padding-bottom:2px;">
+            <h2>Simulação: dispare os eventos, veja o ciclo reagir</h2>
+            <p class="small-text">Clique nas ações do sistema (abrir, Home, trocar de app, Voltar, girar a tela) e observe qual estado é alcançado e quais callbacks são chamados, na ordem — o mesmo diagrama clássico do ciclo de vida, agora ao vivo.</p>
+            <div id="lifecycle-sim" class="lifecycle-sim">
+                <div class="lc-sim-toolbar">
+                    <button type="button" class="ab-add" data-action="open">▶️ Abrir app</button>
+                    <button type="button" class="ab-add" data-action="switch">🗂️ Diálogo por cima</button>
+                    <button type="button" class="ab-add" data-action="home">🏠 Botão Home</button>
+                    <button type="button" class="ab-add" data-action="rotate">🔄 Girar tela</button>
+                    <button type="button" class="ab-add" data-action="back">◀️ Botão Voltar</button>
+                    <button type="button" class="ab-reset" data-action="reset">↺ Reiniciar</button>
+                </div>
+                <div class="lc-sim-body">
+                    <div class="ab-phone lc-sim-phone">
+                        <div class="ab-statusbar"></div>
+                        <div id="lc-phone-screen" class="ab-screen lc-phone-inner lc-phone-gone"></div>
+                    </div>
+                    <div class="lifecycle-wrap lc-sim-diagram">
+                        <svg id="lc-sim-svg" class="lifecycle-svg" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="lcArrowSim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                                    <path d="M0,0 L10,5 L0,10 Z" fill="#333"/>
+                                </marker>
+                            </defs>
+                            <g marker-end="url(#lcArrowSim)">
+                                <path class="lc-edge-path" d="M110,190 C140,160 155,145 168,128" />
+                                <path class="lc-edge-path" d="M255,95 C270,75 285,55 300,38" />
+                                <path class="lc-edge-path" d="M370,95 C355,75 340,55 328,38" />
+                                <path class="lc-edge-path" d="M348,50 C355,63 360,73 366,90" />
+                                <path class="lc-edge-path" d="M414,127 C414,148 414,168 414,186" />
+                                <path class="lc-edge-path" d="M412,220 C320,240 220,240 128,222" />
+                                <path class="lc-edge-path" d="M485,225 C500,235 512,242 520,248" />
+                            </g>
+                            <text class="lc-edge-label" x="112" y="155">onCreate()</text>
+                            <text class="lc-edge-label" x="243" y="65">onStart()</text>
+                            <text class="lc-edge-label" x="430" y="48">onResume()</text>
+                            <text class="lc-edge-label" x="375" y="78">onPause()</text>
+                            <text class="lc-edge-label" x="464" y="160">onStop()</text>
+                            <text class="lc-edge-label" x="260" y="252">onRestart()</text>
+                            <text class="lc-edge-label" x="548" y="222">onDestroy()</text>
+
+                            <g class="lc-node" data-lc="created">
+                                <rect x="0" y="167" width="120" height="46" rx="23" fill="#8bc34a"/>
+                                <text x="60" y="186">Created</text>
+                            </g>
+                            <g class="lc-node" data-lc="started">
+                                <rect x="176" y="80" width="120" height="46" rx="23" fill="#9ccc4f"/>
+                                <text x="236" y="99">Started</text>
+                                <text class="lc-sub" x="236" y="114">(visible)</text>
+                            </g>
+                            <g class="lc-node" data-lc="resumed">
+                                <rect x="262" y="0" width="120" height="46" rx="23" fill="#a8d857"/>
+                                <text x="322" y="19">Resumed</text>
+                                <text class="lc-sub" x="322" y="34">(visible)</text>
+                            </g>
+                            <g class="lc-node" data-lc="paused">
+                                <rect x="354" y="80" width="120" height="46" rx="23" fill="#d4d84f"/>
+                                <text x="414" y="99">Paused</text>
+                                <text class="lc-sub" x="414" y="114">(partially visible)</text>
+                            </g>
+                            <g class="lc-node" data-lc="stopped">
+                                <rect x="354" y="167" width="120" height="46" rx="23" fill="#ffb347"/>
+                                <text x="414" y="186">Stopped</text>
+                                <text class="lc-sub" x="414" y="201">(hidden)</text>
+                            </g>
+                            <g class="lc-node lc-destroyed" data-lc="destroyed">
+                                <rect x="490" y="245" width="100" height="42" rx="6" fill="#dcdcdc"/>
+                                <text x="540" y="271">Destroyed</text>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="lc-sim-log">
+                        <div class="lc-sim-state">Estado atual: <strong id="lc-current-state">Activity ainda não existe</strong></div>
+                        <div class="ttl" style="text-align:left; margin:6px 0 2px;">Callbacks chamados</div>
+                        <div id="lc-log" class="lc-log"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>onCreate() e onDestroy()</h2>
+            <div class="compare">
+                <div class="card fragment fade-up" style="background:#eafff4; border:1px solid #b7ecd2;">
+                    <h4 style="color:#0f9d58;">onCreate()</h4>
+                    <ul>
+                        <li>Chamado <strong>uma única vez</strong> quando a Activity é criada</li>
+                        <li>Local do <code>setContentView()</code>, <code>findViewById()</code>, inicialização de variáveis</li>
+                        <li>Recebe <code>savedInstanceState</code> — útil para restaurar estado salvo</li>
+                    </ul>
+                </div>
+                <div class="card fragment fade-up" style="background:#fdf3f2; border:1px solid #f3c9c4;">
+                    <h4 style="color:#c0392b;">onDestroy()</h4>
+                    <ul>
+                        <li>Última chamada antes da Activity deixar de existir</li>
+                        <li>Chamado ao fechar o app (<code>finish()</code>) <strong>ou</strong> quando o sistema recria a Activity (ex.: rotação de tela)</li>
+                        <li>Local para liberar recursos que não devem vazar</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="warn-box fragment fade-in"><strong>Pegadinha comum:</strong> girar a tela chama <code>onDestroy()</code> seguido de um novo <code>onCreate()</code> — a Activity é recriada do zero, e variáveis não salvas se perdem.</div>
+        </section>
+
+        <section class="compact">
+            <h2>onPause(), onResume(), onStop()</h2>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>onPause():</strong> a Activity perde o foco, mas ainda pode estar parcialmente visível (ex.: um diálogo aberto por cima). Deve ser rápido — pausar animações, sensores.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>onResume():</strong> a Activity volta a ficar em primeiro plano e interativa. Retomar o que foi pausado.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>onStop():</strong> a Activity fica completamente invisível (outro app cobriu a tela, ou o usuário apertou Home). Bom lugar para liberar recursos pesados.</li>
+            </ul>
+            <div class="tip-box fragment fade-in"><code>onPause()</code> é sempre chamado antes de <code>onStop()</code> — mas nem todo <code>onPause()</code> é seguido de <code>onStop()</code> (ex.: um diálogo transparente por cima não esconde a Activity totalmente).</div>
+        </section>
+
+        <section class="compact">
+            <h2>Cenário 1 — Girar a tela</h2>
+            <p>Ao rotacionar o dispositivo, a configuração muda e o Android <strong>recria</strong> a Activity por padrão:</p>
+            <div class="scenario">
+                <div class="sc-step">onPause</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onStop</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onDestroy</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onCreate</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onStart</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onResume</div>
+            </div>
+            <div class="warn-box">Sem tratamento, o contador de cliques <strong>volta a zero</strong> a cada rotação — porque a variável <code>contador</code> vive apenas na instância da Activity, que acabou de ser destruída.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Cenário 2 — Botão Home / trocar de app</h2>
+            <div class="scenario">
+                <div class="sc-step">onPause</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onStop</div>
+            </div>
+            <p class="small-text">A Activity <strong>não é destruída</strong> — fica parada em segundo plano, mantendo seu estado em memória.</p>
+            <p>Ao voltar para o app:</p>
+            <div class="scenario">
+                <div class="sc-step">onRestart</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onStart</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onResume</div>
+            </div>
+            <div class="tip-box fragment fade-in">Aqui o contador <strong>mantém o valor</strong> — a instância da Activity nunca foi destruída, só pausada.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Cenário 3 — Botão Voltar (fechar a tela)</h2>
+            <div class="scenario">
+                <div class="sc-step">onPause</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onStop</div><div class="sc-arrow">→</div>
+                <div class="sc-step">onDestroy</div>
+            </div>
+            <p>O usuário decidiu sair da tela — a Activity é destruída de forma <strong>definitiva</strong> (diferente da rotação, aqui não vem um <code>onCreate()</code> automático depois).</p>
+            <div class="android-box">Se o usuário abrir o app de novo, uma <strong>nova instância</strong> da Activity é criada do zero, com <code>onCreate()</code> chamado sem estado salvo anterior.</div>
+        </section>
+
+        <section class="compact" id="quiz-parte-4"><h2>Questionário — Ciclo de Vida</h2><p>Preveja os callbacks nos cenários apresentados.</p>
+            <div class="quiz" data-quiz-id="ddm-aula2-ciclo-vida">
+                <article class="quiz-question" data-question-id="rotacao"><div class="quiz-number">Questão 1 · objetiva</div><p class="quiz-prompt">O que ocorre por padrão quando a tela é girada?</p><div class="quiz-options"><button class="quiz-option" data-option-id="recreate" data-correct="true">A Activity é destruída e uma nova instância é criada</button><button class="quiz-option" data-option-id="pause" data-feedback="A rotação não causa apenas uma pausa: a mudança de configuração normalmente recria a Activity.">Somente onPause é chamado</button><button class="quiz-option" data-option-id="nothing" data-feedback="A rotação é uma mudança de configuração e afeta o ciclo de vida da Activity.">Nada muda</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="home"><div class="quiz-number">Questão 2 · verdadeiro ou falso</div><p class="quiz-prompt">Ao apertar Home, a Activity normalmente passa por onPause e onStop, mas permanece em memória.</p><div class="quiz-options"><button class="quiz-option" data-option-id="v" data-correct="true">Verdadeiro</button><button class="quiz-option" data-option-id="f" data-feedback="No cenário apresentado, Home deixa a Activity em segundo plano: ela pausa e para sem ser destruída imediatamente.">Falso</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="voltar"><div class="quiz-number">Questão 3 · objetiva</div><p class="quiz-prompt">Qual sequência representa o botão Voltar fechando a tela?</p><div class="quiz-options"><button class="quiz-option" data-option-id="destroy" data-correct="true">onPause → onStop → onDestroy</button><button class="quiz-option" data-option-id="restart" data-feedback="onRestart ocorre quando uma Activity parada volta; o botão Voltar encerra a tela no cenário apresentado.">onRestart → onStart → onResume</button><button class="quiz-option" data-option-id="create" data-feedback="Essa sequência corresponde à entrada em primeiro plano de uma Activity, não ao seu fechamento.">onCreate → onStart → onResume</button></div><div class="quiz-result"></div></article>
+            </div><div class="quiz-progress"></div></section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 3 — INICIALIZAÇÃO DE UM APP ANDROID                            -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 3</div>
+            <h1>Como um App Nasce</h1>
+            <p>Do toque no ícone ao primeiro processo rodando o seu código</p>
+        </section>
+
+        <section class="compact" style="text-align:center;">
+            <h2>Do boot do sistema até o primeiro app</h2>
+            <img src="assets/boot-passos-diagrama.png" alt="Fluxograma dos passos de boot: Boot ROM, Boot Loader, Kernel, Init, Zygote/Runtime/Daemons, System Servers/Managers" style="max-width:58%; box-shadow:0 6px 20px rgba(0,0,0,0.15); border-radius:8px;">
+            <p class="small-text">Antes de qualquer app abrir, o sistema já passou por boot ROM, bootloader, kernel Linux, <code>init</code> e os serviços nativos (visto na Aula 1). O <strong>Zygote</strong> nasce nessa etapa — e é ele quem gera cada app.</p>
+        </section>
+
+        <section class="compact">
+            <h2>Zygote e a Android Runtime</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>O <strong>Zygote</strong> é um processo especial, criado ainda durante o boot, que já vem com a <strong>Android Runtime (ART)</strong> e as classes principais do framework <strong>pré-carregadas</strong> na memória.</p>
+                    <p>Ele funciona como um "molde": em vez de iniciar cada app do zero, o sistema faz um <code>fork()</code> do Zygote — muito mais rápido do que carregar tudo de novo a cada app aberto.</p>
+                </div>
+                <div class="col-img">
+                    <img src="assets/inicializacao-fluxo-diagrama.png" alt="Diagrama de fluxo da inicialização do Android: Bootloader, Kernel, Init, Zygote, System Server, Activity Manager, Launcher">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>O que acontece ao tocar no ícone?</h2>
+            <p>O toque dispara uma <strong>Intent</strong> no sistema, com os dados de qual aplicação deve ser iniciada — direcionada ao <strong>ActivityManager</strong>, serviço do Android Framework:</p>
+            <div class="init-flow">
+                <div class="intent-box">
+                    <div class="ttl">Intent</div>
+                    <div><span class="k">package:</span> <span class="v">"com.ifsc.contaclick"</span></div>
+                    <div><span class="k">type:</span> Intent.ACTION_MAIN</div>
+                    <div><span class="k">category:</span> Intent.CATEGORY_LAUNCHER</div>
+                    <div><span class="k">class:</span> com.ifsc.contaclick.MainActivity.class</div>
+                </div>
+                <div class="init-arrow-v fragment fade-in">↓</div>
+                <div class="init-box am fragment fade-up">ActivityManager</div>
+            </div>
+            <div class="android-box fragment fade-in">O <strong>ActivityManager</strong> verifica as permissões da Intent e, se puder iniciar o app, faz um <code>fork()</code> do processo <strong>Zygote</strong>.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Do fork() ao processo do seu app</h2>
+            <p>O novo processo nasce como uma cópia do Zygote, já com a ART pronta, e recebe um <strong>PID</strong> (Process ID) próprio:</p>
+            <div class="init-fork-row" style="justify-content:center;">
+                <div class="init-proc">
+                    <div class="pid">PID = 1013 · GUID = 1013</div>
+                    <div class="layer2">ART</div>
+                    <div class="layer2">Zygote</div>
+                </div>
+                <div class="init-arrow-v" style="transform:rotate(-90deg); margin:0 6px;">➜</div>
+                <div class="init-proc fragment fade-in">
+                    <div class="pid">novo processo do app</div>
+                    <div class="layer2" style="background:#c9f7de;">ApplicationContext</div>
+                    <div class="layer2">ActivityMain.dex</div>
+                </div>
+            </div>
+            <ul class="icon-list" style="margin-top:14px;">
+                <li class="fragment fade-up"><span class="ic">▸</span>O código do app (<code>.dex</code>) é carregado dentro desse novo processo.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>É criado o <code>ApplicationContext</code> — o objeto que dá acesso a recursos, preferências e serviços do sistema.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Só depois disso o <code>ActivityManager</code> chama o <code>onCreate()</code> da sua <code>MainActivity</code>.</li>
+            </ul>
+        </section>
+
+        <section class="compact">
+            <h2>Copy-on-Write: por que o fork() é tão rápido?</h2>
+            <p>Cada app iniciado é um processo <strong>filho do Zygote</strong>, mas eles não duplicam toda a memória — reutilizam o espaço já carregado pelo processo pai:</p>
+            <div class="cow-wrap">
+                <div class="mem-block">
+                    <div class="mem-seg proc0">Espaço de Memória<br>Process 1013</div>
+                    <div class="mem-seg cow">Apenas mudanças referentes ao processo pai (COW)</div>
+                    <div class="mem-seg shared">&nbsp;</div>
+                </div>
+                <div class="cow-procs">
+                    <div class="cow-proc-row fragment fade-up">
+                        <span class="fork-label">fork() ←</span>
+                        <div class="init-proc"><div class="pid">user:pkg · PID=1013</div><div class="layer2">ART</div><div class="layer2">Zygote</div></div>
+                        <span class="small-text">processo pai</span>
+                    </div>
+                    <div class="cow-proc-row fragment fade-up">
+                        <span class="fork-label">fork() ←</span>
+                        <div class="init-proc"><div class="pid">user:pkg · PID=1014</div><div class="layer2">ART</div><div class="layer2">Zygote</div></div>
+                        <div class="phone-mini"><img src="assets/celular-icone-simples.png" alt="Ícone de smartphone representando o app 1"></div>
+                    </div>
+                    <div class="cow-proc-row fragment fade-up">
+                        <span class="fork-label">fork() ←</span>
+                        <div class="init-proc"><div class="pid">user:pkg · PID=1015</div><div class="layer2">ART</div><div class="layer2">Zygote</div></div>
+                        <div class="phone-mini"><img src="assets/celular-icone-simples.png" alt="Ícone de smartphone representando o app 2"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="tip-box fragment fade-in"><strong>Copy-on-Write (COW):</strong> cada processo filho só grava em memória própria a partir do momento em que <em>modifica</em> algo — até lá, todos compartilham a mesma região de memória do processo pai. É por isso que abrir um novo app é rápido e econômico em memória.</div>
+        </section>
+
+        <section class="compact" id="quiz-parte-3"><h2>Questionário — Como um App Nasce</h2><p>Revise Intent, Zygote, fork e Copy-on-Write.</p>
+            <div class="quiz" data-quiz-id="ddm-aula2-inicializacao">
+                <article class="quiz-question" data-question-id="zygote"><div class="quiz-number">Questão 1 · objetiva</div><p class="quiz-prompt">Por que o Zygote acelera a abertura dos apps?</p><div class="quiz-options"><button class="quiz-option" data-option-id="preload" data-correct="true">Mantém ART e classes do framework pré-carregadas</button><button class="quiz-option" data-option-id="compile" data-feedback="O benefício apresentado vem do processo pré-carregado e do fork, não de recompilar todo app a cada abertura.">Recompila o Android a cada toque</button><button class="quiz-option" data-option-id="network" data-feedback="Zygote atua na criação local dos processos; ele não depende de baixar componentes da rede.">Baixa a Runtime da internet</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="activity-manager"><div class="quiz-number">Questão 2 · objetiva</div><p class="quiz-prompt">Quem recebe a Intent e solicita a criação do processo do app?</p><div class="quiz-options"><button class="quiz-option" data-option-id="am" data-correct="true">ActivityManager</button><button class="quiz-option" data-option-id="view" data-feedback="Uma View pertence à interface do app e não coordena a criação de processos.">TextView</button><button class="quiz-option" data-option-id="gradle" data-feedback="Gradle constrói o projeto; em execução, o ActivityManager coordena a abertura da Activity.">Gradle</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="cow"><div class="quiz-number">Questão 3 · verdadeiro ou falso</div><p class="quiz-prompt">Com Copy-on-Write, o processo filho copia uma região compartilhada somente quando precisa modificá-la.</p><div class="quiz-options"><button class="quiz-option" data-option-id="v" data-correct="true">Verdadeiro</button><button class="quiz-option" data-option-id="f" data-feedback="COW permite compartilhar páginas inicialmente e criar uma cópia privada apenas na escrita, economizando tempo e memória.">Falso</button></div><div class="quiz-result"></div></article>
+            </div><div class="quiz-progress"></div></section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 5 — NA PRÁTICA: OBSERVANDO E SALVANDO ESTADO                   -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#1b5e20">
+            <div class="part-no">PARTE 5</div>
+            <h1>Na Prática</h1>
+            <p>Observando o ciclo de vida no contador de cliques e salvando estado</p>
+        </section>
+
+        <section class="compact">
+            <h2>Enxergando o ciclo de vida com Log</h2>
+            <p>A forma mais direta de ver os callbacks acontecendo é logar cada um e observar no <strong>Logcat</strong> (visto na Aula 1):</p>
+            <pre><code class="language-java">private static final String TAG = "LifecycleDemo";
+
+@Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    Log.d(TAG, "onCreate");
+}
+@Override protected void onStart()   { super.onStart();   Log.d(TAG, "onStart"); }
+@Override protected void onResume()  { super.onResume();  Log.d(TAG, "onResume"); }
+@Override protected void onPause()   { super.onPause();   Log.d(TAG, "onPause"); }
+@Override protected void onStop()    { super.onStop();    Log.d(TAG, "onStop"); }
+@Override protected void onDestroy() { super.onDestroy(); Log.d(TAG, "onDestroy"); }</code></pre>
+            <div class="tip-box">Rode o app, gire o celular, aperte Home e Voltar — e veja no <code>adb logcat</code> a sequência exata de callbacks de cada cenário da Parte 3.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Salvando estado: onSaveInstanceState()</h2>
+            <p>Para o contador <strong>sobreviver à rotação de tela</strong>, salvamos seu valor antes da Activity ser destruída:</p>
+            <pre><code class="language-java">@Override
+protected void onSaveInstanceState(@NonNull Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putInt("contador", contador); // salva antes de destruir
+}</code></pre>
+            <pre><code class="language-java">@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    tvShowContador = findViewById(R.id.tvShowContador);
+
+    if (savedInstanceState != null) {
+        contador = savedInstanceState.getInt("contador", 0); // restaura
+    }
+    tvShowContador.setText(String.valueOf(contador));
+}</code></pre>
+        </section>
+
+        <section class="compact">
+            <h2>Quando o Bundle salva (e quando não salva)</h2>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span><code>onSaveInstanceState()</code> é chamado <strong>antes de onStop()</strong>, quando o sistema pode recriar a Activity (rotação, app em segundo plano sob pressão de memória).</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>Não</strong> é chamado quando o usuário aperta <strong>Voltar</strong> ou o app é fechado explicitamente — nesses casos, o usuário indicou que quer sair, não continuar depois.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Serve para dados <strong>pequenos e temporários</strong> de UI (posição de scroll, texto digitado, contador). Não é substituto de um banco de dados.</li>
+            </ul>
+            <div class="warn-box fragment fade-in">Para persistir dados entre <strong>execuções completas</strong> do app (não só rotações), a ferramenta certa é <code>SharedPreferences</code> ou um banco local — assunto de uma próxima aula.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Resumo visual: o que sobrevive a quê?</h2>
+            <table class="tbl">
+                <tr><th>Evento</th><th>Activity é destruída?</th><th>Variável comum sobrevive?</th><th>Com onSaveInstanceState?</th></tr>
+                <tr class="fragment fade-up"><td>Girar a tela</td><td>Sim</td><td>Não</td><td>Sim</td></tr>
+                <tr class="fragment fade-up"><td>Apertar Home</td><td>Não (só pausa/para)</td><td>Sim</td><td>—</td></tr>
+                <tr class="fragment fade-up"><td>Apertar Voltar</td><td>Sim (definitivo)</td><td>Não</td><td>Não</td></tr>
+                <tr class="fragment fade-up"><td>Sistema mata o processo (pouca memória)</td><td>Sim</td><td>Não</td><td>Sim (se o Bundle foi salvo a tempo)</td></tr>
+            </table>
+        </section>
+
+        <section class="compact" id="quiz-parte-5"><h2>Questionário — Estado e Logcat</h2><p>Revise observação dos callbacks e restauração do contador.</p>
+            <div class="quiz" data-quiz-id="ddm-aula2-estado-logcat">
+                <article class="quiz-question" data-question-id="logcat"><div class="quiz-number">Questão 1 · objetiva</div><p class="quiz-prompt">Como observar a sequência real dos callbacks executados?</p><div class="quiz-options"><button class="quiz-option" data-option-id="log" data-correct="true">Usar <code>Log.d()</code> e acompanhar o Logcat</button><button class="quiz-option" data-option-id="manifest" data-feedback="O Manifest declara componentes, mas não mostra callbacks sendo executados.">Editar o Manifest</button><button class="quiz-option" data-option-id="layout" data-feedback="O XML descreve a interface; os logs de execução aparecem no Logcat.">Abrir o layout XML</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="bundle"><div class="quiz-number">Questão 2 · objetiva</div><p class="quiz-prompt">Como o contador é recuperado após uma rotação?</p><div class="quiz-options"><button class="quiz-option" data-option-id="bundle" data-correct="true">Do <code>savedInstanceState</code> recebido em onCreate</button><button class="quiz-option" data-option-id="view" data-feedback="O TextView exibe o valor, mas a restauração usa o Bundle entregue à nova Activity.">Diretamente do TextView destruído</button><button class="quiz-option" data-option-id="manifest" data-feedback="O Manifest não armazena o estado temporário das Views ou variáveis.">Do AndroidManifest.xml</button></div><div class="quiz-result"></div></article>
+                <article class="quiz-question" data-question-id="bundle-limite"><div class="quiz-number">Questão 3 · verdadeiro ou falso</div><p class="quiz-prompt">onSaveInstanceState substitui banco de dados ou SharedPreferences para persistência definitiva.</p><div class="quiz-options"><button class="quiz-option" data-option-id="v" data-feedback="O Bundle é indicado para estado pequeno e temporário da interface. Persistência entre execuções completas exige outro mecanismo.">Verdadeiro</button><button class="quiz-option" data-option-id="f" data-correct="true">Falso</button></div><div class="quiz-result"></div></article>
+            </div><div class="quiz-progress"></div></section>
+
+        <!-- ===================== ENCERRAMENTO ===================== -->
+        <section class="compact">
+            <h2>Recapitulando</h2>
+            <ul class="icon-list">
+                <li><span class="ic">▸</span>Uma <strong>Activity</strong> é uma tela; ela infla um <strong>layout XML</strong> com <code>setContentView()</code> e é declarada no <code>AndroidManifest.xml</code>.</li>
+                <li><span class="ic">▸</span><strong>ConstraintLayout</strong> organiza Views por restrições relativas, com hierarquia mais achatada que o LinearLayout.</li>
+                <li><span class="ic">▸</span>O <strong>ciclo de vida</strong> tem 7 callbacks: onCreate, onStart, onResume, onPause, onStop, onDestroy e onRestart.</li>
+                <li><span class="ic">▸</span>Girar a tela <strong>destrói e recria</strong> a Activity; Home apenas pausa; Voltar destrói definitivamente.</li>
+                <li><span class="ic">▸</span><code>onSaveInstanceState()</code> salva dados de UI temporários para sobreviver a recriações do sistema.</li>
+            </ul>
+        </section>
+
+        <section style="text-align:center;">
+            <h2 style="border:none;">Próxima aula</h2>
+            <p style="font-size:1.1em; margin-top:20px;"><strong>Encontro 3</strong></p>
+            <p class="small-text" style="margin-top:30px;">Traga o contador de cliques com <code>onSaveInstanceState</code> funcionando — vamos evoluí-lo para guardar o valor mesmo depois de fechar o app.</p>
+        </section>
+
+</div>
+</div>
+
+<div class="quiz-modal" id="quizFeedbackModal" role="dialog" aria-modal="true" aria-labelledby="quizModalTitle" aria-describedby="quizModalText"><div class="quiz-modal-card"><h3 id="quizModalTitle">Ainda não</h3><p id="quizModalText"></p><button class="quiz-modal-close" type="button">Entendi, tentar novamente</button></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        transition: 'fade',
+        slideNumber: 'c/t',
+        width: 1100,
+        height: 800,
+        margin: 0.02,
+        minScale: 0.2,
+        maxScale: 1.5,
+        plugins: [ RevealHighlight ]
+    });
+
+    // Rede de segurança contra transbordamento: se o conteúdo de um slide passar da altura
+    // útil (800px), reduz progressivamente a fonte daquele slide até caber.
+    (function () {
+        const SLIDE_H = 800;
+        function fit(slide) {
+            if (!slide) return;
+            slide.style.fontSize = '';
+            let scale = 1;
+            for (let i = 0; i < 12 && slide.scrollHeight > SLIDE_H; i++) {
+                scale -= 0.04;
+                slide.style.fontSize = (scale * (slide.classList.contains('compact') ? 0.80 : 1)) + 'em';
+            }
+        }
+        Reveal.on('ready', e => fit(e.currentSlide));
+        Reveal.on('slidechanged', e => fit(e.currentSlide));
+        window.addEventListener('resize', () => fit(Reveal.getCurrentSlide()));
+    })();
+
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', () => setTimeout(() => window.print(), 800));
+    }
+
+    (function () {
+        const PREFIX='ddm-aula2.quiz.v1.', modal=document.getElementById('quizFeedbackModal'), modalText=document.getElementById('quizModalText'), closeBtn=modal.querySelector('.quiz-modal-close');
+        let returnFocus=null;
+        const read=id=>{try{return JSON.parse(localStorage.getItem(PREFIX+id))||{}}catch(_){return{}}};
+        const write=(id,state)=>{try{localStorage.setItem(PREFIX+id,JSON.stringify(state))}catch(_){}};
+        function open(message,trigger){returnFocus=trigger;modalText.textContent=message;modal.classList.add('open');closeBtn.focus()}
+        function close(){modal.classList.remove('open');if(returnFocus)returnFocus.focus()}
+        closeBtn.addEventListener('click',close); modal.addEventListener('click',e=>{if(e.target===modal)close()});
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open')){e.stopPropagation();close()}},true);
+        document.querySelectorAll('[data-quiz-id]').forEach(quiz=>{
+            const id=quiz.dataset.quizId,state=read(id),questions=[...quiz.querySelectorAll('[data-question-id]')],progress=quiz.closest('section').querySelector('.quiz-progress');
+            function update(){const n=questions.filter(q=>q.classList.contains('correct')).length;progress.textContent=n===questions.length?'Concluído: todas as respostas estão corretas.':`${n} de ${questions.length} questões concluídas`}
+            questions.forEach(q=>{
+                const qid=q.dataset.questionId,saved=state[qid]||{wrong:[],correct:false},result=q.querySelector('.quiz-result'),options=[...q.querySelectorAll('.quiz-option')],reset=document.createElement('button');
+                reset.type='button';reset.className='quiz-reset';reset.textContent='↶ Desfazer';reset.setAttribute('aria-label','Desfazer respostas desta questão');q.appendChild(reset);
+                reset.addEventListener('click',e=>{e.stopPropagation();delete state[qid];write(id,state);q.classList.remove('correct');options.forEach(o=>{o.classList.remove('wrong','right');o.disabled=false});result.textContent='';update()});
+                saved.wrong.forEach(oid=>{const o=options.find(x=>x.dataset.optionId===oid);if(o)o.classList.add('wrong')});
+                if(saved.correct){const right=options.find(o=>o.dataset.correct==='true');q.classList.add('correct');if(right)right.classList.add('right');options.forEach(o=>o.disabled=!o.classList.contains('wrong'));result.textContent='✓ Correto!'}
+                options.forEach(option=>option.addEventListener('click',e=>{
+                    e.stopPropagation();if(option.classList.contains('wrong')){open(option.dataset.feedback,option);return}if(q.classList.contains('correct'))return;
+                    const current=state[qid]||{wrong:[],correct:false};
+                    if(option.dataset.correct==='true'){current.correct=true;q.classList.add('correct');option.classList.add('right');options.forEach(o=>o.disabled=!o.classList.contains('wrong'));result.textContent='✓ Correto! Muito bem.'}
+                    else{if(!current.wrong.includes(option.dataset.optionId))current.wrong.push(option.dataset.optionId);option.classList.add('wrong');result.textContent='Essa tentativa foi marcada. Escolha outra alternativa.';open(option.dataset.feedback,option)}
+                    state[qid]=current;write(id,state);update();
+                }));
+            });update();
+        });
+    })();
+
+    // ===================== Simulação: montador de Activity =====================
+    (function () {
+        const root = document.getElementById('activity-builder');
+        if (!root) return;
+        const screen = root.querySelector('#ab-screen');
+        const xmlOut = root.querySelector('#ab-code-xml');
+        const javaOut = root.querySelector('#ab-code-java');
+        let counter = { TextView: 0, Button: 0, EditText: 0, ImageView: 0 };
+        let views = [];
+
+        const specs = {
+            TextView:  { cls: 'tv',  label: v => `Texto ${v}`,      xmlTag: 'TextView',  extraXml: id => `        android:text="Texto ${id}"\n`, },
+            Button:    { cls: 'btn', label: v => `Botão ${v}`,      xmlTag: 'Button',    extraXml: id => `        android:text="Botão ${id}"\n`, },
+            EditText:  { cls: 'et',  label: v => `Digite algo...`,  xmlTag: 'EditText',  extraXml: id => `        android:hint="Digite algo..."\n`, },
+            ImageView: { cls: 'iv',  label: v => `🖼️`,             xmlTag: 'ImageView', extraXml: id => `        android:src="@drawable/ic_launcher"\n`, },
+        };
+
+        function idFor(type, n) {
+            const base = { TextView: 'tvTexto', Button: 'btnAcao', EditText: 'etEntrada', ImageView: 'ivImagem' }[type];
+            return `${base}${n}`;
+        }
+
+        function render() {
+            screen.innerHTML = '';
+            views.forEach((v, idx) => {
+                const spec = specs[v.type];
+                const el = document.createElement('div');
+                el.className = `ab-view ${spec.cls}`;
+                el.innerHTML = `${spec.label(v.n)}<span class="ab-view-remove" title="Remover">×</span>`;
+                el.querySelector('.ab-view-remove').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    views.splice(idx, 1);
+                    render();
+                });
+                screen.appendChild(el);
+            });
+            renderCode();
+        }
+
+        function renderCode() {
+            let xml = `<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"\n    android:layout_width="match_parent"\n    android:layout_height="match_parent"\n    android:orientation="vertical"\n    android:padding="16dp">\n\n`;
+            let javaFields = '';
+            let javaInit = '';
+            views.forEach(v => {
+                const spec = specs[v.type];
+                const id = idFor(v.type, v.n);
+                xml += `    <${spec.xmlTag}\n        android:id="@+id/${id}"\n        android:layout_width="wrap_content"\n        android:layout_height="wrap_content"\n${spec.extraXml(v.n)}    />\n\n`;
+                javaFields += `    ${v.type} ${id};\n`;
+                javaInit += `        ${id} = findViewById(R.id.${id});\n`;
+            });
+            xml += `</LinearLayout>`;
+
+            const java = `public class MainActivity extends AppCompatActivity {\n\n${javaFields || '    // nenhuma View adicionada ainda\n'}\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        setContentView(R.layout.activity_main);\n\n${javaInit}    }\n}`;
+
+            xmlOut.textContent = xml;
+            javaOut.textContent = java;
+            if (window.hljs) {
+                window.hljs.highlightElement(xmlOut);
+                window.hljs.highlightElement(javaOut);
+            }
+        }
+
+        root.querySelectorAll('.ab-add').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.view;
+                counter[type]++;
+                views.push({ type, n: counter[type] });
+                render();
+            });
+        });
+
+        root.querySelector('.ab-reset').addEventListener('click', () => {
+            views = [];
+            counter = { TextView: 0, Button: 0, EditText: 0, ImageView: 0 };
+            render();
+        });
+
+        root.querySelectorAll('.ab-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                root.querySelectorAll('.ab-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const showXml = tab.dataset.tab === 'xml';
+                root.querySelector('.ab-pre-xml').style.display = showXml ? '' : 'none';
+                root.querySelector('.ab-pre-java').style.display = showXml ? 'none' : '';
+            });
+        });
+
+        // Estado inicial: um TextView de exemplo, como no contador de cliques
+        counter.TextView = 1;
+        views = [{ type: 'TextView', n: 1 }];
+        render();
+    })();
+
+    // ===================== Simulação: ciclo de vida interativo =====================
+    (function () {
+        const root = document.getElementById('lifecycle-sim');
+        if (!root) return;
+
+        const nodeIds = ['created', 'started', 'resumed', 'paused', 'stopped', 'destroyed'];
+        const nodes = {};
+        nodeIds.forEach(id => nodes[id] = root.querySelector(`[data-lc="${id}"]`));
+        const logEl = root.querySelector('#lc-log');
+        const phoneScreen = root.querySelector('#lc-phone-screen');
+        const stateLabel = root.querySelector('#lc-current-state');
+
+        let state = 'none'; // none | created | started | resumed | paused | stopped | destroyed
+        let everStarted = false;
+
+        function log(method) {
+            const entry = document.createElement('div');
+            entry.className = 'lc-log-line';
+            entry.innerHTML = `<span class="lc-log-arrow">▸</span> <code>${method}()</code>`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function highlight(id) {
+            Object.values(nodes).forEach(n => n && n.classList.remove('lc-active'));
+            if (nodes[id]) nodes[id].classList.add('lc-active');
+        }
+
+        function setPhone(mode) {
+            phoneScreen.className = 'ab-screen lc-phone-inner lc-phone-' + mode;
+            const labels = {
+                visible: '📱 App em primeiro plano',
+                covered: '🗂️ App parcialmente coberto',
+                home: '🏠 Tela inicial (Home)',
+                gone: '⬛ App destruído / fechado',
+                rotate: '🔄 Girando a tela...'
+            };
+            phoneScreen.textContent = labels[mode] || '';
+        }
+
+        function transition(steps, finalState, finalMode) {
+            steps.forEach((m, i) => {
+                setTimeout(() => { log(m); highlight(stepToNode(m)); }, i * 550);
+            });
+            setTimeout(() => {
+                state = finalState;
+                everStarted = everStarted || finalState !== 'destroyed';
+                setPhone(finalMode);
+                stateLabel.textContent = stateLabelText(finalState);
+            }, steps.length * 550);
+        }
+
+        function stepToNode(m) {
+            // onRestart() não tem caixa própria no diagrama oficial — é o rótulo da aresta Stopped -> Created
+            return { onCreate: 'created', onStart: 'started', onResume: 'resumed', onPause: 'paused', onStop: 'stopped', onDestroy: 'destroyed', onRestart: 'created' }[m];
+        }
+
+        function stateLabelText(s) {
+            return {
+                none: 'Activity ainda não existe', created: 'Criada (onCreate)', started: 'Visível (onStart)',
+                resumed: 'Em primeiro plano (onResume)', paused: 'Perdendo o foco (onPause)',
+                stopped: 'Invisível (onStop)', destroyed: 'Destruída (onDestroy)'
+            }[s];
+        }
+
+        function reset() {
+            state = 'none'; everStarted = false;
+            logEl.innerHTML = '';
+            highlight(null);
+            setPhone('gone');
+            stateLabel.textContent = 'Activity ainda não existe';
+        }
+
+        function openApp() {
+            if (state === 'resumed') return;
+            if (state === 'none' || state === 'destroyed') {
+                transition(['onCreate', 'onStart', 'onResume'], 'resumed', 'visible');
+            } else if (state === 'stopped') {
+                transition(['onRestart', 'onStart', 'onResume'], 'resumed', 'visible');
+            } else if (state === 'paused') {
+                transition(['onResume'], 'resumed', 'visible');
+            }
+        }
+
+        function pressHome() {
+            if (state !== 'resumed' && state !== 'paused') return;
+            transition(['onPause', 'onStop'], 'stopped', 'home');
+        }
+
+        function switchApp() {
+            if (state !== 'resumed') return;
+            transition(['onPause'], 'paused', 'covered');
+        }
+
+        function pressBack() {
+            if (state === 'none' || state === 'destroyed') return;
+            transition(['onPause', 'onStop', 'onDestroy'], 'destroyed', 'gone');
+        }
+
+        function rotate() {
+            if (state !== 'resumed' && state !== 'paused') return;
+            setPhone('rotate');
+            setTimeout(() => {
+                transition(['onPause', 'onStop', 'onDestroy', 'onCreate', 'onStart', 'onResume'], 'resumed', 'visible');
+            }, 400);
+        }
+
+        root.querySelector('[data-action="open"]').addEventListener('click', openApp);
+        root.querySelector('[data-action="home"]').addEventListener('click', pressHome);
+        root.querySelector('[data-action="switch"]').addEventListener('click', switchApp);
+        root.querySelector('[data-action="back"]').addEventListener('click', pressBack);
+        root.querySelector('[data-action="rotate"]').addEventListener('click', rotate);
+        root.querySelector('[data-action="reset"]').addEventListener('click', reset);
+
+        reset();
+    })();
+</script>
+</body>
+</html>

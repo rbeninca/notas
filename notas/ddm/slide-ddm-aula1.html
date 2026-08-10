@@ -60,6 +60,7 @@
         .two-col .col-text { flex: 1; }
         .two-col .col-img { flex: 1; text-align: center; }
         .two-col .col-img img { max-width: 100%; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+        .two-col .col-img img + img { margin-top: 10px; }
         .two-col figcaption { font-size: 0.6em; color: #888; margin-top: 8px; }
 
         .icon-list { list-style: none; margin-left: 0; }
@@ -148,6 +149,40 @@
         .compare .card.xml h4 { color:#a3590c; }
         .compare .card.compose { background:#eafff4; border:1px solid #b7ecd2; }
         .compare .card.compose h4 { color:#0f9d58; }
+
+        /* Questionarios reutilizaveis */
+        .quiz { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:8px; }
+        .quiz-question { position:relative; background:#f8fafc; border:1px solid #d9e1ea; border-radius:10px;
+            padding:11px; box-shadow:0 3px 10px rgba(30,50,80,0.08); }
+        .quiz-question.correct { border-color:var(--ifsc-green); background:#f3faf4; animation:quizSuccess .55s ease-out; }
+        .quiz-number { color:var(--ifsc-green); font-size:.55em; font-weight:800; letter-spacing:.6px; text-transform:uppercase; }
+        .quiz-prompt { min-height:48px; margin:4px 0 7px !important; padding-right:36px; font-size:.64em; line-height:1.25; font-weight:700; color:#263548; }
+        .quiz-options { display:grid; gap:5px; }
+        .quiz-option { width:100%; border:2px solid #d7dee8; border-radius:7px; background:#fff; color:#344254;
+            padding:6px 8px; font:inherit; font-size:.53em; line-height:1.22; text-align:left; cursor:pointer;
+            transition:transform .16s ease, border-color .16s ease, background .16s ease; }
+        .quiz-option:hover:not(.wrong):not(.right) { transform:translateY(-1px); border-color:var(--accent-blue); background:#f5faff; }
+        .quiz-option.wrong { border-color:var(--accent-red); background:#fdf0ef; color:#8f2d22; cursor:help; animation:quizShake .35s ease; }
+        .quiz-option.right { border-color:var(--ifsc-green); background:#e8f5e9; color:var(--ifsc-dark); font-weight:800; cursor:default; }
+        .quiz-option:disabled { opacity:1; }
+        .quiz-result { min-height:17px; margin-top:5px; font-size:.48em; font-weight:800; color:var(--ifsc-green); }
+        .quiz-progress { margin:6px 0 0; text-align:right; color:#69788b; font-size:.52em; font-weight:700; }
+        .quiz-reset { position:absolute; top:6px; right:7px; border:0; border-radius:5px; background:transparent;
+            color:#758397; padding:3px 5px; font:inherit; font-size:.4em; font-weight:800; cursor:pointer; }
+        .quiz-reset:hover { color:var(--accent-red); background:#fdf0ef; }
+        @keyframes quizShake { 25% { transform:translateX(-5px); } 50% { transform:translateX(5px); } 75% { transform:translateX(-3px); } }
+        @keyframes quizSuccess { 50% { transform:scale(1.018); box-shadow:0 0 0 8px rgba(46,125,50,.12); } }
+        .quiz-modal { position:fixed; inset:0; z-index:3000; display:flex; align-items:center; justify-content:center;
+            background:rgba(17,27,39,.58); padding:24px; opacity:0; visibility:hidden; transition:opacity .2s ease, visibility .2s; }
+        .quiz-modal.open { opacity:1; visibility:visible; }
+        .quiz-modal-card { width:min(560px, 90vw); background:#fff; border-radius:12px; border-top:7px solid var(--accent-red);
+            padding:22px 26px; box-shadow:0 18px 55px rgba(0,0,0,.32); transform:translateY(14px) scale(.97);
+            transition:transform .2s ease; font-family:Arial,sans-serif; }
+        .quiz-modal.open .quiz-modal-card { transform:translateY(0) scale(1); }
+        .quiz-modal-card h3 { margin:0 0 8px; color:var(--accent-red); font-size:23px; }
+        .quiz-modal-card p { margin:0 0 18px; color:#344254; font-size:17px; line-height:1.45; }
+        .quiz-modal-close { float:right; border:0; border-radius:6px; padding:8px 15px; background:var(--ifsc-green); color:#fff; font-size:15px; font-weight:800; cursor:pointer; }
+        @media print { .quiz-modal { display:none !important; } }
     </style>
 </head>
 <body>
@@ -193,26 +228,107 @@
         </section>
 
         <section class="compact">
-            <h2>Antes do Android</h2>
-            <p>No início dos anos 2000 o mercado de celulares "inteligentes" já existia, mas era fragmentado e fechado:</p>
+            <h2>Origem: uma startup de câmeras digitais</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p class="fragment fade-up">Com a grande popularidade das câmeras digitais, em <strong>2003</strong> um grupo de desenvolvedores fundou a <strong>Android Inc.</strong>, que pretendia criar um sistema operacional para câmeras.</p>
+                    <p class="fragment fade-up">Fundadores: <strong>Andy Rubin, Rich Miner, Nick Sears</strong> e <strong>Chris White</strong>. A empresa usou a biblioteca <strong>Bionic (C)</strong> e o <strong>kernel Linux</strong> como base do sistema.</p>
+                </div>
+                <div class="col-img">
+                    <img class="fragment fade-in" src="assets/hist-camera-polaroid.jpg" alt="Câmera digital instantânea, referência ao mercado que inspirou a Android Inc.">
+                    <img class="fragment fade-in" src="assets/hist-android-figures-camera.jpg" alt="Bonecos do mascote Android ao lado de uma câmera digital Samsung Galaxy">
+                    <figcaption>O projeto original mirava um SO para câmeras — não para celulares.</figcaption>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Antes do Android: mercado fragmentado</h2>
+            <p>Em 2004, observando o crescimento dos celulares, a Android Inc. mudou o foco para concorrer com os sistemas já existentes:</p>
             <ul class="icon-list">
-                <li><span class="ic">▸</span><strong>Symbian</strong> — dominante em aparelhos Nokia, mas fechado e difícil de desenvolver.</li>
-                <li><span class="ic">▸</span><strong>BlackBerry OS</strong> — focado em e-mail corporativo e teclado físico.</li>
-                <li><span class="ic">▸</span><strong>Windows Mobile / Palm OS</strong> — presentes, porém com interfaces pouco amigáveis.</li>
-                <li><span class="ic">▸</span><strong>iPhone (2007)</strong> — a Apple lança um SO fechado, de hardware único, e redefine o que se espera de um smartphone.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>Symbian</strong> — dominante em aparelhos Nokia, mas fechado e difícil de desenvolver.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>BlackBerry OS</strong> — focado em e-mail corporativo e teclado físico.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>Windows Mobile</strong> (antigo Pocket PC) — presente, porém com interface pouco amigável.</li>
             </ul>
-            <div class="warn-box"><strong>O problema:</strong> não existia uma plataforma <em>aberta</em> que qualquer fabricante de hardware pudesse usar e qualquer desenvolvedor pudesse programar livremente.</div>
+            <div class="two-col fragment fade-in">
+                <div class="col-img"><img src="assets/hist-htc-dream-relogio.jpg" alt="Primeiro protótipo com tela sensível ao toque e teclado deslizante"><figcaption>Protótipo inicial</figcaption></div>
+                <div class="col-img"><img src="assets/hist-nokia.jpg" alt="Celular Nokia rodando Symbian OS"><figcaption>Symbian (Nokia)</figcaption></div>
+                <div class="col-img"><img src="assets/hist-blackberry.jpg" alt="Celular BlackBerry com teclado físico"><figcaption>BlackBerry OS</figcaption></div>
+            </div>
         </section>
 
         <section class="compact">
             <h2>Nascimento do Android</h2>
             <div class="timeline android-tl">
-                <div class="stage"><div class="dot"></div><h4>2003</h4><p>Android Inc. é fundada (Andy Rubin e equipe), inicialmente pensando em câmeras digitais.</p></div>
-                <div class="stage"><div class="dot"></div><h4>2005</h4><p>Google compra a Android Inc., ainda sem anunciar publicamente os planos.</p></div>
-                <div class="stage"><div class="dot"></div><h4>2007</h4><p>Google anuncia a plataforma e forma a <strong>Open Handset Alliance</strong> — dezenas de fabricantes e operadoras.</p></div>
-                <div class="stage"><div class="dot"></div><h4>2008</h4><p>Primeiro celular comercial: <strong>T-Mobile G1 (HTC Dream)</strong>, com Android 1.0.</p></div>
+                <div class="stage fragment fade-up"><div class="dot"></div><h4>2003</h4><p>Android Inc. é fundada (Andy Rubin e equipe), inicialmente pensando em câmeras digitais.</p></div>
+                <div class="stage fragment fade-up"><div class="dot"></div><h4>2005</h4><p>Google compra a Android Inc., ainda sem anunciar publicamente os planos.</p></div>
+                <div class="stage fragment fade-up"><div class="dot"></div><h4>2007</h4><p>Google anuncia a plataforma e forma a <strong>Open Handset Alliance</strong> — dezenas de fabricantes e operadoras.</p></div>
+                <div class="stage fragment fade-up"><div class="dot"></div><h4>2008</h4><p>Primeiro celular comercial: <strong>T-Mobile G1 (HTC Dream)</strong>, com Android 1.0.</p></div>
             </div>
-            <div class="android-box"><strong>A ideia central:</strong> um sistema operacional <span class="android-highlight">open source</span>, baseado em Linux, que qualquer fabricante poderia adotar sem pagar licença — o oposto do modelo fechado da Apple.</div>
+            <div class="android-box fragment fade-in"><strong>A ideia central:</strong> um sistema operacional <span class="android-highlight">open source</span>, baseado em Linux, que qualquer fabricante poderia adotar sem pagar licença — o oposto do modelo fechado da Apple.</div>
+        </section>
+
+        <section class="compact">
+            <h2>Aquisição pelo Google (2005)</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>Em 2005 a Android Inc. foi adquirida pelo Google, que manteve quase todos os desenvolvedores em um projeto ambicioso: lançar o Android como uma <span class="android-highlight">plataforma aberta e gratuita</span> para dispositivos móveis, flexível o bastante para rodar em qualquer hardware.</p>
+                </div>
+                <div class="col-img">
+                    <img src="assets/google-android-statue.jpg" alt="Estátua do mascote Android em frente à sede do Google">
+                    <figcaption>Campus do Google, sede da plataforma Android</figcaption>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>O ceticismo da concorrência</h2>
+            <div class="two-col">
+                <div class="col-img">
+                    <img src="assets/quote-ballmer.jpg" alt="Steve Ballmer, ex-CEO da Microsoft">
+                    <figcaption>Steve Ballmer, ex-CEO da Microsoft (2006)</figcaption>
+                </div>
+                <div class="col-text">
+                    <div class="warn-box">"Mercado de celulares jamais dará certo." <span class="small-text">— Steve Ballmer, 2006</span></div>
+                </div>
+            </div>
+            <div class="two-col fragment fade-in" style="margin-top:14px;">
+                <div class="col-text">
+                    <div class="tip-box">"Esses são mercados do tipo 'o vencedor leva tudo'. Meu maior erro foi ter me engajado em algum tipo de ingerência que levou a Microsoft a não ser o que o Android é. O Android é a plataforma não-Apple padrão. Era uma coisa natural para a Microsoft ocupar esse espaço." <span class="small-text">— Bill Gates, 2019</span></div>
+                </div>
+                <div class="col-img">
+                    <img src="assets/quote-gates.jpg" alt="Bill Gates, cofundador da Microsoft">
+                    <figcaption>Bill Gates, cofundador da Microsoft</figcaption>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>2008 — o primeiro celular Android</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>Em 2008 foi lançado o <strong>T-Mobile G1 (HTC Dream)</strong>, com design peculiar para os padrões atuais e teclado físico deslizante.</p>
+                    <p>Um grande trunfo da plataforma foi o <strong>Android Market</strong> — o início do que hoje é a <span class="android-highlight">Play Store</span>.</p>
+                </div>
+                <div class="col-img">
+                    <img src="assets/hist-htc-dream-full.jpg" alt="HTC Dream (T-Mobile G1), primeiro celular comercial com Android">
+                    <figcaption>HTC Dream — primeiro Android comercial (2008)</figcaption>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Distribuição de apps: o Android Market</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>A Apple, que havia lançado o iPhone no final de 2007, não fornecia uma loja de aplicativos — apenas um site para baixar apps da própria Apple.</p>
+                    <p>O Android Market tinha número limitado de aplicações no início, mas ampliou muito as possibilidades de uso do celular.</p>
+                </div>
+                <div class="col-img">
+                    <img src="assets/android-market-antigo.jpg" alt="Telas do Android Market original mostrando lista de aplicativos para download">
+                    <figcaption>Android Market, ancestral da Play Store</figcaption>
+                </div>
+            </div>
         </section>
 
         <section class="compact">
@@ -220,15 +336,21 @@
             <p class="small-text">Até o Android 9, cada versão principal ganhava o nome de uma sobremesa, em ordem alfabética.</p>
             <table class="tbl">
                 <tr><th>Versão</th><th>Nome</th><th>Ano</th><th>Marco</th></tr>
-                <tr><td>1.0</td><td>—</td><td>2008</td><td>Primeiro lançamento comercial (G1)</td></tr>
-                <tr><td>1.5 – 2.3</td><td>Cupcake … Gingerbread</td><td>2009–2010</td><td>Teclado virtual, widgets, multitarefa</td></tr>
-                <tr><td>4.0</td><td>Ice Cream Sandwich</td><td>2011</td><td>Unifica a interface de celulares e tablets</td></tr>
-                <tr><td>5.0</td><td>Lollipop</td><td>2014</td><td>Introduz o <strong>Material Design</strong> e o runtime ART</td></tr>
-                <tr><td>6.0</td><td>Marshmallow</td><td>2015</td><td>Permissões concedidas em tempo de execução</td></tr>
-                <tr><td>10</td><td><span class="small-text">(nomes de doce descontinuados publicamente)</span></td><td>2019</td><td>Modo escuro, foco em privacidade</td></tr>
-                <tr><td>12</td><td>—</td><td>2021</td><td><strong>Material You</strong>, temas dinâmicos</td></tr>
-                <tr><td>13 – 15+</td><td>—</td><td>2022 → hoje</td><td>Mais privacidade, IA embarcada, foco em telas grandes</td></tr>
+                <tr class="fragment fade-up"><td>1.0</td><td>—</td><td>2008</td><td>Primeiro lançamento comercial (G1)</td></tr>
+                <tr class="fragment fade-up"><td>1.5 – 2.3</td><td>Cupcake … Gingerbread</td><td>2009–2010</td><td>Teclado virtual, widgets, multitarefa</td></tr>
+                <tr class="fragment fade-up"><td>4.0</td><td>Ice Cream Sandwich</td><td>2011</td><td>Unifica a interface de celulares e tablets</td></tr>
+                <tr class="fragment fade-up"><td>5.0</td><td>Lollipop</td><td>2014</td><td>Introduz o <strong>Material Design</strong> e o runtime ART</td></tr>
+                <tr class="fragment fade-up"><td>6.0</td><td>Marshmallow</td><td>2015</td><td>Permissões concedidas em tempo de execução</td></tr>
+                <tr class="fragment fade-up"><td>10</td><td><span class="small-text">(nomes de doce descontinuados publicamente)</span></td><td>2019</td><td>Modo escuro, foco em privacidade</td></tr>
+                <tr class="fragment fade-up"><td>12</td><td>—</td><td>2021</td><td><strong>Material You</strong>, temas dinâmicos</td></tr>
+                <tr class="fragment fade-up"><td>13 – 15+</td><td>—</td><td>2022 → hoje</td><td>Mais privacidade, IA embarcada, foco em telas grandes</td></tr>
             </table>
+        </section>
+
+        <section class="compact" style="text-align:center;">
+            <h2>Adoção das versões ao longo do tempo</h2>
+            <img src="assets/versoes-android-grafico.png" alt="Gráfico de área mostrando a distribuição de uso das versões do Android de 2010 a 2018, de Cupcake a Oreo" style="max-width:88%; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,0.15);">
+            <p class="small-text">Fonte: landenlabs.com/android/info/os-api-level.html</p>
         </section>
 
         <section class="compact" style="text-align:center;">
@@ -259,13 +381,49 @@
         </section>
 
         <section class="compact">
+            <h2>Arquitetura — Kernel Linux</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p><strong>Estabilidade e segurança:</strong> o Android é baseado no robusto kernel Linux.</p>
+                    <p><strong>Compatibilidade de hardware:</strong> o amplo suporte do Linux a diferentes configurações facilita a adoção por uma ampla gama de fabricantes.</p>
+                </div>
+                <div class="col-img">
+                    <img src="assets/arquitetura-camadas-diagrama.png" alt="Diagrama de camadas do Android com destaque no Kernel Linux, a camada mais baixa">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Arquitetura — Abstração de Hardware (HAL)</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>A <strong>HAL</strong> é a camada que permite ao Android <strong>se comunicar com o hardware</strong> (câmera, GPS, sensores, Wi-Fi...) de forma padronizada, independente do fabricante.</p>
+                    <ul class="icon-list">
+                        <li class="fragment fade-up"><span class="ic">▸</span>O Android não precisa saber os detalhes de cada hardware.</li>
+                        <li class="fragment fade-up"><span class="ic">▸</span>Fabricantes apenas implementam as interfaces HAL.</li>
+                        <li class="fragment fade-up"><span class="ic">▸</span>O mesmo Android funciona em dispositivos diferentes.</li>
+                    </ul>
+                </div>
+                <div class="col-img">
+                    <img src="assets/arquitetura-camadas-diagrama-v2.png" alt="Diagrama de camadas do Android com destaque na Hardware Abstraction Layer">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
             <h2>Por que isso importa na prática?</h2>
             <ul class="icon-list">
-                <li><span class="ic">▸</span><strong>Portabilidade:</strong> o mesmo APK roda em aparelhos de fabricantes diferentes porque todos implementam o mesmo HAL sobre hardwares distintos.</li>
-                <li><span class="ic">▸</span><strong>Sandbox de segurança:</strong> cada app roda em sua própria instância da ART com permissões isoladas — um app não acessa dados de outro sem permissão.</li>
-                <li><span class="ic">▸</span><strong>Reuso via Framework:</strong> classes como <code>Activity</code>, <code>View</code> e <code>Intent</code> escondem toda a complexidade das camadas de baixo.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>Portabilidade:</strong> o mesmo APK roda em aparelhos de fabricantes diferentes porque todos implementam o mesmo HAL sobre hardwares distintos.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>Sandbox de segurança:</strong> cada app roda em sua própria instância da ART com permissões isoladas — um app não acessa dados de outro sem permissão.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span><strong>Reuso via Framework:</strong> classes como <code>Activity</code>, <code>View</code> e <code>Intent</code> escondem toda a complexidade das camadas de baixo.</li>
             </ul>
-            <div class="tip-box"><strong>Fixando o conceito:</strong> quando você chama <code>startActivity()</code>, o pedido atravessa o Framework, passa pela ART, pode acionar o HAL (ex.: abrir a câmera) e, no fim, o Kernel Linux gerencia o processo de verdade.</div>
+            <div class="tip-box fragment fade-in"><strong>Fixando o conceito:</strong> quando você chama <code>startActivity()</code>, o pedido atravessa o Framework, passa pela ART, pode acionar o HAL (ex.: abrir a câmera) e, no fim, o Kernel Linux gerencia o processo de verdade.</div>
+        </section>
+
+        <section class="compact" style="text-align:center;">
+            <h2>Visão em camadas (isométrica)</h2>
+            <img src="assets/camadas-isometrico.png" alt="Diagrama isométrico das camadas do Android, do Linux Kernel aos Android Apps" style="max-width:60%; box-shadow:0 6px 20px rgba(0,0,0,0.15); border-radius:8px;">
+            <p class="small-text">Fonte: source.android.com/docs/core/architecture</p>
         </section>
 
         <!-- =================================================================== -->
@@ -281,17 +439,42 @@
             <h2>Android Studio</h2>
             <p>É a IDE oficial para desenvolvimento Android, mantida pelo Google e baseada no <strong>IntelliJ IDEA</strong>.</p>
             <ul class="icon-list">
-                <li><span class="ic">▸</span>Gerencia o projeto com <strong>Gradle</strong> (build, dependências, variantes de build).</li>
-                <li><span class="ic">▸</span>Inclui emulador (<strong>AVD — Android Virtual Device</strong>) para testar sem um celular físico.</li>
-                <li><span class="ic">▸</span>Suporta as duas linguagens oficiais — <strong>Java</strong> e <strong>Kotlin</strong> — e as duas formas de interface — <strong>XML (Views)</strong> e <strong>Jetpack Compose</strong>.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Gerencia o projeto com <strong>Gradle</strong> (build, dependências, variantes de build).</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Inclui emulador (<strong>AVD — Android Virtual Device</strong>) para testar sem um celular físico.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Suporta as duas linguagens oficiais — <strong>Java</strong> e <strong>Kotlin</strong> — e as duas formas de interface — <strong>XML (Views)</strong> e <strong>Jetpack Compose</strong>.</li>
             </ul>
             <div class="tip-box"><strong>No assistente "New Project":</strong> você escolhe um template (ex.: Empty Views Activity ou Empty Activity/Compose), o nome do pacote, a linguagem e a versão mínima do Android suportada.</div>
+        </section>
+
+        <section class="compact" style="text-align:center;">
+            <h2>Android Studio: edição, emulação e depuração</h2>
+            <img src="assets/android-studio-screenshot.png" alt="Interface do Android Studio mostrando código Kotlin com Jetpack Compose, Layout Inspector e painel de qualidade do app" style="max-width:82%; box-shadow:0 6px 20px rgba(0,0,0,0.18); border-radius:8px;">
+            <p class="small-text">O Android Studio fornece gestão de bibliotecas, ferramenta de emulação, design de interface e depuração — tudo em um só lugar.</p>
+        </section>
+
+        <section class="compact">
+            <h2>Android SDK e o SDK Manager</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>O <strong>Android SDK</strong> é o conjunto de ferramentas do Google para criar apps: compilador, emulador e documentação. O <strong>Android Studio</strong> é a IDE que reúne tudo isso.</p>
+                    <p class="fragment fade-up">O <strong>SDK Manager</strong> gerencia as bibliotecas e recursos do SDK, incluindo as diferentes <strong>versões da API</strong> disponíveis para desenvolvimento e teste.</p>
+                </div>
+                <div class="col-img">
+                    <img src="assets/sdk-manager-screenshot.png" alt="Tela do SDK Manager do Android Studio mostrando plataformas SDK disponíveis para instalação por API Level">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact" style="text-align:center;">
+            <h2>API Level: cada versão, um número</h2>
+            <p>A API do Android é organizada em níveis que correspondem aos recursos disponíveis no sistema — do <strong>Ice Cream Sandwich (API 15)</strong> ao <strong>Android 10 (API 29)</strong> e além.</p>
+            <img src="assets/api-level-tabela.png" alt="Tabela de versões do Android, API Level e percentual de distribuição cumulativa, de Ice Cream Sandwich a Android 10" style="max-width:58%; box-shadow:0 6px 20px rgba(0,0,0,0.15); border-radius:8px;">
         </section>
 
         <section class="compact">
             <h2>Linguagem: Java × Kotlin</h2>
             <div class="compare">
-                <div class="card java">
+                <div class="card java fragment fade-up">
                     <h4>☕ Java</h4>
                     <ul>
                         <li>Linguagem original do Android desde 2008</li>
@@ -300,7 +483,7 @@
                         <li>Maior volume de tutoriais e código legado</li>
                     </ul>
                 </div>
-                <div class="card kotlin">
+                <div class="card kotlin fragment fade-up">
                     <h4>🎯 Kotlin</h4>
                     <ul>
                         <li>Linguagem <strong>oficialmente preferida</strong> pelo Google desde 2019</li>
@@ -316,7 +499,7 @@
         <section class="compact">
             <h2>Interface: XML × Jetpack Compose</h2>
             <div class="compare">
-                <div class="card xml">
+                <div class="card xml fragment fade-up">
                     <h4>📄 XML (View System)</h4>
                     <ul>
                         <li>Layout descrito em arquivo <code>.xml</code>, separado do código</li>
@@ -325,7 +508,7 @@
                         <li>Modelo usado pela imensa maioria dos apps em produção hoje</li>
                     </ul>
                 </div>
-                <div class="card compose">
+                <div class="card compose fragment fade-up">
                     <h4>🧩 Jetpack Compose</h4>
                     <ul>
                         <li>Interface descrita em funções <code>@Composable</code>, em Kotlin</li>
@@ -336,6 +519,18 @@
                 </div>
             </div>
             <div class="tip-box"><strong>Escolha da disciplina:</strong> começamos com XML porque expõe melhor a estrutura de um projeto Android e o ciclo de vida da Activity — a base que também sustenta o Compose.</div>
+        </section>
+
+        <section class="compact" style="padding:0;">
+            <h2 style="margin:10px 0 4px 18px;">Onde o Android nativo se encaixa</h2>
+            <p style="margin:0 0 6px 18px;" class="small-text">Nativo, Híbrido/Cross-platform ou PWA — clique em cada categoria para ver as camadas do dispositivo.</p>
+            <iframe src="assets/interactive/app-nativo-hibrido.html" title="Simulação interativa: apps nativos, híbridos e PWA" style="width:100%; height:680px; border:none; display:block;" loading="lazy"></iframe>
+        </section>
+
+        <section class="compact" style="padding:0;">
+            <h2 style="margin:10px 0 4px 18px;">Como o código vira pixel na tela?</h2>
+            <p style="margin:0 0 6px 18px;" class="small-text">Clique em um framework e acompanhe o fluxo de renderização, camada por camada.</p>
+            <iframe src="assets/interactive/frameworks.html" title="Simulação interativa: pipeline de renderização por framework" style="width:100%; height:680px; border:none; display:block;" loading="lazy"></iframe>
         </section>
 
         <section class="compact">
@@ -362,6 +557,67 @@ app/<br>
                 <tr><td><span class="fxml">XML de layout</span></td><td>Descreve <em>o que aparece na tela</em>: componentes visuais e sua disposição.</td></tr>
                 <tr><td><span class="fcode">Código Java/Kotlin</span></td><td>Descreve <em>o comportamento</em>: o que acontece quando o usuário interage.</td></tr>
             </table>
+        </section>
+
+        <!-- ===================== 30. Questionario ===================== -->
+        <section class="compact" id="slide-quiz-fundamentos-android">
+            <h2>Questionário — Fundamentos do Projeto Android</h2>
+            <p>Revise as escolhas de linguagem, interface e organização do projeto.</p>
+            <div class="quiz" data-quiz-id="ddm-aula1-fundamentos-projeto">
+                <article class="quiz-question" data-question-id="kotlin-null-safety">
+                    <div class="quiz-number">Questão 1 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Kotlin possui null-safety no sistema de tipos e pode interoperar com Java.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="Kotlin diferencia tipos que aceitam nulo, como String?, e foi projetado para interoperar com Java na JVM.">Falso</button>
+                    </div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="xml-interface">
+                    <div class="quiz-number">Questão 2 · objetiva</div>
+                    <p class="quiz-prompt">No sistema tradicional de Views, onde o layout da tela é normalmente descrito?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="xml" data-correct="true">Em um arquivo XML separado do código</button>
+                        <button class="quiz-option" data-option-id="manifest" data-feedback="O AndroidManifest.xml declara componentes e configurações do app; ele não descreve a disposição visual da tela.">No AndroidManifest.xml</button>
+                        <button class="quiz-option" data-option-id="gradle" data-feedback="Os arquivos Gradle configuram build e dependências. O layout do sistema de Views fica em arquivos XML de recursos.">No arquivo build.gradle</button>
+                    </div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="compose-interface">
+                    <div class="quiz-number">Questão 3 · objetiva</div>
+                    <p class="quiz-prompt">Qual característica pertence ao Jetpack Compose?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="composable" data-correct="true">Interface em funções <code>@Composable</code></button>
+                        <button class="quiz-option" data-option-id="somente-java" data-feedback="Compose é uma abordagem declarativa baseada em Kotlin, não uma biblioteca exclusiva para código Java.">Uso obrigatório e exclusivo de Java</button>
+                        <button class="quiz-option" data-option-id="layout-manifest" data-feedback="O Manifest não é utilizado para desenhar telas. Em Compose, a interface é declarada em funções Kotlin.">Layout desenhado no Manifest</button>
+                    </div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="papel-manifest">
+                    <div class="quiz-number">Questão 4 · objetiva</div>
+                    <p class="quiz-prompt">Qual é uma responsabilidade do <code>AndroidManifest.xml</code>?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="componentes-permissoes" data-correct="true">Declarar Activities e permissões</button>
+                        <button class="quiz-option" data-option-id="codigo-activity" data-feedback="O comportamento de uma Activity fica em uma classe Java ou Kotlin. O Manifest apenas declara que esse componente existe.">Implementar o código da MainActivity</button>
+                        <button class="quiz-option" data-option-id="desenhar-layout" data-feedback="O conteúdo visual fica em recursos de layout ou em Compose. O Manifest descreve componentes e configurações gerais.">Desenhar os componentes da tela</button>
+                    </div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="pasta-layout">
+                    <div class="quiz-number">Questão 5 · objetiva</div>
+                    <p class="quiz-prompt">Em um projeto baseado em Views, onde fica normalmente o arquivo <code>activity_main.xml</code>?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="res-layout" data-correct="true"><code>res/layout/</code></button>
+                        <button class="quiz-option" data-option-id="java" data-feedback="A pasta java ou kotlin contém código-fonte. Os layouts XML são recursos armazenados em res/layout."><code>java/</code> ou <code>kotlin/</code></button>
+                        <button class="quiz-option" data-option-id="mipmap" data-feedback="A pasta mipmap é usada principalmente para os ícones do aplicativo, não para layouts de tela."><code>res/mipmap/</code></button>
+                    </div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="codigo-main-activity">
+                    <div class="quiz-number">Questão 6 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt"><code>MainActivity.java</code> contém código de comportamento, enquanto textos e cores ficam sob <code>res/</code>.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="A Activity contém a lógica da tela. Textos, cores, temas, imagens e layouts são organizados nas subpastas de res.">Falso</button>
+                    </div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div>
+            <div class="quiz-progress" aria-live="polite"></div>
         </section>
 
         <!-- =================================================================== -->
@@ -435,13 +691,62 @@ protected void onCreate(Bundle savedInstanceState) {
             <p class="small-text">Persistir esse valor entre rotações de tela e fechamento do app (<code>onSaveInstanceState</code>, <code>SharedPreferences</code>) é assunto da próxima aula, sobre ciclo de vida da Activity.</p>
         </section>
 
+        <section class="compact" id="slide-quiz-primeiro-app">
+            <h2>Questionário — Primeiro App Android</h2>
+            <p>Revise a ligação entre o layout XML, a Activity e os eventos de toque.</p>
+            <div class="quiz" data-quiz-id="ddm-aula1-primeiro-app">
+                <article class="quiz-question" data-question-id="template-views">
+                    <div class="quiz-number">Questão 1 · objetiva</div><p class="quiz-prompt">Qual template foi usado para iniciar o projeto com layout XML?</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="empty-views" data-correct="true">Empty Views Activity</button><button class="quiz-option" data-option-id="compose" data-feedback="Empty Activity é normalmente associado ao fluxo com Compose. Na aula foi escolhido Empty Views Activity para trabalhar com XML.">Empty Activity com Compose</button><button class="quiz-option" data-option-id="sem-activity" data-feedback="O exemplo já começa com uma Activity e um layout funcional gerados pelo assistente.">No Activity</button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="set-content-view">
+                    <div class="quiz-number">Questão 2 · objetiva</div><p class="quiz-prompt">Qual chamada liga a <code>MainActivity</code> ao arquivo <code>activity_main.xml</code>?</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="set-content" data-correct="true"><code>setContentView(R.layout.activity_main)</code></button><button class="quiz-option" data-option-id="find-view" data-feedback="findViewById localiza uma View específica depois que o layout foi carregado; ele não define o layout inteiro da Activity."><code>findViewById()</code></button><button class="quiz-option" data-option-id="set-text" data-feedback="setText altera o texto de uma View. A ligação da Activity ao layout é feita por setContentView."><code>setText()</code></button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="find-view-by-id">
+                    <div class="quiz-number">Questão 3 · verdadeiro ou falso</div><p class="quiz-prompt"><code>findViewById(R.id.tvShowContador)</code> permite obter no Java a referência do TextView declarado no XML.</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button><button class="quiz-option" data-option-id="falso" data-feedback="O identificador criado no XML aparece em R.id e permite que findViewById encontre a View correspondente no código.">Falso</button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="id-xml">
+                    <div class="quiz-number">Questão 4 · objetiva</div><p class="quiz-prompt">Qual atributo cria o identificador usado pelo contador?</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="android-id" data-correct="true"><code>android:id="@+id/tvShowContador"</code></button><button class="quiz-option" data-option-id="android-text" data-feedback="android:text define o conteúdo exibido, mas não cria o identificador usado por findViewById."><code>android:text</code></button><button class="quiz-option" data-option-id="layout-width" data-feedback="layout_width controla a largura da View. O identificador é declarado com android:id."><code>android:layout_width</code></button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="click-listener">
+                    <div class="quiz-number">Questão 5 · objetiva</div><p class="quiz-prompt">O que executa o incremento quando o usuário toca no TextView?</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="listener" data-correct="true"><code>setOnClickListener</code></button><button class="quiz-option" data-option-id="on-create" data-feedback="onCreate prepara a tela quando a Activity é criada. O toque é tratado pelo OnClickListener registrado na View."><code>onCreate</code></button><button class="quiz-option" data-option-id="gradle" data-feedback="Gradle cuida do build e das dependências, não dos eventos de interação da tela.">Gradle</button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="contador-persiste">
+                    <div class="quiz-number">Questão 6 · verdadeiro ou falso</div><p class="quiz-prompt">O código apresentado já garante que o contador sobreviva à rotação da tela e ao fechamento do app.</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="verdadeiro" data-feedback="O valor está apenas em uma variável da Activity. Persistência entre recriações ou fechamentos exige mecanismos adicionais, assunto indicado para a aula seguinte.">Verdadeiro</button><button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div><div class="quiz-progress" aria-live="polite"></div>
+        </section>
+
         <!-- =================================================================== -->
         <!-- PARTE 5 — ADB E MODO DESENVOLVEDOR                                   -->
         <!-- =================================================================== -->
         <section class="divider" data-background-color="#1b5e20">
             <div class="part-no">PARTE 5</div>
-            <h1>Modo Desenvolvedor e ADB</h1>
-            <p>Rodando o app em um celular de verdade</p>
+            <h1>Emulador e ADB</h1>
+            <p>Testando e depurando sem (ou com) um celular de verdade</p>
+        </section>
+
+        <section class="compact">
+            <h2>Emulador do Android Studio</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>O <strong>Emulador do Android Studio</strong> simula um dispositivo Android virtual no computador, permitindo <strong>testar e depurar aplicativos</strong> sem precisar de um celular físico.</p>
+                    <p class="small-text">Reproduz fielmente o funcionamento do Android real: tela, botões, sensores, GPS, câmera, chamadas e muito mais.</p>
+                    <ul class="icon-list">
+                        <li class="fragment fade-up"><span class="ic">▸</span><strong>Interface gráfica completa:</strong> simula um smartphone ou tablet real.</li>
+                        <li class="fragment fade-up"><span class="ic">▸</span><strong>Sensores virtuais:</strong> localização (GPS), acelerômetro, câmera, bateria.</li>
+                        <li class="fragment fade-up"><span class="ic">▸</span><strong>Integração com o ADB</strong> para logcat, instalação e testes.</li>
+                    </ul>
+                </div>
+                <div class="col-img">
+                    <img src="assets/adb-emulador-screenshot.png" alt="Emulador do Android Studio (Pixel 2) com painel de controles estendidos mostrando sensores virtuais como acelerômetro e giroscópio">
+                </div>
+            </div>
         </section>
 
         <section class="compact">
@@ -456,34 +761,86 @@ protected void onCreate(Bundle savedInstanceState) {
         </section>
 
         <section class="compact">
-            <h2>Depuração USB e ADB</h2>
-            <ol>
-                <li><span class="step-badge android">1</span>Em <strong>Opções do desenvolvedor</strong>, ativar <strong>Depuração USB</strong>.</li>
-                <li><span class="step-badge android">2</span>Conectar o celular ao computador via cabo USB.</li>
-                <li><span class="step-badge android">3</span>Autorizar a chave RSA do computador na caixa de diálogo que aparece no celular.</li>
-                <li><span class="step-badge android">4</span>O Android Studio (e o <strong>ADB</strong>) passam a enxergar o aparelho como destino de execução.</li>
-            </ol>
-            <div class="android-box"><strong>ADB — Android Debug Bridge:</strong> ferramenta de linha de comando que faz a ponte entre o computador e um dispositivo (real ou emulado): instala apps, lê logs, abre um shell no aparelho.</div>
+            <h2>Por que ADB, e não SSH?</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>Embora o Android seja um sistema operacional Linux, o acesso a recursos do sistema deve sempre passar pelas <strong>políticas e permissões da plataforma Android</strong>.</p>
+                    <p>Por isso, para acessar remotamente o dispositivo <strong>não usamos SSH</strong>, e sim uma aplicação própria: o <span class="android-highlight">ADB</span>.</p>
+                </div>
+                <div class="col-img">
+                    <img src="assets/adb-cliente-servidor-simples.png" alt="Diagrama simplificado: adb client se comunica com adb server no computador, que se conecta via TCP/IP ou USB ao adbd no dispositivo Android">
+                </div>
+            </div>
         </section>
 
         <section class="compact">
-            <h2>Comandos essenciais do ADB</h2>
-            <div class="term">
-                <div class="ttl">Terminal</div>
-                <div class="ln"><span class="prompt">$</span> <span class="cmd">adb devices</span></div>
-                <div class="ln out">List of devices attached</div>
-                <div class="ln out ok">R58N801ABCD    device</div>
-                <div class="ln">&nbsp;</div>
-                <div class="ln"><span class="prompt">$</span> <span class="cmd">adb install app-debug.apk</span></div>
-                <div class="ln out ok">Success</div>
-                <div class="ln">&nbsp;</div>
-                <div class="ln"><span class="prompt">$</span> <span class="cmd">adb logcat</span></div>
-                <div class="ln out dim">... fluxo contínuo de logs do sistema e do app ...</div>
-                <div class="ln">&nbsp;</div>
-                <div class="ln"><span class="prompt">$</span> <span class="cmd">adb shell</span></div>
-                <div class="ln out dim">abre um terminal dentro do próprio Android</div>
+            <h2>Arquitetura do ADB</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p>O <strong>ADB (Android Debug Bridge)</strong> é uma ferramenta versátil de linha de comando, incluída no Android SDK, que permite a desenvolvedores e usuários comunicarem-se com um dispositivo Android a partir de um computador.</p>
+                    <p class="small-text">Três componentes: <strong>ADB Daemon (adbd)</strong> no aparelho, <strong>ADB Server</strong> no computador (fica escutando na porta TCP 5037) e o <strong>Client</strong> — o comando <code>adb</code> que você digita no terminal.</p>
+                </div>
+                <div class="col-img">
+                    <img src="assets/adb-arquitetura-detalhada.png" alt="Diagrama detalhado do ADB: ADB Daemon no Android conectado via USB ou TCP/WiFi ao ADB Server no Host, que atende múltiplos clientes via TCP 5037">
+                </div>
             </div>
-            <p class="small-text">Na prática, o Android Studio chama o ADB automaticamente ao clicar em ▶ Run — mas saber os comandos ajuda a diagnosticar quando o dispositivo "não aparece".</p>
+            <p class="small-text" style="text-align:center;">Fonte: developer.android.com/studio/command-line/adb</p>
+        </section>
+
+        <section class="compact">
+            <h2>Depuração USB: ativando na prática</h2>
+            <div class="two-col">
+                <div class="col-img">
+                    <img src="assets/adb-debug-usb-settings.png" alt="Tela de Opções do desenvolvedor no Android com USB debugging marcado">
+                </div>
+                <div class="col-text">
+                    <ol>
+                        <li><span class="step-badge android">1</span>Em <strong>Opções do desenvolvedor</strong>, ativar <strong>USB debugging</strong>.</li>
+                        <li><span class="step-badge android">2</span>Conectar o celular ao computador via cabo USB.</li>
+                        <li><span class="step-badge android">3</span>Autorizar a chave RSA do computador na caixa de diálogo que aparece no celular.</li>
+                    </ol>
+                    <div class="android-box">Essa opção permite que o computador envie comandos e instale aplicativos diretamente no aparelho via cabo USB.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Como usar o ADB</h2>
+            <p>No diretório onde está instalado o SDK e as ferramentas de plataforma (<code>~/Android/Sdk/platform-tools</code>), execute <code>./adb devices</code> para listar os dispositivos com ADB habilitado:</p>
+            <img src="assets/adb-terminal-devices.png" alt="Terminal executando ./adb devices e listando um emulador conectado" style="max-width:78%; display:block; margin:10px auto; border-radius:6px; box-shadow:0 4px 14px rgba(0,0,0,0.2);">
+            <table class="tbl" style="margin-top:10px;">
+                <tr><th>Comando</th><th>Função</th></tr>
+                <tr class="fragment fade-up"><td><code>adb logcat</code></td><td>Exibe os logs do sistema Android em tempo real (útil para depuração)</td></tr>
+                <tr class="fragment fade-up"><td><code>adb shell</code></td><td>Abre um terminal (shell) dentro do sistema Android</td></tr>
+                <tr class="fragment fade-up"><td><code>adb install meu_app.apk</code></td><td>Instala o arquivo APK no dispositivo conectado</td></tr>
+                <tr class="fragment fade-up"><td><code>adb push arquivo.txt /sdcard/</code></td><td>Envia o arquivo do computador para o armazenamento interno do Android</td></tr>
+                <tr class="fragment fade-up"><td><code>adb pull /sdcard/arquivo.txt .</code></td><td>Copia um arquivo do Android para o computador local</td></tr>
+                <tr class="fragment fade-up"><td><code>adb reboot</code></td><td>Reinicia o dispositivo conectado</td></tr>
+            </table>
+        </section>
+
+        <section class="compact">
+            <h2>Atividade prática: explorando o ADB</h2>
+            <p><strong>Foco em manipulação de arquivos</strong> (push/pull/shell) — mostra a comunicação entre o PC e o emulador.</p>
+            <p>Com o emulador rodando, abra o terminal e siga os passos:</p>
+            <ol>
+                <li class="fragment fade-up">Crie um arquivo de texto rápido no PC: <code>echo "Teste ADB" &gt; teste.txt</code></li>
+                <li class="fragment fade-up">Envie este arquivo para o emulador: <code>adb push teste.txt /sdcard/</code></li>
+                <li class="fragment fade-up">Entre no sistema do Android: <code>adb shell</code></li>
+                <li class="fragment fade-up">Liste os arquivos para provar que ele chegou lá: <code>ls /sdcard/</code> (depois <code>exit</code> para sair)</li>
+                <li class="fragment fade-up">Traga o arquivo de volta com outro nome: <code>adb pull /sdcard/teste.txt teste_recebido.txt</code></li>
+            </ol>
+        </section>
+
+        <section class="compact">
+            <h2>Atividade prática: monitorando com logcat</h2>
+            <p><strong>Foco em diagnóstico</strong> — observando o fluxo de logs do sistema em tempo real.</p>
+            <ol>
+                <li class="fragment fade-up">Verifique se o emulador está reconhecido: <code>adb devices</code></li>
+                <li class="fragment fade-up">Inicie o monitoramento do sistema: <code>adb logcat</code></li>
+                <li class="fragment fade-up"><em>Desafio:</em> interaja com o emulador (clique em alguns apps) e observe o terminal. Pressione <code>Ctrl+C</code> para parar o log.</li>
+                <li class="fragment fade-up">Acesse o sistema de arquivos digitando <code>adb shell</code> e explore as pastas com <code>ls</code>. (<code>exit</code> para voltar).</li>
+            </ol>
         </section>
 
         <section class="compact">
@@ -495,6 +852,37 @@ protected void onCreate(Bundle savedInstanceState) {
                 <tr><td>Sensores/Câmera</td><td>Simulados</td><td>Reais</td></tr>
                 <tr><td>Uso recomendado</td><td>Testes rápidos e múltiplas versões de Android</td><td>Validação final e recursos de hardware</td></tr>
             </table>
+        </section>
+
+        <section class="compact" id="slide-quiz-adb-emulador">
+            <h2>Questionário — Emulador e ADB</h2>
+            <p>Revise conexão, diagnóstico e transferência de arquivos com dispositivos Android.</p>
+            <div class="quiz" data-quiz-id="ddm-aula1-adb-emulador">
+                <article class="quiz-question" data-question-id="componentes-adb">
+                    <div class="quiz-number">Questão 1 · objetiva</div><p class="quiz-prompt">Quais são os três componentes da arquitetura ADB?</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="client-server-daemon" data-correct="true">Client, Server e Daemon</button><button class="quiz-option" data-option-id="ssh-http-usb" data-feedback="Esses termos representam protocolos ou conexões, não os três componentes da arquitetura ADB apresentados.">SSH, HTTP e USB</button><button class="quiz-option" data-option-id="activity-view-intent" data-feedback="Activity, View e Intent pertencem ao framework de aplicações Android, não à arquitetura do ADB.">Activity, View e Intent</button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="adb-devices">
+                    <div class="quiz-number">Questão 2 · objetiva</div><p class="quiz-prompt">Qual comando lista os dispositivos reconhecidos pelo ADB?</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="devices" data-correct="true"><code>adb devices</code></button><button class="quiz-option" data-option-id="shell" data-feedback="adb shell abre um terminal no Android. Para listar conexões reconhecidas, use adb devices."><code>adb shell</code></button><button class="quiz-option" data-option-id="logcat" data-feedback="adb logcat acompanha logs. A listagem de dispositivos é feita por adb devices."><code>adb logcat</code></button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="adb-logcat">
+                    <div class="quiz-number">Questão 3 · verdadeiro ou falso</div><p class="quiz-prompt"><code>adb logcat</code> exibe logs do sistema Android em tempo real.</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button><button class="quiz-option" data-option-id="falso" data-feedback="logcat é justamente o fluxo de mensagens do sistema e dos aplicativos, utilizado para diagnóstico e depuração.">Falso</button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="push-pull">
+                    <div class="quiz-number">Questão 4 · objetiva</div><p class="quiz-prompt">Qual comando envia um arquivo do computador para o Android?</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="push" data-correct="true"><code>adb push arquivo.txt /sdcard/</code></button><button class="quiz-option" data-option-id="pull" data-feedback="adb pull faz o sentido inverso: copia um arquivo do Android para o computador."><code>adb pull /sdcard/arquivo.txt .</code></button><button class="quiz-option" data-option-id="reboot" data-feedback="adb reboot reinicia o dispositivo; ele não transfere arquivos."><code>adb reboot</code></button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="autorizar-usb">
+                    <div class="quiz-number">Questão 5 · objetiva</div><p class="quiz-prompt">Além de ativar a depuração USB, o que deve ser autorizado no celular ao conectar um novo computador?</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="rsa" data-correct="true">A chave RSA do computador</button><button class="quiz-option" data-option-id="formatacao" data-feedback="A conexão ADB não exige formatar o aparelho. O Android solicita a autorização da chave RSA do computador.">A formatação do dispositivo</button><button class="quiz-option" data-option-id="root" data-feedback="Não é necessário conceder root para a conexão ADB comum. A confirmação solicitada é a chave RSA.">O acesso root permanente</button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="avd-fisico">
+                    <div class="quiz-number">Questão 6 · verdadeiro ou falso</div><p class="quiz-prompt">O AVD facilita testes em várias versões do Android, enquanto o aparelho físico valida desempenho e sensores reais.</p>
+                    <div class="quiz-options"><button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button><button class="quiz-option" data-option-id="falso" data-feedback="O emulador é conveniente para configurações e versões variadas; o dispositivo físico oferece condições reais de hardware, sensores e desempenho.">Falso</button></div><div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div><div class="quiz-progress" aria-live="polite"></div>
         </section>
 
         <!-- ===================== ENCERRAMENTO ===================== -->
@@ -511,11 +899,19 @@ protected void onCreate(Bundle savedInstanceState) {
 
         <section style="text-align:center;">
             <h2 style="border:none;">Próxima aula</h2>
-            <p style="font-size:1.1em; margin-top:20px;"><strong>Encontro 2 — 10/08/2026</strong></p>
+            <p style="font-size:1.1em; margin-top:20px;"><strong>/strong></p>
             <p style="font-size:1.05em;">Activities, layouts e <span class="highlight">ciclo de vida</span></p>
             <p class="small-text" style="margin-top:30px;">Traga o app do contador pronto — vamos usá-lo para observar o ciclo de vida da Activity na prática.</p>
         </section>
 
+</div>
+</div>
+
+<div class="quiz-modal" id="quizFeedbackModal" role="dialog" aria-modal="true" aria-labelledby="quizModalTitle" aria-describedby="quizModalText">
+    <div class="quiz-modal-card">
+        <h3 id="quizModalTitle">Ainda não</h3>
+        <p id="quizModalText"></p>
+        <button class="quiz-modal-close" type="button">Entendi, tentar novamente</button>
     </div>
 </div>
 
@@ -540,7 +936,7 @@ protected void onCreate(Bundle savedInstanceState) {
     (function () {
         const SLIDE_H = 800;
         function fit(slide) {
-            if (!slide) return;
+            if (!slide || slide.querySelector('iframe')) return;
             slide.style.fontSize = '';
             let scale = 1;
             for (let i = 0; i < 12 && slide.scrollHeight > SLIDE_H; i++) {
@@ -564,6 +960,79 @@ protected void onCreate(Bundle savedInstanceState) {
     if (window.location.search.indexOf('print-pdf') !== -1) {
         window.addEventListener('load', () => setTimeout(() => window.print(), 800));
     }
+
+    // Motor generico de questionarios: conteudo no HTML, comportamento e persistencia aqui.
+    (function () {
+        const STORAGE_PREFIX = 'ddm-aula1.quiz.v1.';
+        const modal = document.getElementById('quizFeedbackModal');
+        const modalText = document.getElementById('quizModalText');
+        const modalClose = modal.querySelector('.quiz-modal-close');
+        let returnFocus = null;
+        function readState(id) { try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + id)) || {}; } catch (_) { return {}; } }
+        function writeState(id, state) { try { localStorage.setItem(STORAGE_PREFIX + id, JSON.stringify(state)); } catch (_) {} }
+        function openFeedback(message, trigger) {
+            returnFocus = trigger; modalText.textContent = message; modal.classList.add('open'); modalClose.focus();
+        }
+        function closeFeedback() {
+            modal.classList.remove('open'); if (returnFocus) returnFocus.focus();
+        }
+        modalClose.addEventListener('click', closeFeedback);
+        modal.addEventListener('click', event => { if (event.target === modal) closeFeedback(); });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && modal.classList.contains('open')) { event.stopPropagation(); closeFeedback(); }
+        }, true);
+
+        document.querySelectorAll('[data-quiz-id]').forEach(quiz => {
+            const quizId = quiz.dataset.quizId;
+            const state = readState(quizId);
+            const questions = Array.from(quiz.querySelectorAll('[data-question-id]'));
+            const progress = quiz.closest('section').querySelector('.quiz-progress');
+            function updateProgress() {
+                const hits = questions.filter(question => question.classList.contains('correct')).length;
+                progress.textContent = hits === questions.length ? 'Concluído: todas as respostas estão corretas.' : `${hits} de ${questions.length} questões concluídas`;
+            }
+            questions.forEach(question => {
+                const questionId = question.dataset.questionId;
+                const saved = state[questionId] || { wrong: [], correct: false };
+                const result = question.querySelector('.quiz-result');
+                const options = Array.from(question.querySelectorAll('.quiz-option'));
+                const reset = document.createElement('button');
+                reset.type = 'button'; reset.className = 'quiz-reset'; reset.textContent = '↶ Desfazer';
+                reset.setAttribute('aria-label', 'Desfazer respostas desta questão'); question.appendChild(reset);
+                reset.addEventListener('click', event => {
+                    event.stopPropagation(); delete state[questionId]; writeState(quizId, state);
+                    question.classList.remove('correct');
+                    options.forEach(option => { option.classList.remove('wrong', 'right'); option.disabled = false; });
+                    result.textContent = ''; updateProgress();
+                });
+                saved.wrong.forEach(optionId => {
+                    const option = options.find(item => item.dataset.optionId === optionId);
+                    if (option) option.classList.add('wrong');
+                });
+                if (saved.correct) {
+                    const right = options.find(item => item.dataset.correct === 'true');
+                    question.classList.add('correct'); if (right) right.classList.add('right');
+                    options.forEach(item => item.disabled = !item.classList.contains('wrong')); result.textContent = '✓ Correto!';
+                }
+                options.forEach(option => option.addEventListener('click', event => {
+                    event.stopPropagation();
+                    if (option.classList.contains('wrong')) { openFeedback(option.dataset.feedback, option); return; }
+                    if (question.classList.contains('correct')) return;
+                    const current = state[questionId] || { wrong: [], correct: false };
+                    if (option.dataset.correct === 'true') {
+                        current.correct = true; question.classList.add('correct'); option.classList.add('right');
+                        options.forEach(item => item.disabled = !item.classList.contains('wrong')); result.textContent = '✓ Correto! Muito bem.';
+                    } else {
+                        if (!current.wrong.includes(option.dataset.optionId)) current.wrong.push(option.dataset.optionId);
+                        option.classList.add('wrong'); result.textContent = 'Essa tentativa foi marcada. Escolha outra alternativa.';
+                        openFeedback(option.dataset.feedback, option);
+                    }
+                    state[questionId] = current; writeState(quizId, state); updateProgress();
+                }));
+            });
+            updateProgress();
+        });
+    })();
 </script>
 </body>
 </html>

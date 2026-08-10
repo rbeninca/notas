@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frameworks: Nativo, Híbrido e PWA</title>
+    <style>
+        :root {
+            --bg-color: #eef2f7;
+            --native-color: #10ac84;
+            --hybrid-color: #ff9f43;
+            --pwa-color: #5f27cd;
+            --device-border: #2d3436;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            color: #2d3436;
+        }
+
+        .header { text-align: center; margin-bottom: 20px; }
+        
+        .controls {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 15px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 50px;
+            background-color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        
+        button.active[data-type="native"] { border-color: var(--native-color); color: var(--native-color); }
+        button.active[data-type="hybrid"] { border-color: var(--hybrid-color); color: var(--hybrid-color); }
+        button.active[data-type="pwa"] { border-color: var(--pwa-color); color: var(--pwa-color); }
+
+        .main-container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1100px;
+        }
+
+        /* Smartphone Design */
+        .device-container { position: relative; }
+        
+        .device {
+            width: 280px;
+            height: 540px;
+            background-color: var(--device-border);
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            border: 4px solid #111;
+        }
+
+        .screen {
+            background-color: #f8f9fa;
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column-reverse;
+            padding: 15px;
+            box-sizing: border-box;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Camadas Animadas */
+        .layer {
+            width: 100%;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            transform: scale(0.8) translateY(50px);
+            min-height: 55px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .layer span { font-size: 9px; opacity: 0.9; margin-top: 4px; font-weight: normal; }
+
+        .layer.show { opacity: 1; transform: scale(1) translateY(0); }
+
+        /* Cores das Camadas */
+        .c-hw { background: #333; }
+        .c-os { background: #555; }
+        .c-api { background: #e67e22; }
+        .c-bridge { background: #e74c3c; }
+        .c-web { background: #3498db; }
+        .c-framework { background: #2ecc71; border: 2px solid rgba(255,255,255,0.3); }
+
+        /* Painel de Informações */
+        .info-panel {
+            flex: 1;
+            min-width: 320px;
+            max-width: 500px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .badge-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge.fw { background-color: #34495e; }
+        .badge.app-ex { background-color: #95a5a6; }
+
+        .section-title {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-top: 20px;
+            display: block;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Ecossistema de Apps Móveis</h1>
+        <p>Frameworks e Arquiteturas</p>
+    </div>
+    
+    <div class="controls">
+        <button onclick="render('native')" id="btn-native" data-type="native">Nativo</button>
+        <button onclick="render('hybrid')" id="btn-hybrid" data-type="hybrid">Híbrido / Cross</button>
+        <button onclick="render('pwa')" id="btn-pwa" data-type="pwa">PWA</button>
+    </div>
+
+    <div class="main-container">
+        <div class="device-container">
+            <div class="device">
+                <div class="screen" id="screen">
+                    <!-- Camadas via JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel" id="info-panel">
+            <h2 id="info-title">Selecione uma categoria</h2>
+            <p id="info-desc">Veja como os frameworks se encaixam na estrutura do dispositivo.</p>
+            
+            <div id="details" style="display:none;">
+                <span class="section-title">Frameworks & Linguagens</span>
+                <div class="badge-grid" id="framework-badges"></div>
+
+                <span class="section-title">Exemplos Reais</span>
+                <div class="badge-grid" id="example-badges"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            native: {
+                title: "Desenvolvimento Nativo",
+                desc: "O código é compilado diretamente para a linguagem do processador e acessa as APIs do sistema sem intermediários. Oferece o máximo de performance e recursos de UI específicos de cada plataforma.",
+                frameworks: ["Swift (iOS)", "Kotlin", "Java (Android)", "Android SDK", "Xcode"],
+                examples: ["WhatsApp", "Instagram", "Spotify", "Google Maps"],
+                layers: [
+                    { name: "Hardware", sub: "CPU / GPU / Sensores", class: "c-hw" },
+                    { name: "Kernel do S.O.", sub: "iOS / Android", class: "c-os" },
+                    { name: "APIs Nativas", sub: "Camera, Localização, BT", class: "c-api" },
+                    { name: "CÓDIGO NATIVO", sub: "Swift / Kotlin", class: "c-framework" }
+                ]
+            },
+            hybrid: {
+                title: "Híbrido / Cross-Platform",
+                desc: "Usa frameworks para escrever um único código que roda em ambos sistemas. Pode usar uma 'Bridge' (Ponte) para traduzir comandos ou renderizar sua própria UI.",
+                frameworks: ["Flutter (Dart)", "React Native (JS)", "Ionic (Angular/Vue)", "Capacitor", "Xamarin"],
+                examples: ["Uber", "Nubank", "Discord", "Airbnb"],
+                layers: [
+                    { name: "Hardware", sub: "CPU / Sensores", class: "c-hw" },
+                    { name: "Kernel do S.O.", sub: "iOS / Android", class: "c-os" },
+                    { name: "Bridge / Engine", sub: "Skia / Yoga / JSI", class: "c-bridge" },
+                    { name: "FRAMEWORK", sub: "Flutter / React Native", class: "c-framework" }
+                ]
+            },
+            pwa: {
+                title: "Progressive Web Apps",
+                desc: "Sites que utilizam tecnologias modernas para parecerem apps nativos. Rodam dentro do motor do navegador, mas podem ser instalados e funcionam offline.",
+                frameworks: ["React", "Vue.js", "Angular", "Workbox", "Next.js"],
+                examples: ["Twitter Lite", "Pinterest", "Starbucks", "Tinder Web"],
+                layers: [
+                    { name: "Hardware", sub: "Limitado via Browser", class: "c-hw" },
+                    { name: "Motor do Navegador", sub: "WebKit / Chromium", class: "c-web" },
+                    { name: "Service Workers", sub: "Cache & Offline", class: "c-bridge" },
+                    { name: "WEB APP", sub: "HTML / CSS / JS", class: "c-framework" }
+                ]
+            }
+        };
+
+        function render(type) {
+            // UI Update
+            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${type}`).classList.add('active');
+
+            const item = data[type];
+            document.getElementById('info-title').innerText = item.title;
+            document.getElementById('info-desc').innerText = item.desc;
+            document.getElementById('details').style.display = 'block';
+
+            // Badges
+            renderBadges('framework-badges', item.frameworks, 'fw');
+            renderBadges('example-badges', item.examples, 'app-ex');
+
+            // Screen Layers
+            const screen = document.getElementById('screen');
+            screen.innerHTML = '';
+            
+            item.layers.forEach((lyr, idx) => {
+                const div = document.createElement('div');
+                div.className = `layer ${lyr.class}`;
+                div.innerHTML = `${lyr.name} <span>${lyr.sub}</span>`;
+                screen.appendChild(div);
+                
+                setTimeout(() => div.classList.add('show'), idx * 100);
+            });
+        }
+
+        function renderBadges(containerId, items, cssClass) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            items.forEach(text => {
+                const span = document.createElement('span');
+                span.className = `badge ${cssClass}`;
+                span.innerText = text;
+                container.appendChild(span);
+            });
+        }
+
+        // Init
+        render('native');
+    </script>
+</body>
+</html>
