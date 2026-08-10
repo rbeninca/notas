@@ -171,6 +171,7 @@
         #slide-diff .stage-term { min-height:400px; max-height:400px; }
         #slide-branch .stage-term { min-height:450px; max-height:450px; }
         #slide-wbranch .stage-term { min-height:330px; max-height:330px; }
+        #slide-remote .stage-term { min-height:330px; max-height:330px; }
 
         /* ===== Slide animado de branches ===== */
         .branch-stage { background:linear-gradient(180deg,#fafcff 0%,#f3f7fb 100%);
@@ -280,6 +281,12 @@
         .filedoc .meta .badge.modified  { color:#a3590c; }
         .filedoc .meta .badge.staged    { color:#1b5e20; }
         .filedoc .meta .badge.clean     { color:#48566b; }
+        /* com quatro regiões na tela cada caixa fica mais estreita: o arquivo passa a
+           ser desenhado em coluna (folha em cima, estado embaixo) */
+        #slide-remote .filedoc { flex-direction:column; gap:3px; align-items:center; }
+        #slide-remote .filedoc .meta { align-items:center; text-align:center; }
+        #slide-remote .filedoc .sheet { width:118px; min-height:64px; }
+        #slide-remote .filedoc .sheet .tline { font-size:10px; }
 
         /* Seta de fluxo comando -> efeito -> diagrama */
         .flow-down { text-align:center; margin: 4px 0; }
@@ -575,6 +582,8 @@
         .quiz-question.correct { border-color:var(--ifsc-green); background:#f3faf4; animation:quizSuccess .55s ease-out; }
         .quiz-number { color:var(--ifsc-green); font-size:.58em; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
         .quiz-prompt { min-height:58px; margin:4px 0 8px !important; font-size:.68em; line-height:1.28; font-weight:700; color:#263548; }
+        .quiz-command-sequence { display:grid; gap:2px; margin-top:4px; font-weight:400; }
+        .quiz-command-sequence code { display:block; }
         .quiz-options { display:grid; gap:6px; }
         .quiz-option { width:100%; border:2px solid #d7dee8; border-radius:7px; background:#fff; color:#344254;
             padding:7px 9px; font:inherit; font-size:.56em; line-height:1.25; text-align:left; cursor:pointer;
@@ -590,6 +599,9 @@
         .quiz-reset:hover { color:var(--accent-red); background:#fdf0ef; }
         .quiz-reset:focus-visible { outline:2px solid var(--accent-blue); outline-offset:2px; }
         .quiz-progress { margin:8px 0 0; text-align:right; color:#69788b; font-size:.55em; font-weight:700; }
+        .quiz-reference { margin:4px 0 7px; font-size:.72em; }
+        .quiz-reference .gitmodel { margin:0; }
+        .quiz-reference .gbox { min-height:105px; padding-top:5px; padding-bottom:5px; }
         @keyframes quizShake { 25% { transform:translateX(-5px); } 50% { transform:translateX(5px); } 75% { transform:translateX(-3px); } }
         @keyframes quizSuccess { 50% { transform:scale(1.018); box-shadow:0 0 0 8px rgba(46,125,50,.12); } }
 
@@ -1634,6 +1646,33 @@
             <p class="small-text" id="diffCaption" style="text-align:center; margin-top:4px; min-height:2.6em;"></p>
         </section>
 
+        <!-- ===================== git log: lendo a história ===================== -->
+        <section class="compact" id="slide-log">
+            <h2><code>git log</code> — lendo a história</h2>
+            <p>Construímos <code>C1 ← C2</code> nos slides anteriores. O <code>git log</code> é a <span class="git-highlight">janela</span> para essa cadeia — ele lê o Repositório Local e a imprime, do mais novo para o mais antigo.</p>
+            <div class="two-col" style="gap:22px; align-items:stretch;">
+                <div class="col-text">
+                    <div class="term">
+                        <div class="ln"><span class="prompt">$</span> <span class="cmd">git log --oneline</span></div>
+                        <div class="ln out ok">c3f9a2e (HEAD -&gt; main) Acrescenta a linha Git</div>
+                        <div class="ln out">7b1d44a Adiciona arquivo inicial</div>
+                    </div>
+                    <p class="small-text" style="margin-top:6px;">Cada linha é <strong>um commit</strong>: o hash que o identifica e a mensagem que você escreveu. O mais recente vem primeiro.</p>
+                </div>
+                <div class="col-text">
+                    <div class="commit-stage" style="margin:0; max-width:none;">
+                        <div class="stage-lbl">o que o log está lendo</div>
+                        <div class="chain">
+                            <div class="cnode">C1</div><span class="clink">&larr;</span><div class="cnode new">C2</div>
+                        </div>
+                        <div class="ptrs"><b>main</b> · HEAD</div>
+                    </div>
+                    <p class="small-text" style="margin-top:6px;">O log percorre a cadeia <strong>de trás para frente</strong>, partindo de onde o HEAD aponta.</p>
+                </div>
+            </div>
+            <div class="tip-box" style="margin-top:6px;"><strong>Variações úteis:</strong> <code>git log</code> (completo, com autor e data) · <code>--oneline</code> (uma linha por commit) · <code>--graph --all</code> (desenha os ramos, como veremos a seguir).</div>
+        </section>
+
         <!-- ===================== Branches, de forma intuitiva (animado) ===================== -->
         <section class="compact step-slide" id="slide-branch">
             <h2>Branches: linhas do tempo paralelas</h2>
@@ -1672,30 +1711,265 @@
             <p class="small-text" id="wbCaption" style="text-align:center; margin-top:4px; min-height:2.6em;"></p>
         </section>
 
-        <!-- ===================== Repositório remoto: introdução ===================== -->
-        <section class="compact">
-            <h2>Adicionando o Repositório Remoto</h2>
-            <p>Só depois que o modelo <strong>local</strong> está bem entendido, adicionamos uma quarta caixa: um repositório hospedado, por exemplo no GitHub, chamado por convenção de <code>origin</code>.</p>
-            <div id="g-remoto-intro"></div>
-            <script>paint('g-remoto-intro', { wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2']} });</script>
-            <p class="small-text" style="text-align:center;">O repositório local está <strong>um commit à frente</strong> (C3) do remoto — algo muito comum: você commitou localmente, mas ainda não enviou.</p>
+        <!-- ===================== 29. Questionario: diff, log e branches ===================== -->
+        <section class="compact" id="slide-quiz-diff-log-branches">
+            <h2>Questionário — Diff, Log e Branches</h2>
+            <p>Revise as comparações, a leitura do histórico e o funcionamento dos branches.</p>
+            <div class="quiz" data-quiz-id="diff-log-branches">
+                <article class="quiz-question" data-question-id="git-diff-compara">
+                    <div class="quiz-number">Questão 1 · objetiva</div>
+                    <p class="quiz-prompt">O que o comando <code>git diff</code> compara por padrão?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="wt-stage" data-correct="true">Working Tree × Staging Area</button>
+                        <button class="quiz-option" data-option-id="stage-commit" data-feedback="Staging Area × último commit é a comparação feita por git diff --staged. Sem essa opção, git diff observa as mudanças ainda não preparadas.">Staging Area × último commit</button>
+                        <button class="quiz-option" data-option-id="commits" data-feedback="A comparação direta entre commits exige que eles sejam informados. O git diff sem argumentos compara Working Tree e Staging Area.">Dois commits do histórico</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="diff-staged-compara">
+                    <div class="quiz-number">Questão 2 · objetiva</div>
+                    <p class="quiz-prompt">O que <code>git diff --staged</code> permite visualizar?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="nao-preparadas" data-feedback="As mudanças que ainda não chegaram à Staging Area aparecem no git diff comum.">Mudanças ainda não preparadas</button>
+                        <button class="quiz-option" data-option-id="preparadas" data-correct="true">Mudanças preparadas em relação ao último commit</button>
+                        <button class="quiz-option" data-option-id="lista-historico" data-feedback="A listagem do histórico é responsabilidade de git log. O diff --staged mostra diferenças de conteúdo.">A lista completa do histórico</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="diff-sem-saida">
+                    <div class="quiz-number">Questão 3 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Se <code>git diff</code> não produz saída, Working Tree e Staging Area não têm diferenças entre si.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="A ausência de saída significa que o par comparado pelo comando é igual. Ainda pode haver mudanças preparadas, visíveis com git diff --staged.">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="ordem-git-log">
+                    <div class="quiz-number">Questão 4 · objetiva</div>
+                    <p class="quiz-prompt">Em que ordem o <code>git log</code> apresentou os commits?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="novo-antigo" data-correct="true">Do mais novo para o mais antigo</button>
+                        <button class="quiz-option" data-option-id="antigo-novo" data-feedback="No exemplo, git log parte de onde HEAD aponta e percorre os commits pais; por isso o mais recente aparece primeiro.">Do mais antigo para o mais novo</button>
+                        <button class="quiz-option" data-option-id="alfabetica" data-feedback="O histórico não é ordenado alfabeticamente pelas mensagens. Ele segue a cadeia de commits a partir de HEAD.">Em ordem alfabética</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="natureza-branch">
+                    <div class="quiz-number">Questão 5 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Criar um branch significa copiar todos os arquivos e commits para uma nova pasta.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="Um branch é um ponteiro leve para um commit. Ao ser criado, ele aponta para o mesmo commit atual, sem copiar todo o projeto.">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="git-switch">
+                    <div class="quiz-number">Questão 6 · objetiva</div>
+                    <p class="quiz-prompt">No exemplo apresentado, para que foi usado <code>git switch</code>?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="trocar-branch" data-correct="true">Trocar o branch ativo</button>
+                        <button class="quiz-option" data-option-id="listar-log" data-feedback="A leitura do histórico foi feita com git log. O git switch altera qual branch está ativo.">Listar os commits do histórico</button>
+                        <button class="quiz-option" data-option-id="mostrar-diff" data-feedback="As diferenças de conteúdo são mostradas por git diff. O git switch foi usado para alternar entre branches.">Mostrar mudanças entre regiões</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div>
+            <div class="quiz-progress" aria-live="polite"></div>
         </section>
 
-        <!-- ===================== git push (crossfade) ===================== -->
-        <section class="compact">
-            <h2><code>git push</code></h2>
-            <div class="term"><div class="ln"><span class="prompt">$</span> <span class="cmd">git push origin main</span></div></div>
-            <div class="stackwrap" style="min-height:230px;">
-                <div class="stacked fragment fade-out" data-fragment-index="0">
-                    <div id="g-push-antes"></div>
-                    <script>paint('g-push-antes', { wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2']} });</script>
-                </div>
-                <div class="stacked fragment fade-in" data-fragment-index="0">
-                    <div id="g-push-depois"></div>
-                    <script>paint('g-push-depois', { active:'push', wt:[{name:'arquivo.txt', status:'clean'}], stage:[{name:'arquivo.txt'}], local:{commits:['C1','C2','C3'], branch:'main'}, remote:{commits:['C1','C2','C3']} });</script>
-                </div>
+        <!-- ===================== 30. Questionario visual: estado final dos branches ===================== -->
+        <section class="compact" id="slide-quiz-branch-final">
+            <h2>Questionário Visual — Branches e Merge</h2>
+            <p>Observe o estado final construído no slide 28 e use o diagrama para responder.</p>
+            <div class="quiz-reference" id="quizBranchFinalDiagram" aria-label="Estado final do repositório: main em M após unir C5 e o ramo experimento em C4"></div>
+            <script>
+                paint('quizBranchFinalDiagram', {
+                    wt:[{ name:'arquivo.txt', status:'clean', content:['Olá','Git','e versionamento','corrige um erro','com branches'] }],
+                    stage:[{ name:'arquivo.txt', content:['Olá','Git','e versionamento','corrige um erro','com branches'] }],
+                    local:{
+                        commits:['C1','C2','C3','C5','M'], branch:'main', newest:'M',
+                        branches:[{ name:'main', head:true }, { name:'experimento' }],
+                        snapshot:{ name:'arquivo.txt', content:['Olá','Git','e versionamento','corrige um erro','com branches'] },
+                        fork:{ from:'C3', commits:['C4'], label:'experimento', mergedInto:'M' }
+                    }
+                });
+            </script>
+            <div class="quiz" data-quiz-id="branch-final-visual">
+                <article class="quiz-question" data-question-id="head-no-diagrama">
+                    <div class="quiz-number">Questão 1 · objetiva</div>
+                    <p class="quiz-prompt">Segundo o diagrama, onde estão <code>HEAD</code> e o ponteiro <code>main</code>?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="m" data-correct="true">No commit de merge M</button>
+                        <button class="quiz-option" data-option-id="c4" data-feedback="C4 pertence ao ramo experimento. No estado final, HEAD acompanha main, que avançou até M.">No commit C4</button>
+                        <button class="quiz-option" data-option-id="c3" data-feedback="C3 é o ponto em que os caminhos se separaram. Depois dos novos commits e da união, main aponta para M.">No commit C3</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="origem-divergencia">
+                    <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">C4 e C5 representam caminhos diferentes que partiram do mesmo commit C3.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="As duas linhas saem visualmente de C3: C4 foi criado em experimento e C5 foi criado em main. Por isso os ramos divergiram a partir do mesmo ponto.">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="papel-merge-m">
+                    <div class="quiz-number">Questão 3 · objetiva</div>
+                    <p class="quiz-prompt">O que o commit M representa na ilustração?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="copia-c4" data-feedback="M não é uma simples cópia de C4. Ele reúne os dois caminhos que avançaram separadamente depois de C3.">Uma cópia do commit C4</button>
+                        <button class="quiz-option" data-option-id="uniao" data-correct="true">A união das histórias de C4 e C5</button>
+                        <button class="quiz-option" data-option-id="novo-branch" data-feedback="O diagrama não mostra M como um novo branch. Ele é um commit de merge em main, ligado aos dois caminhos anteriores.">A criação de um terceiro branch</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
             </div>
-            <p class="small-text" style="text-align:center;">Clique para avançar: o commit C3 é replicado para o remoto e o ponteiro <strong>origin/main</strong> se move até ele.</p>
+            <div class="quiz-progress" aria-live="polite"></div>
+        </section>
+
+        <!-- ===================== 31. Questionario: efeitos dos comandos no diagrama ===================== -->
+        <section class="compact" id="slide-quiz-command-effects">
+            <h2>Questionário — Qual será o efeito?</h2>
+            <p>Considere este estado inicial em todas as questões e preveja como o diagrama ficará.</p>
+            <div class="quiz-reference" id="quizCommandInitialDiagram" aria-label="Estado inicial com os commits C1, C2 e C3; main e HEAD apontam para C3"></div>
+            <script>
+                paint('quizCommandInitialDiagram', {
+                    wt:[{ name:'arquivo.txt', status:'clean', content:['Olá','Git','e versionamento'] }],
+                    stage:[{ name:'arquivo.txt', content:['Olá','Git','e versionamento'] }],
+                    local:{
+                        commits:['C1','C2','C3'], branch:'main', newest:'C3',
+                        branches:[{ name:'main', head:true }],
+                        snapshot:{ name:'arquivo.txt', content:['Olá','Git','e versionamento'] }
+                    }
+                });
+            </script>
+            <div class="quiz" data-quiz-id="efeitos-comandos-diagrama">
+                <article class="quiz-question" data-question-id="branch-experimento">
+                    <div class="quiz-number">Questão 1 · um comando</div>
+                    <p class="quiz-prompt">Após <code>git branch experimento</code>, o que muda no diagrama?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="ponteiro-c3" data-correct="true">Surge o ponteiro experimento em C3; HEAD continua em main</button>
+                        <button class="quiz-option" data-option-id="novo-commit" data-feedback="git branch não cria um commit. Ele cria somente um novo ponteiro no commit atual, que neste estado é C3.">Surge C4 e experimento aponta para ele</button>
+                        <button class="quiz-option" data-option-id="head-muda" data-feedback="Criar o branch não troca o branch ativo. HEAD continua ligado a main até que um comando como git switch seja executado.">HEAD passa imediatamente para experimento</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="switch-add-commit">
+                    <div class="quiz-number">Questão 2 · sequência</div>
+                    <p class="quiz-prompt">Qual é o resultado desta sequência?
+                        <span class="quiz-command-sequence">
+                            <code>git switch -c experimento</code>
+                            <codee>echo "ed">>arquivo.txt"</code>
+                            <code>git add .</code>
+                            <code>git commit</code>
+                        </span>
+                    </p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="experimento-c4" data-correct="true">C4 nasce em experimento; HEAD aponta para experimento e main fica em C3</button>
+                        <button class="quiz-option" data-option-id="main-c4" data-feedback="A troca colocou HEAD em experimento antes do commit. Por isso é esse branch que avança para C4; main permanece em C3.">C4 nasce em main; experimento fica em C3</button>
+                        <button class="quiz-option" data-option-id="ambos-c4" data-feedback="Os dois ponteiros começam juntos em C3, mas somente o branch ativo acompanha o novo commit. Um commit não move todos os branches.">main e experimento avançam juntos para C4</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="divergencia-merge">
+                    <div class="quiz-number">Questão 3 · sequência</div>
+                    <p class="quiz-prompt">Experimento cria C4; main cria C5; em main executamos <code>git merge experimento</code>. Qual efeito é esperado?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="merge-m" data-correct="true">Nasce M com dois pais, unindo os caminhos de C4 e C5</button>
+                        <button class="quiz-option" data-option-id="apaga-c4" data-feedback="O merge não apaga o caminho de experimento. C4 continua no histórico e participa da união representada por M.">C4 é apagado e main permanece em C5</button>
+                        <button class="quiz-option" data-option-id="volta-c3" data-feedback="C3 é o ancestral comum usado para comparar os caminhos, mas o merge não faz os branches voltarem até ele.">Os dois branches voltam para C3</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div>
+            <div class="quiz-progress" aria-live="polite"></div>
+        </section>
+
+        <!-- ===================== 32. Questionario: branch -c e log ===================== -->
+        <section class="compact" id="slide-quiz-branch-copy-log">
+            <h2>Questionário — Copiando Branches e Lendo o Log</h2>
+            <p>Parta novamente de C3 e preveja os ponteiros e o histórico após cada operação.</p>
+            <div class="quiz-reference" id="quizBranchCopyInitialDiagram" aria-label="Estado inicial com C1, C2 e C3; main e HEAD apontam para C3"></div>
+            <script>
+                paint('quizBranchCopyInitialDiagram', {
+                    wt:[{ name:'arquivo.txt', status:'clean', content:['Olá','Git','e versionamento'] }],
+                    stage:[{ name:'arquivo.txt', content:['Olá','Git','e versionamento'] }],
+                    local:{
+                        commits:['C1','C2','C3'], branch:'main', newest:'C3',
+                        branches:[{ name:'main', head:true }],
+                        snapshot:{ name:'arquivo.txt', content:['Olá','Git','e versionamento'] }
+                    }
+                });
+            </script>
+            <div class="quiz" data-quiz-id="branch-copy-log">
+                <article class="quiz-question" data-question-id="copiar-branch">
+                    <div class="quiz-number">Questão 1 · um comando</div>
+                    <p class="quiz-prompt"><code>git branch -c main copia-main</code><br>Qual é o efeito visível no diagrama?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="dois-c3" data-correct="true">copia-main também aponta para C3; HEAD continua em main</button>
+                        <button class="quiz-option" data-option-id="cria-c4" data-feedback="Copiar um branch não cria um commit. O novo ponteiro nasce no mesmo commit apontado pelo branch copiado.">Um novo commit C4 é criado</button>
+                        <button class="quiz-option" data-option-id="move-head" data-feedback="A opção -c copia o branch, mas não troca automaticamente o branch ativo. HEAD continua ligado a main.">HEAD muda para copia-main</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="log-oneline">
+                    <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt"><code>git log --oneline</code><br>No estado inicial, a primeira linha exibida representa C3.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="O log parte do commit apontado por HEAD e percorre seus pais. Como HEAD está em main e main aponta para C3, C3 aparece primeiro.">Falso</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+
+                <article class="quiz-question" data-question-id="copiar-avancar-log">
+                    <div class="quiz-number">Questão 3 · sequência</div>
+                    <p class="quiz-prompt">Qual será o resultado?
+                        <span class="quiz-command-sequence">
+                            <code>git branch -c main copia-main</code>
+                            <code>git switch copia-main</code>
+                            <code>edição em arquivo</code>
+                            <code>git add . &amp;&amp; git commit -m "b"</code>
+                            <code>git log --oneline --graph --all</code>
+                        </span>
+                    </p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="copia-c4" data-correct="true">copia-main avança para C4; main fica em C3; o log mostra os dois ponteiros</button>
+                        <button class="quiz-option" data-option-id="main-c4" data-feedback="Após git switch, HEAD está ligado a copia-main. Assim, o novo commit movimenta copia-main, não main.">main avança para C4 e copia-main fica em C3</button>
+                        <button class="quiz-option" data-option-id="historico-duplicado" data-feedback="Copiar o branch não duplica os commits C1, C2 e C3. Os dois ponteiros compartilham a mesma história até C3, e somente copia-main avança para C4.">O log mostra duas cópias independentes de C1, C2 e C3</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div>
+            <div class="quiz-progress" aria-live="polite"></div>
+        </section>
+
+        <!-- ===================== Repositório remoto (animado) ===================== -->
+        <section class="compact step-slide" id="slide-remote">
+            <h2>A quarta caixa: o repositório remoto</h2>
+            <div class="stage-diagram" id="rmDiagram"></div>
+            <div class="flow-up"><span class="arrow">↑</span><span class="lbl">efeito no modelo</span></div>
+            <div class="stage-term" id="rmTerm"></div>
+            <div class="story-ctrl">
+                <button id="rmPrev" type="button">◀ voltar</button>
+                <button id="rmNext" type="button" class="primary">avançar ▶</button>
+                <button id="rmAll" type="button">executar até o fim</button>
+                <button id="rmReset" type="button">recomeçar</button>
+                <span class="pos" id="rmPos"></span>
+            </div>
+            <p class="small-text" id="rmCaption" style="text-align:center; margin-top:4px; min-height:2.6em;"></p>
         </section>
 
         <!-- ===================== Git != GitHub ===================== -->
@@ -4352,6 +4626,190 @@ git pull origin main   # equivale a: git fetch + git merge</code></pre>
         }
         Reveal.on('slidechanged', e => syncToSlide(e.currentSlide));
         Reveal.on('ready', e => syncToSlide(e.currentSlide));
+    })();
+
+    // --- Slide "A quarta caixa: o repositório remoto" ---
+    // Introduz o remoto como uma quarta região do mesmo modelo: vincular (remote add),
+    // enviar (push), receber o que outra pessoa publicou (fetch) e integrar (pull).
+    (function () {
+        const root = document.getElementById('slide-remote');
+        if (!root) return;
+
+        const diagEl = document.getElementById('rmDiagram');
+        const termEl = document.getElementById('rmTerm');
+        const capEl  = document.getElementById('rmCaption');
+        const posEl  = document.getElementById('rmPos');
+        const btnPrev  = document.getElementById('rmPrev');
+        const btnNext  = document.getElementById('rmNext');
+        const btnAll   = document.getElementById('rmAll');
+        const btnReset = document.getElementById('rmReset');
+
+        const T   = (l) => '<div class="term">' + l + '</div>';
+        const CMD = (c) => `<div class="ln"><span class="prompt">$</span> <span class="cmd">${c}</span></div>`;
+        const OUT = (o) => Array.isArray(o)
+            ? `<div class="ln out ${o[1]}">${o[0]}</div>`
+            : `<div class="ln out">${o}</div>`;
+
+        const TXT = ['Olá', 'Git'];
+        const base = (o) => Object.assign({
+            docWt: true,
+            wt:    [{ name: 'arquivo.txt', status: 'clean', content: TXT }],
+            stage: [{ name: 'arquivo.txt', content: TXT }],
+            local: { commits: ['C1','C2'], branch: 'main',
+                     snapshot: { name: 'arquivo.txt', content: TXT } }
+        }, o);
+        const loc = (commits) => ({ commits, branch: 'main',
+                                    snapshot: { name: 'arquivo.txt', content: TXT } });
+
+        const STEPS = [
+            {
+                cmd: 'git remote add origin https://github.com/voce/projeto.git', out: [],
+                model: base({ remote: { commits: [] } }),
+                cap: 'O remoto entra como uma <b>quarta caixa</b>: um repositório hospedado, apelidado por convenção de <code>origin</code>. Por enquanto, vazio.'
+            },
+            {
+                cmd: 'git push -u origin main', out: [['To github.com/voce/projeto.git', 'dim'],
+                                                      ['&nbsp;* [new branch]      main -> main', 'ok']],
+                model: base({ active: 'push', remote: { commits: ['C1','C2'] } }),
+                cap: '<code>push</code> <b>envia</b> os commits que o remoto ainda não tem. Agora <code>origin/main</code> aponta para C2, igual ao seu <code>main</code>.'
+            },
+            {
+                cmd: 'git commit -m "Mais uma melhoria"', out: [['[main C3] Mais uma melhoria', 'ok']],
+                model: base({ local: loc(['C1','C2','C3']), remote: { commits: ['C1','C2'] } }),
+                cap: 'Você commita localmente: o repositório local fica <b>um commit à frente</b> do remoto. Situação corriqueira — nada foi enviado ainda.'
+            },
+            {
+                cmd: 'git push', out: [['To github.com/voce/projeto.git', 'dim'],
+                                       ['&nbsp;&nbsp;&nbsp;c2f9a1e..c3f9a2e  main -> main', 'ok']],
+                model: base({ active: 'push', local: loc(['C1','C2','C3']),
+                              remote: { commits: ['C1','C2','C3'] } }),
+                cap: 'O <b>C3</b> é replicado para o remoto e <code>origin/main</code> avança até ele. As duas cópias voltam a coincidir.'
+            },
+            {
+                cmd: 'git fetch', out: [['From github.com/voce/projeto.git', 'dim'],
+                                        ['&nbsp;&nbsp;&nbsp;c3f9a2e..d4a7b10  main -> origin/main', 'ok']],
+                model: base({ active: 'fetch', local: loc(['C1','C2','C3']),
+                              remote: { commits: ['C1','C2','C3','C4'] } }),
+                cap: 'Um colega publicou o <b>C4</b>. O <code>fetch</code> <b>baixa</b> esse commit, mas <b>não</b> mexe no seu <code>main</code> — é uma operação segura.'
+            },
+            {
+                cmd: 'git pull', out: [['Updating c3f9a2e..d4a7b10', 'dim'],
+                                       ['Fast-forward', 'ok'],
+                                       ['&nbsp;1 file changed, 1 insertion(+)', 'dim']],
+                model: base({ active: 'fetch',
+                              wt:    [{ name: 'arquivo.txt', status: 'clean', content: ['Olá','Git','do colega'] }],
+                              stage: [{ name: 'arquivo.txt', content: ['Olá','Git','do colega'] }],
+                              local: { commits: ['C1','C2','C3','C4'], branch: 'main',
+                                       snapshot: { name: 'arquivo.txt', content: ['Olá','Git','do colega'] } },
+                              remote: { commits: ['C1','C2','C3','C4'] } }),
+                cap: '<code>pull</code> = <code>fetch</code> + <code>merge</code>: além de baixar, <b>integra</b> o trabalho no seu branch — e os arquivos no disco mudam.'
+            }
+        ];
+
+        const INICIAL = base({});                 // ainda sem remoto vinculado
+        let idx = -1, autoTimer = null, typeTimer = null;
+        function stopTyping() { if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; } }
+
+        function paintDiagram(model) { diagEl.innerHTML = gitModel(model); gmAlignForks(diagEl); }
+        function pulse() {
+            diagEl.querySelectorAll('.gbox.active, .arr.active').forEach(b => {
+                b.classList.remove('pulseBox'); void b.offsetWidth; b.classList.add('pulseBox');
+            });
+        }
+        function paintTerm(upTo, partial) {
+            let html = '';
+            for (let i = 0; i <= upTo; i++) {
+                const s = STEPS[i];
+                const últ = i === upTo;
+                const txt = (últ && partial) ? s.cmd.slice(0, partial.chars) : s.cmd;
+                const cur = (últ && partial && partial.chars < s.cmd.length) ? '<span class="cursor">▌</span>' : '';
+                html += CMD(txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + cur);
+                if (!(últ && partial)) html += s.out.map(o => OUT(o)).join('');
+            }
+            termEl.innerHTML = html ? T(html) : '';
+            termEl.scrollTop = termEl.scrollHeight;
+        }
+
+        function render(animate) {
+            stopTyping();
+            const st = idx >= 0 ? STEPS[idx] : null;
+            capEl.innerHTML = st ? st.cap
+                : 'Até aqui, tudo aconteceu na sua máquina. Vamos ligar o repositório a uma cópia <b>hospedada</b>.';
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx < 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled  = idx >= STEPS.length - 1;
+
+            if (!animate || !st) {
+                paintTerm(idx, null);
+                paintDiagram(st ? st.model : INICIAL);
+                return;
+            }
+            const total = st.cmd.length;
+            let n = 0;
+            paintTerm(idx, { chars: 0 });
+            paintDiagram(idx > 0 ? STEPS[idx - 1].model : INICIAL);
+            (function type() {
+                n++;
+                paintTerm(idx, { chars: n });
+                if (n < total) { typeTimer = setTimeout(type, 38 / globalAnimSpeed); return; }
+                typeTimer = setTimeout(() => {
+                    paintTerm(idx, null);
+                    paintDiagram(st.model);
+                    pulse();
+                    typeTimer = null;
+                }, 380 / globalAnimSpeed);
+            })();
+        }
+
+        function stopAuto() {
+            if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+            stopTyping();
+        }
+        function go(to, animate) {
+            idx = Math.max(-1, Math.min(STEPS.length - 1, to));
+            render(animate);
+        }
+        function next()  { stopAuto(); go(idx + 1, true); }
+        function prev()  { stopAuto(); go(idx - 1, false); }
+        function reset() { stopAuto(); go(-1, false); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1, true);
+                autoTimer = setTimeout(tick, 3200 / globalAnimSpeed);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', reset);
+
+        document.addEventListener('keydown', ev => {
+            if (Reveal.getCurrentSlide() !== root) return;
+            if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+            const FWD  = ev.key === 'ArrowRight' || ev.key === 'ArrowDown' || ev.key === 'PageDown';
+            const BACK = ev.key === 'ArrowLeft'  || ev.key === 'ArrowUp'   || ev.key === 'PageUp';
+            if (!FWD && !BACK) return;
+            if (FWD && idx < STEPS.length - 1) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); next();
+            } else if (BACK && idx >= 0) {
+                ev.preventDefault(); ev.stopImmediatePropagation(); prev();
+            }
+        }, true);
+
+        function syncToSlide(event) {
+            const slide = event.currentSlide;
+            if (slide !== root) { stopAuto(); return; }
+            const cameFromAhead = event.previousSlide &&
+                root.compareDocumentPosition(event.previousSlide) & Node.DOCUMENT_POSITION_FOLLOWING;
+            stopAuto();
+            go(cameFromAhead ? STEPS.length - 1 : -1, false);
+        }
+        Reveal.on('slidechanged', syncToSlide);
+        Reveal.on('ready', syncToSlide);
     })();
 
     // --- Animação: patches convergindo para Linus e sendo mergiados (slide "O contexto: o kernel Linux") ---
