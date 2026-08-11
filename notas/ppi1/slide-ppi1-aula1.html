@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPI1 — Aula 1: Fundamentos da Web</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <!-- Highlight.js para realce de codigo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --ifsc-green: #2e7d32;
+            --ifsc-dark:  #1b5e20;
+            --accent-red: #c0392b;
+            --accent-gold: #f39c12;
+            --accent-blue: #2980b9;
+            --web-purple: #6c3fa8;
+            --grid-color: #f0f0f0;
+        }
+        .reveal h1, .reveal h2 { color: var(--ifsc-green); font-weight: 800; text-transform: uppercase; }
+        .reveal h2 { border-bottom: 3px solid var(--ifsc-green); display: inline-block; padding-bottom: 4px; margin: 0 0 8px; line-height: 1.15em; }
+        .reveal h3 { color: var(--ifsc-dark); }
+        .reveal section { text-align: left; padding: 0 18px 8px; }
+        .reveal section > *:first-child { margin-top: 0; }
+        .reveal .slides { padding: 0; }
+        .reveal .slides > section, .reveal .slides > section > section { padding-top: 0; top: 0 !important; }
+        .reveal section p { margin: 8px 0; }
+        .reveal section ul, .reveal section ol { margin: 8px 0; }
+
+        .reveal section.compact { font-size: 0.80em; }
+        .reveal section.compact li { margin: 5px 0; }
+
+        .reveal pre { width: 100%; box-shadow: 0 3px 12px rgba(0,0,0,0.18); font-size: 0.60em; margin: 8px 0; }
+        .reveal pre code { padding: 12px 16px; max-height: 420px; border-radius: 6px; }
+
+        .formula-box {
+            background: #eef4fc; padding: 12px 16px; border-left: 6px solid var(--ifsc-green);
+            border-radius: 4px; margin: 10px 0; font-size: 0.88em; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        }
+        .warn-box { background: #fdf3f2; border-left: 6px solid var(--accent-red); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+        .tip-box  { background: #fff8e8; border-left: 6px solid var(--accent-gold); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+
+        .highlight { color: var(--ifsc-green); font-weight: bold; }
+        .web-highlight { color: var(--web-purple); font-weight: bold; }
+        .small-text { font-size: 0.72em; color: #666; }
+        code, .mono { font-family: 'Courier New', monospace; }
+
+        table.tbl { width: 100%; font-size: 0.62em; border-collapse: collapse; margin-top: 10px; }
+        table.tbl th { background: var(--ifsc-green); color: white; padding: 8px; }
+        table.tbl td { border: 1px solid #ddd; padding: 6px 8px; }
+        table.tbl tr:nth-child(even) td { background: #f5f8fc; }
+
+        .two-col { display: flex; align-items: flex-start; gap: 36px; }
+        .two-col .col-text { flex: 1.2; }
+        .two-col .col-img { flex: 1; text-align: center; }
+        .two-col .col-img img { max-width: 100%; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+        .two-col figcaption { font-size: 0.6em; color: #888; margin-top: 8px; }
+
+        .icon-list { list-style: none; margin-left: 0; }
+        .icon-list li { margin: 12px 0; padding-left: 4px; }
+        .icon-list .ic { color: var(--ifsc-green); margin-right: 8px; font-weight: 700; }
+
+        /* Timeline horizontal */
+        .timeline { position: relative; display: flex; justify-content: space-between; margin: 26px 0 14px; }
+        .timeline::before { content: ""; position: absolute; top: 12px; left: 4%; right: 4%; height: 3px; background: #d6e3f0; z-index: 0; }
+        .timeline .stage { position: relative; z-index: 1; flex: 1; text-align: center; padding: 0 6px; }
+        .timeline .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--ifsc-green); border: 4px solid #fff; box-shadow: 0 0 0 2px var(--ifsc-green); margin: 0 auto 12px; }
+        .timeline .stage h4 { color: #1a2b45; font-size: 0.92em; font-weight: 700; margin: 0 0 6px; }
+        .timeline .stage p { font-size: 0.68em; color: #555; margin: 0; line-height: 1.3em; }
+        .timeline.web-tl .dot { background: var(--web-purple); box-shadow: 0 0 0 2px var(--web-purple); }
+        .timeline.web-tl::before { background: #e6d9f2; }
+
+        /* Etapa numerada (badge) */
+        .step-badge { display:inline-block; background: var(--ifsc-green); color:#fff; border-radius:50%;
+            width: 34px; height: 34px; line-height: 34px; text-align:center; font-weight:800; margin-right:10px; }
+        .step-badge.web { background: var(--web-purple); }
+
+        /* Barra fixa superior: botao PDF */
+        .topbar { position: fixed; top: 16px; right: 16px; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        @media print { .topbar { display: none !important; } }
+
+        #btnPdf { background: var(--ifsc-green);
+            color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: background 0.2s, transform 0.1s; }
+        #btnPdf:hover { background: var(--ifsc-dark); }
+        #btnPdf:active { transform: scale(0.96); }
+
+        .reveal .slide-number { background: var(--ifsc-green); color: #fff; font-size: 16px; padding: 4px 10px; border-radius: 4px; }
+        .pill { display:inline-block; background:#e7f0fb; color: var(--ifsc-dark); border-radius: 12px; padding: 2px 10px; font-size: 0.7em; font-weight:700; margin: 2px; }
+        .pill.web { background:#f1e9f9; color: var(--web-purple); }
+
+        /* ===================== Slides divisorios de secao ===================== */
+        .divider { text-align:center; }
+        .divider .part-no { font-size: 0.9em; letter-spacing: 3px; color: rgba(255,255,255,0.85); font-weight:700; }
+        .divider h1 { color:#fff !important; font-size: 2.2em; border:none; margin-top:6px; }
+        .divider p { color: rgba(255,255,255,0.9); font-size: 1.05em; }
+
+        /* ===== Mini-timeline no topo dos slides de história (1 bloco por marco) ===== */
+        .mini-tl { position: relative; display: flex; justify-content: space-between; margin: 6px 0 20px; }
+        .mini-tl::before { content: ""; position: absolute; top: 4px; left: 2%; right: 2%; height: 3px; background: #d6e3f0; z-index: 0; }
+        .mini-tl .pt { position: relative; z-index: 1; flex: 1; text-align: center; }
+        .mini-tl .pt .d { width: 9px; height: 9px; border-radius: 50%; background: #c2ccd9; border: 2px solid #fff; margin: 0 auto; }
+        .mini-tl .pt.done .d { background: var(--ifsc-green); }
+        .mini-tl .pt.on .d { background: var(--web-purple); box-shadow: 0 0 0 3px rgba(108,63,168,0.30); transform: scale(1.7); }
+        .mini-tl-label { text-align: center; font-size: 0.62em; color: var(--web-purple); font-weight: 800; letter-spacing: .5px; margin: 4px 0 2px; }
+
+        .hist-body { display: flex; align-items: center; gap: 30px; margin-top: 6px; }
+        .hist-body .htxt { flex: 1.3; }
+        .hist-body .htxt h3 { color: var(--ifsc-green); margin: 0 0 8px; font-size: 1.1em; }
+        .hist-body .htxt p { font-size: 0.82em; line-height: 1.4em; margin: 6px 0; }
+        .hist-body .hfig { flex: 1; text-align: center; margin: 0; }
+        .hist-body .hfig img { width: 100%; max-width: 260px; max-height: 220px; object-fit: contain;
+            border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); background: #fff; }
+        .hist-body .hfig figcaption { font-size: 0.56em; color: #888; margin-top: 6px; }
+        .hist-body.multi .hfig { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .hist-body.multi .hfig img { max-width: 120px; max-height: 100px; }
+
+        /* Cartoes lado a lado */
+        .cards { display: flex; gap: 18px; margin-top: 12px; }
+        .card { flex: 1; background: #f5f8fc; border-radius: 8px; border-top: 5px solid var(--ifsc-green);
+            padding: 12px 16px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); }
+        .card h3 { margin: 0 0 6px; color: var(--ifsc-green); font-size: 1em; }
+        .card p { font-size: 0.76em; margin: 4px 0; }
+
+        /* Fluxo cliente-servidor (passo a passo) */
+        .flow .stage-tag { display: inline-block; background: var(--ifsc-green); color: #fff;
+            font-size: 0.62em; font-weight: 800; letter-spacing: .5px; padding: 4px 12px; border-radius: 20px;
+            margin-bottom: 6px; text-transform: uppercase; }
+        .flow .scene { display: flex; align-items: stretch; justify-content: space-between; gap: 16px; margin: 10px 0; }
+        .node { flex: 1; background: #fff; border: 2px solid #d6e3f0; border-radius: 12px; padding: 12px 10px;
+            text-align: center; box-shadow: 0 4px 14px rgba(0,0,0,0.07); display: flex; flex-direction: column;
+            justify-content: center; min-height: 130px; }
+        .node .ni { font-size: 2.1em; line-height: 1; }
+        .node .nt { font-weight: 800; color: var(--ifsc-green); margin-top: 5px; font-size: 0.88em; }
+        .node .ns { font-size: 0.64em; color: #777; margin-top: 4px; }
+        .node.client { border-color: var(--ifsc-green); }
+        .node.server { border-color: var(--accent-gold); }
+        .node.server .nt { color: var(--accent-gold); }
+        .node.cloud  { border-color: #9aa7b8; border-style: dashed; flex: 1.15; background: #f7f9fc; }
+        .node.dns    { border-color: var(--ifsc-green); flex: 0.9; }
+        .node.dns .nt { color: var(--ifsc-green); }
+        .node.dim { opacity: 0.35; }
+
+        .arrow-col { flex: 0.85; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .arrow-col .lbl { font-size: 0.58em; color: #444; text-align: center; line-height: 1.25em; margin: 2px 0; }
+        .arrow-col .bar { width: 100%; height: 3px; background: var(--ifsc-green); position: relative; border-radius: 2px; }
+        .arrow-col .bar::after { content: ""; position: absolute; right: -2px; top: -5px;
+            border-left: 11px solid var(--ifsc-green); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+        .arrow-col .bar.back { background: var(--ifsc-green); }
+        .arrow-col .bar.back::after { left: -2px; right: auto; border-left: 0; border-right: 11px solid var(--ifsc-green); }
+        .step-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+            border-radius: 50%; background: var(--ifsc-green); color: #fff; font-size: 0.62em; font-weight: 800; margin-right: 6px; }
+        .kw { font-weight: 800; padding: 1px 6px; border-radius: 4px; }
+        .kw-blue  { background: #e3edfa; color: var(--ifsc-green); }
+        .kw-green { background: #e4f6ec; color: var(--ifsc-green); }
+        .kw-gold  { background: #fdf1dc; color: #c97c00; }
+        .kw-red   { background: #fde6e3; color: var(--accent-red); }
+        .kw-gray  { background: #eef1f6; color: #555; }
+        .kw-purple{ background: #f1e9f9; color: var(--web-purple); }
+
+        /* Pilha de encapsulamento TCP/IP */
+        .stack { display: inline-block; text-align: center; margin: 6px auto; }
+        .stack .layer { border: 2px solid; border-radius: 8px; padding: 8px 10px; margin: 0 auto; font-weight: 700; font-size: 0.82em; }
+        .layer-http { border-color: var(--ifsc-green); color: var(--ifsc-green); background: #eef4fc; width: 150px; }
+        .layer-tcp  { border-color: var(--ifsc-green); color: var(--ifsc-green); background: #edf8f0; width: 210px; padding-top: 14px; padding-bottom: 14px; }
+        .layer-ip   { border-color: var(--accent-gold); color: #c97c00; background: #fdf6ea; width: 270px; padding-top: 18px; padding-bottom: 18px; }
+        .pkt-cap { font-size: 0.62em; color: #777; margin-top: 4px; }
+
+        .msg-box { background: #fbfcfe; border: 2px solid var(--ifsc-green); border-radius: 10px; padding: 12px 16px;
+            font-family: 'Courier New', monospace; font-size: 0.8em; box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+        .msg-box.resp { border-color: var(--ifsc-green); }
+
+        /* Etiquetas de status HTTP por faixa */
+        .status-row { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
+        .status-badge { display: inline-block; min-width: 56px; text-align: center; color: #fff; font-weight: 700;
+            border-radius: 6px; padding: 5px 10px; font-size: 0.8em; }
+
+        /* Trilha de tecnologias (linguagens de back-end) */
+        .tech-track { display: flex; gap: 12px; margin: 14px 0; flex-wrap: wrap; }
+        .tech-card { flex: 1; min-width: 140px; background: #fff; border: 2px solid #d6e3f0; border-radius: 10px;
+            padding: 12px 14px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
+        .tech-card .yr { font-size: 0.62em; font-weight: 800; color: var(--web-purple); letter-spacing: .5px; }
+        .tech-card h4 { margin: 4px 0 6px; font-size: 0.95em; color: var(--ifsc-dark); }
+        .tech-card p { font-size: 0.68em; color: #555; margin: 0; line-height: 1.35em; }
+
+        /* ===================== Simulação: como a Web funciona, passo a passo ===================== */
+        .cs-sim { display: flex; flex-direction: column; gap: 8px; }
+        .cs-stage { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; min-height: 300px; }
+
+        .cs-side { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .cs-side-label { font-size: 0.6em; font-weight: 800; color: #8a97a8; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* Caixa do cliente com navegador simulado dentro */
+        .cs-client-box { width: 100%; max-width: 260px; border: 2px solid var(--ifsc-green); border-radius: 12px;
+            background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.07); overflow: hidden; transition: box-shadow .25s; }
+        .cs-client-box.cs-active { box-shadow: 0 0 0 3px rgba(46,125,50,0.35), 0 6px 18px rgba(0,0,0,0.15); }
+        .cs-browser-chrome { background: #eef1f6; padding: 6px 8px; display: flex; align-items: center; gap: 6px; }
+        .cs-browser-dots { display: flex; gap: 4px; }
+        .cs-browser-dots span { width: 7px; height: 7px; border-radius: 50%; background: #c7cfd9; display: inline-block; }
+        .cs-browser-url { flex: 1; background: #fff; border: 1px solid #d6e3f0; border-radius: 12px; padding: 3px 10px;
+            font-family: 'Courier New', monospace; font-size: 0.62em; color: #344254; text-align: left; min-height: 1.3em; }
+        .cs-browser-url .cs-cursor { display: inline-block; width: 1px; background: var(--ifsc-green); margin-left: 1px;
+            animation: cs-blink 0.9s steps(1) infinite; }
+        @keyframes cs-blink { 50% { opacity: 0; } }
+        .cs-browser-body { padding: 14px 10px; min-height: 90px; display: flex; align-items: center; justify-content: center;
+            text-align: center; font-size: 0.62em; color: #99a3b0; background: repeating-linear-gradient(135deg, #fff, #fff 10px, #fafbfd 10px, #fafbfd 20px); }
+        .cs-browser-body.cs-loaded { color: var(--ifsc-dark); font-weight: 700; background: #fff; }
+        .cs-os-tag { font-size: 0.58em; font-weight: 800; color: #778; background: #eef1f6; border-radius: 6px;
+            padding: 3px 8px; margin-top: 6px; opacity: 0.35; transition: opacity .25s, background .25s, color .25s; }
+        .cs-os-tag.cs-active { opacity: 1; background: #e7f0fb; color: var(--ifsc-dark); }
+
+        .cs-server-box { width: 100%; max-width: 220px; border: 2px solid var(--accent-gold); border-radius: 12px;
+            background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.07); padding: 12px 10px; text-align: center; transition: box-shadow .25s; }
+        .cs-server-box.cs-active { box-shadow: 0 0 0 3px rgba(243,156,18,0.35), 0 6px 18px rgba(0,0,0,0.15); }
+        .cs-server-box .ni { font-size: 1.9em; line-height: 1; }
+        .cs-server-box .nt { font-weight: 800; color: var(--accent-gold); margin-top: 4px; font-size: 0.85em; }
+        .cs-docroot { margin-top: 8px; border: 1px dashed #d6cbb0; border-radius: 8px; padding: 6px 8px; font-size: 0.56em;
+            color: #8a7550; text-align: left; opacity: 0.4; transition: opacity .25s, border-color .25s, background .25s; }
+        .cs-docroot.cs-active { opacity: 1; border-color: var(--accent-gold); background: #fdf6ea; }
+        .cs-docroot .fp { font-family: 'Courier New', monospace; }
+        .cs-docroot .fp b { color: var(--accent-gold); }
+
+        .cs-dns-box { width: 100%; max-width: 220px; border: 2px solid var(--ifsc-green); border-radius: 12px;
+            background: #f3faf4; padding: 10px 10px; text-align: center; opacity: 0; transform: translateY(-8px);
+            transition: opacity .3s, transform .3s; }
+        .cs-dns-box.cs-show { opacity: 1; transform: translateY(0); }
+        .cs-dns-box.cs-active { box-shadow: 0 0 0 3px rgba(46,125,50,0.3), 0 6px 18px rgba(0,0,0,0.12); }
+        .cs-dns-box .ni { font-size: 1.5em; line-height: 1; }
+        .cs-dns-box .nt { font-weight: 800; color: var(--ifsc-green); font-size: 0.78em; margin-top: 2px; }
+        .cs-dns-box .ns { font-size: 0.56em; color: #557; margin-top: 2px; }
+
+        /* Trilho central onde os pacotes/setas viajam */
+        .cs-mid { flex: 1.3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+            min-height: 260px; position: relative; }
+        .cs-mid-track { width: 100%; height: 4px; background: #e4ebf3; border-radius: 3px; position: relative; }
+        .cs-mid-lbl { font-size: 0.6em; color: #556; text-align: center; min-height: 2.4em; line-height: 1.3em; }
+        .cs-mid-lbl b { color: var(--ifsc-dark); }
+        .cs-packet { position: absolute; top: 50%; left: 0; transform: translate(-50%, -50%); opacity: 0;
+            transition: left .9s cubic-bezier(.4,0,.2,1), opacity .3s; }
+        .cs-packet.cs-show { opacity: 1; }
+        .cs-packet-inner { background: #fff; border: 2px solid var(--ifsc-green); border-radius: 8px; padding: 5px 9px;
+            font-size: 0.56em; font-weight: 800; color: var(--ifsc-dark); white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+        .cs-packet.cs-resp .cs-packet-inner { border-color: var(--accent-gold); color: #8a5d00; }
+
+        .cs-stack-mini { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .cs-stack-mini .csl { border-radius: 6px; padding: 3px 8px; font-size: 0.54em; font-weight: 800; border: 1.5px solid; }
+        .cs-stack-mini .csl.http { border-color: var(--ifsc-green); color: var(--ifsc-green); background: #eef4fc; }
+        .cs-stack-mini .csl.tcp  { border-color: var(--ifsc-green); color: var(--ifsc-green); background: #edf8f0; }
+        .cs-stack-mini .csl.ip   { border-color: var(--accent-gold); color: #c97c00; background: #fdf6ea; }
+
+        .cs-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .cs-toolbar button { border: 1px solid #cfe3cf; background: #f6faf6; color: var(--ifsc-dark); border-radius: 7px;
+            padding: 6px 12px; font-size: 0.62em; font-weight: 700; cursor: pointer; transition: .15s; }
+        .cs-toolbar button:hover:not(:disabled) { background: var(--ifsc-green); color: #fff; border-color: var(--ifsc-green); }
+        .cs-toolbar button:disabled { opacity: 0.4; cursor: default; }
+        .cs-toolbar .cs-reset { border-color: #f3c9c4; background: #fdf3f2; color: var(--accent-red); margin-left: auto; }
+        .cs-toolbar .cs-reset:hover { background: var(--accent-red); color: #fff; }
+        .cs-pos { font-size: 0.58em; color: #778; font-weight: 700; margin-left: 4px; }
+        .cs-caption { text-align: center; font-size: 0.66em; color: #445; min-height: 2.6em; margin-top: 2px; }
+        .cs-caption b { color: var(--ifsc-dark); }
+        .cs-caption code { background: #eef4fc; padding: 0 4px; border-radius: 3px; }
+
+        /* ===================== Questionarios reutilizaveis ===================== */
+        .quiz { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:10px; }
+        .quiz-question { position:relative; background:#f8fafc; border:1px solid #d9e1ea; border-radius:10px; padding:12px;
+            box-shadow:0 3px 10px rgba(30,50,80,0.08); }
+        .quiz.quiz-inline { display:block; margin-top:6px; }
+        .quiz-inline .quiz-question { display:grid; grid-template-columns:1fr auto; align-items:center; column-gap:12px; padding:8px 12px; }
+        .quiz-inline .quiz-number { grid-column:1; }
+        .quiz-inline .quiz-prompt { grid-column:1; min-height:0; margin:2px 0 !important; }
+        .quiz-inline .quiz-options { grid-column:2; grid-row:1 / span 2; display:flex; min-width:190px; }
+        .quiz-inline .quiz-option { text-align:center; min-width:88px; }
+        .quiz-inline .quiz-result { grid-column:1 / -1; min-height:15px; margin-top:2px; }
+        .quiz-question.correct { border-color:var(--ifsc-green); background:#f2f7fd; animation:quizSuccess .55s ease-out; }
+        .quiz-number { color:var(--ifsc-green); font-size:.58em; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
+        .quiz-prompt { min-height:58px; margin:4px 0 8px !important; font-size:.68em; line-height:1.28; font-weight:700; color:#263548; }
+        .quiz-command-sequence { display:grid; gap:2px; margin-top:4px; font-weight:400; }
+        .quiz-command-sequence code { display:block; }
+        .quiz-options { display:grid; gap:6px; }
+        .quiz-option { width:100%; border:2px solid #d7dee8; border-radius:7px; background:#fff; color:#344254;
+            padding:7px 9px; font:inherit; font-size:.56em; line-height:1.25; text-align:left; cursor:pointer;
+            transition:transform .16s ease, border-color .16s ease, background .16s ease; }
+        .quiz-option:hover:not(.wrong):not(.right) { transform:translateY(-1px); border-color:var(--accent-blue); background:#f5faff; }
+        .quiz-option.wrong { border-color:var(--accent-red); background:#fdf0ef; color:#8f2d22; cursor:help; animation:quizShake .35s ease; }
+        .quiz-option.right { border-color:var(--ifsc-green); background:#e7f0fb; color:var(--ifsc-dark); font-weight:800; cursor:default; }
+        .quiz-option:disabled { opacity:1; }
+        .quiz-result { min-height:20px; margin-top:7px; font-size:.51em; font-weight:800; color:var(--ifsc-green); }
+        .quiz-reset { position:absolute; top:7px; right:8px; border:0; border-radius:5px; background:transparent;
+            color:#758397; padding:3px 6px; font:inherit; font-size:.43em; font-weight:800; cursor:pointer;
+            transition:color .16s ease, background .16s ease; }
+        .quiz-reset:hover { color:var(--accent-red); background:#fdf0ef; }
+        .quiz-reset:focus-visible { outline:2px solid var(--accent-blue); outline-offset:2px; }
+        .quiz-progress { margin:8px 0 0; text-align:right; color:#69788b; font-size:.55em; font-weight:700; }
+        @keyframes quizShake { 25% { transform:translateX(-5px); } 50% { transform:translateX(5px); } 75% { transform:translateX(-3px); } }
+        @keyframes quizSuccess { 50% { transform:scale(1.018); box-shadow:0 0 0 8px rgba(0,74,142,.12); } }
+
+        .quiz-modal { position:fixed; inset:0; z-index:3000; display:flex; align-items:center; justify-content:center;
+            background:rgba(17,27,39,.58); padding:24px; opacity:0; visibility:hidden; transition:opacity .2s ease, visibility .2s; }
+        .quiz-modal.open { opacity:1; visibility:visible; }
+        .quiz-modal-card { width:min(560px, 90vw); background:#fff; border-radius:12px; border-top:7px solid var(--accent-red);
+            padding:22px 26px; box-shadow:0 18px 55px rgba(0,0,0,.32); transform:translateY(14px) scale(.97);
+            transition:transform .2s ease; font-family:Arial, sans-serif; }
+        .quiz-modal.open .quiz-modal-card { transform:translateY(0) scale(1); }
+        .quiz-modal-card h3 { margin:0 0 8px; color:var(--accent-red); font-size:23px; }
+        .quiz-modal-card p { margin:0 0 18px; color:#344254; font-size:17px; line-height:1.45; }
+        .quiz-modal-close { float:right; border:0; border-radius:6px; padding:8px 15px; background:var(--ifsc-green);
+            color:#fff; font-size:15px; font-weight:800; cursor:pointer; }
+        @media print { .quiz-modal { display:none !important; } }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <button id="btnPdf" title="Gerar PDF da apresentação" aria-label="Gerar PDF">📄 PDF</button>
+</div>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- ===================== 1. CAPA ===================== -->
+        <section style="text-align:center;">
+            <h1 style="font-size:2.0em;">Programação para Internet I</h1>
+            <h2 style="border:none; color:#555; text-transform:none;">Aula 1 — Fundamentos da Web</h2>
+            <p style="font-size:1.0em;">Da Guerra Fria ao navegador: como <span class="highlight">Internet</span> e <span class="web-highlight">Web</span> chegaram até aqui — e como uma página realmente aparece na tela</p>
+            <div style="margin-top:50px;">
+                <p><span class="pill">IFSC</span> <span class="pill web">Web</span> <span class="pill">ADS</span></p>
+                <p style="margin-top:20px;"><strong>Professor:</strong> Romulo de Aguiar Beninca</p>
+                <p class="small-text">Encontro 1</p>
+            </div>
+        </section>
+
+        <!-- ===================== 2. ROTEIRO ===================== -->
+        <section class="compact">
+            <h2>Roteiro da Aula</h2>
+            <div class="timeline web-tl">
+                <div class="stage"><div class="dot"></div><h4>1. História</h4><p>Da Guerra Fria à ARPANET, ao nascimento da Web e à Web de hoje.</p></div>
+                <div class="stage"><div class="dot"></div><h4>2. Internet × Web</h4><p>Duas camadas diferentes que costumam ser confundidas.</p></div>
+                <div class="stage"><div class="dot"></div><h4>3. W3C</h4><p>Quem define os padrões que fazem a Web funcionar igual em todo lugar.</p></div>
+                <div class="stage"><div class="dot"></div><h4>4. Linguagens</h4><p>De páginas estáticas a PHP, JavaScript e Node.js.</p></div>
+                <div class="stage"><div class="dot"></div><h4>5. Como funciona</h4><p>URL, DNS, cliente-servidor e o ciclo completo de uma requisição HTTP.</p></div>
+            </div>
+            <div class="tip-box"><strong>Objetivo do dia:</strong> sair da aula sabendo <span class="web-highlight">por que</span> a Web é organizada do jeito que é — para entender, daqui pra frente, onde cada tecnologia que vamos estudar se encaixa.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 1 — HISTÓRIA                                                   -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#2e7d32">
+            <div class="part-no">PARTE 1</div>
+            <h1>História da Internet e da Web</h1>
+            <p>Duas invenções diferentes, décadas de distância, o mesmo fio condutor</p>
+        </section>
+
+        <section class="compact">
+            <h2>Antes de tudo: um contexto de guerra</h2>
+            <p>A Internet não nasceu para conectar pessoas casualmente — nasceu de <strong>pesquisa militar e acadêmica</strong>, num momento de disputa geopolítica. A seguir, a linha do tempo que vai desse contexto até a <strong>Web de hoje</strong>:</p>
+            <div class="mini-tl" id="tlIntro"></div>
+            <div class="formula-box">
+                A <strong>Internet</strong> é a infraestrutura de rede: surgiu nos anos 1960. A <strong>Web</strong> é um serviço que passou a rodar sobre essa infraestrutura só <strong>30 anos depois</strong>, em 1989-91, para compartilhar documentos científicos — e virou a maior plataforma de aplicações do mundo. Três invenções de Tim Berners-Lee a sustentam até hoje: <span class="web-highlight">HTML, URL e HTTP</span>.
+            </div>
+        </section>
+
+        <section class="compact" data-hist="0">
+            <h2>1957–58 — Sputnik e a criação da ARPA</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body multi">
+                <div class="htxt">
+                    <p>O lançamento do satélite soviético <strong>Sputnik</strong> (1957) acelera a preocupação dos EUA com pesquisa estratégica. Em resposta, o governo cria em 1958 a <strong>ARPA</strong> (Advanced Research Projects Agency) — uma agência do <strong>Departamento de Defesa</strong> para financiar e coordenar pesquisas avançadas.</p>
+                </div>
+                <div class="hfig">
+                    <img src="imgs/aula01/1957-sputnik.jpg" alt="Réplica do satélite Sputnik 1">
+                    <img src="imgs/aula01/1958-arpa.png" alt="Logotipo da DARPA">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="1">
+            <h2>Anos 1960 — Uma visão de rede e computadores isolados</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body">
+                <div class="htxt">
+                    <p><strong>J. C. R. Licklider</strong> defende a ideia de computadores conectados em rede — a <em>"Galactic Network"</em>, precursora da Internet. Ao mesmo tempo, universidades e centros de pesquisa financiados pela ARPA tinham grandes computadores <strong>isolados, caros e difíceis de compartilhar</strong>.</p>
+                </div>
+                <figure class="hfig"><img src="imgs/aula01/1960-licklider.jpg" alt="Retrato de J. C. R. Licklider"><figcaption>J. C. R. Licklider</figcaption></figure>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="2">
+            <h2>1966–1969 — De Bob Taylor à ARPANET</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body">
+                <div class="htxt">
+                    <p><strong>Bob Taylor</strong> consegue financiamento para interligar os centros de pesquisa. <strong>Larry Roberts</strong> estrutura o projeto tecnicamente, e a empresa <strong>BBN</strong> constrói os <strong>IMPs</strong> — minicomputadores precursores dos roteadores. Em 1969, a <strong>ARPANET</strong> entra em operação: o 1º nó foi na UCLA, a 1ª mensagem tentou enviar <code>LOGIN</code> ao Stanford Research Institute — só chegaram as letras <code>LO</code>.</p>
+                </div>
+                <figure class="hfig"><img src="imgs/aula01/1969-arpanet.png" alt="Mapa lógico da ARPANET"><figcaption>Mapa lógico da ARPANET (1969)</figcaption></figure>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="3">
+            <h2>1970s–1985 — TCP/IP e a NSFNET</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body multi">
+                <div class="htxt">
+                    <p>A ARPANET se expande e consolida ideias como <strong>comutação de pacotes</strong>. Em 1983, a adoção do <strong>TCP/IP</strong> transforma a Internet numa <strong>rede de redes</strong> — a base técnica até hoje. Em 1985, a NSFNET amplia o acesso acadêmico para além do ambiente militar.</p>
+                </div>
+                <div class="hfig">
+                    <img src="imgs/aula01/1983-tcpip.png" alt="Pilha de protocolos TCP/IP">
+                    <img src="imgs/aula01/1985-nsfnet.png" alt="Backbone da NSFNET">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="4">
+            <h2>Março de 1989 — A proposta de Tim Berners-Lee</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body">
+                <div class="htxt">
+                    <p>No <strong>CERN</strong>, o físico e engenheiro de software <strong>Tim Berners-Lee</strong> circula o documento <em>"Information Management: A Proposal"</em> — uma resposta ao problema de pesquisadores perderem informação por causa de sistemas incompatíveis e alta rotatividade de pessoal.</p>
+                    <p>Propõe um sistema de <strong>hipertexto</strong> distribuído: documentos ligados por links, acessíveis de qualquer computador da rede, sem uma estrutura hierárquica fixa.</p>
+                    <p class="small-text">Seu supervisor, Mike Sendall, anota na proposta: <em>"Vague, but exciting"</em> ("vago, mas empolgante") — e autoriza o projeto.</p>
+                </div>
+                <figure class="hfig"><img src="imgs/aula01/1989-bernerslee.jpg" alt="Retrato de Tim Berners-Lee"><figcaption>Tim Berners-Lee, autor da proposta</figcaption></figure>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="5">
+            <h2>1990 — As três invenções e o primeiro navegador</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body">
+                <div class="htxt">
+                    <p>Ao longo de 1990, Berners-Lee implementa os <strong>três pilares</strong> que ainda sustentam a Web: <span class="web-highlight">HTML</span> (a linguagem dos documentos), <span class="web-highlight">URL</span> (o endereçamento) e <span class="web-highlight">HTTP</span> (o protocolo de transferência).</p>
+                    <p>Cria também o <strong>WorldWideWeb</strong> — ao mesmo tempo navegador <em>e</em> editor de páginas — rodando em um computador <strong>NeXT</strong>, que também serve como o <strong>primeiro servidor Web</strong> do mundo.</p>
+                </div>
+                <figure class="hfig"><img src="imgs/aula01/1990-nextcube.jpg" alt="Computador NeXT usado como primeiro servidor Web"><figcaption>NeXTcube: navegador, editor e servidor, tudo na mesma máquina</figcaption></figure>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="6">
+            <h2>Agosto de 1991 — A primeira página publicada</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body">
+                <div class="htxt">
+                    <p>Berners-Lee publica a primeira página Web pública, explicando o próprio projeto: <strong>o que é a World Wide Web</strong>, como instalar um servidor e como criar hiperlinks. Endereço original: <code>info.cern.ch</code>.</p>
+                    <p>É também o convite formal: ele anuncia o projeto em fóruns de discussão da época (Usenet), convidando outros pesquisadores a experimentar e contribuir.</p>
+                    <div class="formula-box mono" style="font-size:0.66em; margin-top:6px;">
+                        1989 → proposta escrita<br>
+                        1990 → HTML + URL + HTTP + navegador + servidor<br>
+                        1991 → primeira página publicada, ao alcance de todos
+                    </div>
+                </div>
+                <figure class="hfig"><img src="imgs/aula01/1990-nextcube.jpg" alt="Reconstrução da primeira página Web"><figcaption>info.cern.ch — a primeira página Web</figcaption></figure>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="7">
+            <h2>1993–1994 — Mosaic e a fundação do W3C</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body multi">
+                <div class="htxt">
+                    <p>O navegador <strong>Mosaic</strong> (1993) populariza a Web ao integrar imagens ao texto, tornando-a visual e acessível. Em 1994, Berners-Lee funda o <strong>W3C</strong> (World Wide Web Consortium) para coordenar <strong>padrões abertos</strong> e evitar a fragmentação entre navegadores e tecnologias incompatíveis.</p>
+                </div>
+                <div class="hfig">
+                    <img src="imgs/aula01/1993-mosaic.png" alt="Captura de tela do navegador NCSA Mosaic">
+                    <img src="imgs/aula01/1994-w3c.png" alt="Logotipo do W3C">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="8">
+            <h2>1995–2001 — Interatividade: JavaScript e CSS</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body multi">
+                <div class="htxt">
+                    <p>Surge o <strong>JavaScript</strong> (1995) para tornar páginas interativas — a Web deixa de ser só documento estático. O W3C publica o <strong>CSS1</strong> (1996) e <strong>CSS2</strong> (1998) para separar apresentação de conteúdo; a partir de 1999-2001 o CSS passa a evoluir em <strong>módulos</strong> (o que hoje chamamos, informalmente, de "CSS3").</p>
+                </div>
+                <div class="hfig">
+                    <img src="imgs/aula01/1995-javascript.png" alt="Logotipo do JavaScript">
+                    <img src="imgs/aula01/1996-css.png" alt="Logotipo do CSS">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact" data-hist="9">
+            <h2>Anos 2000 até hoje — Web 2.0 e plataforma universal</h2>
+            <div class="mini-tl"></div><div class="mini-tl-label"></div>
+            <div class="hist-body multi">
+                <div class="htxt">
+                    <p>Usuários passam a <strong>produzir conteúdo</strong> em escala (blogs, redes sociais, wikis) — a <strong>Web 2.0</strong>. De 2010 em diante, aplicações complexas rodam direto no navegador, e hoje a Web é uma <strong>plataforma universal</strong>: mobile, APIs, nuvem, bancos distribuídos, tempo real.</p>
+                </div>
+                <div class="hfig">
+                    <img src="imgs/aula01/2000-web2.png" alt="Mapa de conceitos da Web 2.0">
+                    <img src="imgs/aula01/hoje-cloud.png" alt="Ícone de computação em nuvem">
+                </div>
+            </div>
+        </section>
+
+        <section class="compact" id="quiz-parte-1"><h2>Questionário — História</h2><p>Revise a ordem dos marcos e a distinção entre origem da Internet e da Web.</p>
+            <div class="quiz" data-quiz-id="ppi1-aula1-historia">
+                <article class="quiz-question" data-question-id="ordem-eventos">
+                    <div class="quiz-number">Questão 1 · objetiva</div>
+                    <p class="quiz-prompt">O que aconteceu primeiro?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="arpanet" data-correct="true">A ARPANET entra em operação (1969)</button>
+                        <button class="quiz-option" data-option-id="web" data-feedback="A Web nasce em 1989-91, mais de 20 anos depois da ARPANET. A Internet é bem mais antiga que a Web.">Tim Berners-Lee propõe a Web (1989)</button>
+                        <button class="quiz-option" data-option-id="w3c" data-feedback="O W3C é fundado em 1994, depois da Web já existir e se popularizar com o Mosaic.">Fundação do W3C (1994)</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="origem-internet">
+                    <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">A Internet foi criada originalmente como um projeto comercial para venda de acesso ao público.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="A ARPANET, origem da Internet, nasceu de pesquisa militar e acadêmica financiada pela ARPA. A abertura comercial só veio décadas depois, com o fim da NSFNET em 1995.">Verdadeiro</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="pilares-web">
+                    <div class="quiz-number">Questão 3 · objetiva</div>
+                    <p class="quiz-prompt">Quais são os três pilares criados por Tim Berners-Lee que sustentam a Web até hoje?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="html-url-http" data-correct="true">HTML, URL e HTTP</button>
+                        <button class="quiz-option" data-option-id="tcp-ip-dns" data-feedback="TCP/IP e DNS são peças da infraestrutura da Internet, criadas antes da Web e mantidas por outras organizações (não pelo W3C).">TCP, IP e DNS</button>
+                        <button class="quiz-option" data-option-id="css-js-html" data-feedback="CSS e JavaScript vieram depois (1995-96) para estilizar e dar interatividade — não fazem parte da proposta original de 1989-91.">HTML, CSS e JavaScript</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="proposta-1989">
+                    <div class="quiz-number">Questão 4 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">A proposta de 1989 de Tim Berners-Lee já surgiu pronta e completa, com HTML, URL, HTTP e navegador todos implementados de uma vez.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="A proposta de 1989 ('Information Management: A Proposal') era só a ideia conceitual de um sistema de hipertexto. As três tecnologias e o primeiro navegador só foram implementados ao longo de 1990, e a primeira página só foi publicada em 1991.">Verdadeiro</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div><div class="quiz-progress"></div></section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 2 — INTERNET × WEB                                             -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#2e7d32">
+            <div class="part-no">PARTE 2</div>
+            <h1>Internet × Web</h1>
+            <p>Agora que vimos a história de cada uma, vamos separar claramente os conceitos</p>
+        </section>
+
+        <section class="compact">
+            <h2>Duas camadas diferentes</h2>
+            <p>Confundir os dois é comum — mas, como vimos na história, são coisas <strong>separadas por décadas</strong> e camadas diferentes:</p>
+            <div class="cards">
+                <div class="card">
+                    <h3>🌐 Internet</h3>
+                    <p><strong>A infraestrutura.</strong> Rede física e lógica global de computadores interligados, nascida na Guerra Fria.</p>
+                    <p>Transporta <em>vários</em> serviços: e-mail, FTP, streaming, jogos, VoIP... e também a Web.</p>
+                    <p class="small-text">Protocolos base: TCP/IP.</p>
+                </div>
+                <div class="card" style="border-top-color: var(--web-purple);">
+                    <h3 style="color: var(--web-purple);">🕸️ Web (WWW)</h3>
+                    <p><strong>Um serviço</strong> que roda <em>sobre</em> a Internet, criado 20 anos depois dela, no CERN.</p>
+                    <p>Sistema de documentos e aplicações interligados por hiperlinks, acessados via HTTP no navegador.</p>
+                    <p class="small-text">Protocolo: HTTP/HTTPS.</p>
+                </div>
+            </div>
+            <div class="formula-box">
+                Analogia: a <strong>Internet é o sistema de estradas</strong>; a <strong>Web é um dos serviços</strong> que trafega por elas (como uma transportadora). E-mail é outro serviço diferente, na mesma estrada.
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 3 — W3C                                                        -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#2e7d32">
+            <div class="part-no">PARTE 3</div>
+            <h1>W3C</h1>
+            <p>Quem garante que a Web funcione igual em qualquer navegador</p>
+        </section>
+
+        <section class="compact">
+            <h2>O que é o W3C?</h2>
+            <p>O <strong>World Wide Web Consortium</strong> foi fundado por Tim Berners-Lee em 1994, logo depois de o Mosaic popularizar a Web, para resolver um problema concreto:</p>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span>Sem um padrão comum, cada navegador poderia interpretar HTML e CSS de um jeito diferente.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>O W3C publica <strong>recomendações</strong> (specs) abertas: HTML, CSS, acessibilidade, internacionalização, APIs da Web...</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Não é uma lei — é um <strong>consenso técnico</strong> que navegadores, empresas e desenvolvedores adotam voluntariamente.</li>
+            </ul>
+            <div class="tip-box fragment fade-in">É por causa do W3C que uma tag <code>&lt;p&gt;</code> se comporta de forma parecida no Chrome, no Firefox e no Safari — sem consenso, a Web teria fragmentado como aconteceu nos primeiros anos dos navegadores (a "guerra dos navegadores" dos anos 1990).</div>
+        </section>
+
+        <section class="compact">
+            <h2>Referência de tags: developer.mozilla.org / w3.org</h2>
+            <p>Você não precisa <strong>decorar</strong> todas as tags HTML — precisa saber onde <strong>consultar</strong>:</p>
+            <div class="formula-box mono" style="text-align:center; font-size:0.95em;">
+                w3.org &nbsp;·&nbsp; developer.mozilla.org (MDN)
+            </div>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span>Documentação oficial de <strong>todas as tags</strong> HTML, com sintaxe, atributos e exemplos.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Referência de <strong>propriedades CSS</strong> e <strong>APIs JavaScript</strong> do navegador.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Mostra a <strong>compatibilidade</strong> entre navegadores — essencial antes de usar um recurso novo em produção.</li>
+            </ul>
+            <div class="warn-box fragment fade-in">Vamos abrir o site juntos em aula. Acostume-se a consultá-lo: é a fonte confiável, à frente de tutoriais aleatórios ou respostas desatualizadas.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 4 — DA PÁGINA ESTÁTICA ÀS LINGUAGENS DE HOJE                   -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#2e7d32">
+            <div class="part-no">PARTE 4</div>
+            <h1>Da Página Estática ao Back-end Moderno</h1>
+            <p>PHP, JavaScript no servidor e o ecossistema de hoje</p>
+        </section>
+
+        <section class="compact">
+            <h2>O problema: páginas sempre iguais</h2>
+            <p>A Web de 1991-94 servia apenas <strong>arquivos HTML prontos</strong>, gravados no disco do servidor. Toda vez que alguém visitava, recebia exatamente o mesmo conteúdo — não dava para mostrar um carrinho de compras, um resultado de busca ou um post de outro usuário.</p>
+            <div class="formula-box">
+                Faltava um jeito de o servidor <strong>gerar</strong> HTML na hora, com base em dados — é aqui que entram as linguagens de <span class="web-highlight">back-end</span>.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>A trilha das linguagens de back-end</h2>
+            <div class="tech-track">
+                <div class="tech-card">
+                    <div class="yr">1995</div>
+                    <h4>PHP</h4>
+                    <p>Criado para gerar páginas dinamicamente. Populariza o modelo "script embutido no HTML" e domina a web dinâmica por anos (WordPress, Facebook original).</p>
+                </div>
+                <div class="tech-card">
+                    <div class="yr">1995</div>
+                    <h4>JavaScript</h4>
+                    <p>Nasce só para rodar <strong>no navegador</strong>. Por 14 anos, ficou restrito ao lado cliente.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="yr">2009</div>
+                    <h4>Node.js</h4>
+                    <p>Leva o motor V8 (do Chrome) para <strong>fora do navegador</strong>. Pela primeira vez, JavaScript roda também no servidor.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="yr">Hoje</div>
+                    <h4>Ecossistema atual</h4>
+                    <p>Uma única linguagem (JS/TypeScript) do front ao back. Frameworks como Express, Next.js; PHP continua vivo (Laravel); Python (Django), entre outros.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Por que o Node.js foi um marco?</h2>
+            <ul class="icon-list">
+                <li class="fragment fade-up"><span class="ic">▸</span>Antes: front-end em JavaScript, back-end em outra linguagem (PHP, Java, .NET...) — <strong>dois contextos, duas sintaxes</strong>.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Com Node.js: o mesmo desenvolvedor pode usar <strong>JavaScript nos dois lados</strong>, compartilhando código e conhecimento.</li>
+                <li class="fragment fade-up"><span class="ic">▸</span>Abriu caminho para o ecossistema npm — hoje o maior repositório de pacotes de código do mundo.</li>
+            </ul>
+            <div class="tip-box fragment fade-in">Nesta disciplina você vai ver <strong>ambos os lados</strong>: HTML/CSS/JS no navegador primeiro, e mais adiante como esse conteúdo pode ser gerado dinamicamente no servidor.</div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- PARTE 5 — COMO A WEB FUNCIONA                                        -->
+        <!-- =================================================================== -->
+        <section class="divider" data-background-color="#2e7d32">
+            <div class="part-no">PARTE 5</div>
+            <h1>Como a Web Funciona</h1>
+            <p>Do endereço digitado até a página renderizada na tela</p>
+        </section>
+
+        <section class="compact">
+            <h2>Arquitetura Cliente-Servidor: simulação passo a passo</h2>
+            <p class="small-text">Do <code>Enter</code> na barra de endereço até o HTML aparecer na tela — acompanhe cada etapa clicando em <strong>avançar</strong>.</p>
+            <div id="cs-sim" class="cs-sim">
+                <div class="cs-stage">
+                    <div class="cs-side">
+                        <div class="cs-side-label">Cliente</div>
+                        <div class="cs-client-box" id="cs-client-box">
+                            <div class="cs-browser-chrome">
+                                <span class="cs-browser-dots"><span></span><span></span><span></span></span>
+                                <div class="cs-browser-url" id="cs-url"></div>
+                            </div>
+                            <div class="cs-browser-body" id="cs-browser-body">página em branco</div>
+                        </div>
+                        <div class="cs-os-tag" id="cs-os-tag">🖥️ Sistema Operacional</div>
+                    </div>
+
+                    <div class="cs-mid">
+                        <div class="cs-mid-track">
+                            <div class="cs-packet" id="cs-packet">
+                                <div class="cs-packet-inner" id="cs-packet-inner">GET /</div>
+                            </div>
+                        </div>
+                        <div class="cs-mid-lbl" id="cs-mid-lbl">Clique em <b>avançar</b> para começar.</div>
+                    </div>
+
+                    <div class="cs-side">
+                        <div class="cs-side-label">Servidor</div>
+                        <div class="cs-server-box" id="cs-server-box">
+                            <span class="ni">🗄️</span><span class="nt">Servidor Web</span>
+                            <div class="cs-docroot" id="cs-docroot">
+                                <span class="fp">/var/www/<b>DOCUMENT_ROOT</b>/<br>&nbsp;&nbsp;└─ index.html</span>
+                            </div>
+                        </div>
+                        <div class="cs-dns-box" id="cs-dns-box">
+                            <span class="ni">📒</span><span class="nt">Servidor DNS</span>
+                            <span class="ns" id="cs-dns-ns">porta 53</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cs-toolbar">
+                    <button id="csPrev" type="button">◀ voltar</button>
+                    <button id="csNext" type="button">avançar ▶</button>
+                    <button id="csAll" type="button">executar até o fim</button>
+                    <span class="cs-pos" id="csPos"></span>
+                    <button id="csReset" type="button" class="cs-reset">↺ recomeçar</button>
+                </div>
+                <p class="cs-caption" id="csCaption"></p>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>URL — O Endereço de um Recurso</h2>
+            <p>Uma <span class="highlight">URL</span> (Uniform Resource Locator) descreve <strong>onde</strong> e <strong>como</strong> acessar algo na Web:</p>
+            <div class="formula-box mono" style="font-size:0.85em; text-align:center; word-break:break-all;">
+                <span style="color:var(--ifsc-green);">https://</span><span style="color:var(--ifsc-green);">www.exemplo.com.br</span><span style="color:#8e44ad;">:443</span><span style="color:#c97c00;">/produtos/livro</span><span style="color:#e67e22;">?id=10&amp;cor=azul</span><span style="color:var(--accent-red);">#avaliacoes</span>
+            </div>
+            <table class="tbl">
+                <tr><th>Parte</th><th>Exemplo</th><th>Função</th></tr>
+                <tr><td>Esquema</td><td>https</td><td>Protocolo usado (http, https, ftp...)</td></tr>
+                <tr><td>Domínio</td><td>www.exemplo.com.br</td><td>Nome do servidor a contatar</td></tr>
+                <tr><td>Porta</td><td>:443</td><td>Porta de serviço (443 = HTTPS; opcional)</td></tr>
+                <tr><td>Caminho</td><td>/produtos/livro</td><td>Recurso específico no servidor</td></tr>
+                <tr><td>Query</td><td>?id=10&cor=azul</td><td>Parâmetros enviados ao servidor</td></tr>
+                <tr><td>Fragmento</td><td>#avaliacoes</td><td>Âncora dentro da página (lado cliente)</td></tr>
+            </table>
+        </section>
+
+        <section class="compact">
+            <h2>Domínio e DNS</h2>
+            <p>Computadores se encontram por <strong>endereços IP</strong> (ex.: <code>142.250.79.110</code>), mas pessoas decoram <strong>nomes</strong>. O <span class="highlight">DNS</span> (Domain Name System) é a "agenda telefônica" da Internet que traduz nome → IP.</p>
+            <div class="flow">
+                <div class="scene">
+                    <div class="node client"><span class="ni">💻</span><span class="nt">Navegador</span><span class="ns">quer exemplo.com.br</span></div>
+                    <div class="arrow-col">
+                        <div class="lbl">1. Qual o IP?</div><div class="bar"></div>
+                        <div class="lbl" style="color:var(--accent-gold);">2. É 142.250.79.110</div><div class="bar back"></div>
+                    </div>
+                    <div class="node dns"><span class="ni">📒</span><span class="nt">Servidor DNS</span><span class="ns">a "agenda" da Web</span></div>
+                </div>
+            </div>
+            <ul class="small-text" style="margin-top:6px;">
+                <li>Hierarquia do domínio <code>www.exemplo.com.br</code>: <strong>br</strong> (TLD de país) → <strong>com</strong> → <strong>exemplo</strong> → <strong>www</strong> (subdomínio).</li>
+                <li>O resultado da consulta fica em <strong>cache</strong> (no SO e no navegador) para acelerar acessos futuros.</li>
+            </ul>
+        </section>
+
+        <section class="compact">
+            <h2>Navegador e Servidor Web</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>🖥️ Navegador (cliente)</h3>
+                    <p>Monta a requisição HTTP e a envia.</p>
+                    <p>Recebe HTML, CSS e JS e os <strong>renderiza</strong> na tela.</p>
+                    <p>Executa JavaScript, gerencia cookies, cache e segurança.</p>
+                    <p class="small-text">Ex.: Chrome, Firefox, Edge, Safari.</p>
+                </div>
+                <div class="card" style="border-top-color: var(--accent-gold);">
+                    <h3 style="color: var(--accent-gold);">🗄️ Servidor Web</h3>
+                    <p>Fica "escutando" requisições em uma porta.</p>
+                    <p>Serve arquivos estáticos ou aciona uma <strong>aplicação</strong> que gera a resposta.</p>
+                    <p>Devolve a resposta HTTP com status, cabeçalhos e corpo.</p>
+                    <p class="small-text">Ex.: Apache, Nginx, IIS, Node.js.</p>
+                </div>
+            </div>
+            <div class="formula-box small-text">
+                Estático = arquivo pronto no disco. Dinâmico = conteúdo <strong>gerado na hora</strong> (PHP, Node.js, consulta a banco) — é aqui que entra a programação para internet.
+            </div>
+        </section>
+
+        <section class="compact flow">
+            <h2>Como a Web Funciona: Visão Geral</h2>
+            <div class="scene">
+                <div class="node client"><span class="ni">💻</span><span class="nt">Cliente</span><span class="ns">computador + navegador</span></div>
+                <div class="node cloud"><span class="ni">🌐</span><span class="nt" style="color:#5a6b80;">Internet</span><span class="ns">transporta os pacotes</span></div>
+                <div class="node server"><span class="ni">🗄️</span><span class="nt">Servidor</span><span class="ns">servidor web</span></div>
+            </div>
+            <p>A Web funciona em um modelo <span class="kw kw-blue">Cliente</span>–<span class="kw kw-gold">Servidor</span>: o navegador <strong>faz pedidos</strong> e o servidor <strong>responde</strong>.</p>
+            <ol style="font-size:0.78em; line-height:1.5em; columns:2; column-gap:36px;">
+                <li>Usuário informa a <span class="kw kw-blue">URL</span></li>
+                <li><span class="kw kw-green">DNS</span> resolve o nome em IP</li>
+                <li>Requisição <span class="kw kw-blue">HTTP</span> é enviada</li>
+                <li>Servidor processa o pedido</li>
+                <li><span class="kw kw-green">Resposta HTTP</span> retorna</li>
+                <li>Navegador faz a <span class="kw kw-gold">Renderização</span></li>
+            </ol>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">1</span> Usuário informa a URL</span>
+            <h2>Passo 1 — O Usuário Digita a URL</h2>
+            <div class="scene">
+                <div class="node client" style="flex:1.6;">
+                    <span class="ns" style="margin-bottom:6px;">🔒 Barra de endereço do navegador</span>
+                    <div class="msg-box" style="font-size:0.9em; text-align:left;">http://www.exemplo.com</div>
+                </div>
+                <div class="arrow-col"><div class="lbl">…e o IP?</div></div>
+                <div class="node server dim"><span class="ni">🗄️</span><span class="nt">Servidor</span><span class="ns">IP ainda desconhecido</span></div>
+            </div>
+            <p>O acesso começa quando o usuário informa uma <span class="kw kw-blue">URL</span>. Ela identifica <strong>o recurso desejado</strong> — mas o navegador <strong>ainda não sabe</strong> em qual <span class="kw kw-gold">IP</span> esse servidor está.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">2</span> Descoberta do IP</span>
+            <h2>Passo 2 — Consulta ao DNS</h2>
+            <div class="scene">
+                <div class="node client"><span class="ni">💻</span><span class="nt">Cliente</span></div>
+                <div class="arrow-col">
+                    <div class="lbl">Consulta DNS · <span class="kw kw-red">porta 53</span></div>
+                    <div class="bar"></div>
+                    <div class="lbl" style="color:var(--ifsc-green);">www.exemplo.com → 203.0.113.10</div>
+                    <div class="bar back"></div>
+                </div>
+                <div class="node dns"><span class="ni">📒</span><span class="nt">Servidor DNS</span><span class="ns">a "agenda" da Internet</span></div>
+            </div>
+            <p>O navegador consulta o <span class="kw kw-green">DNS</span> para descobrir o <span class="kw kw-gold">IP</span> associado ao nome do domínio. Essa consulta usa a <span class="kw kw-red">porta 53</span>.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">3</span> Montagem da requisição</span>
+            <h2>Passo 3 — O Navegador Monta a Requisição HTTP</h2>
+            <div class="scene" style="align-items:center;">
+                <div class="node client" style="flex:0.7;"><span class="ni">💻</span><span class="nt">Cliente</span></div>
+                <div style="flex:2;">
+                    <div class="ns" style="margin-bottom:4px; color:var(--ifsc-green); font-weight:700;">Mensagem HTTP (camada de aplicação)</div>
+                    <div class="msg-box">GET / HTTP/1.1<br>Host: www.exemplo.com</div>
+                </div>
+            </div>
+            <p>O navegador cria uma requisição <span class="kw kw-blue">HTTP</span> — um protocolo da <strong>camada de aplicação</strong>. A mensagem é, essencialmente, <strong>texto estruturado</strong>.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">4</span> Encapsulamento</span>
+            <h2>Passo 4 — Encapsulamento em TCP/IP</h2>
+            <div style="text-align:center;">
+                <div class="stack">
+                    <div class="layer layer-ip">
+                        Pacote <span class="kw kw-gold">IP</span>
+                        <div class="layer layer-tcp" style="margin-top:8px;">
+                            Segmento <span class="kw kw-green">TCP</span>
+                            <div class="layer layer-http" style="margin-top:8px;">Mensagem <span class="kw kw-blue">HTTP</span></div>
+                        </div>
+                    </div>
+                    <div class="pkt-cap">Mensagem HTTP → Segmento TCP → Pacote IP</div>
+                </div>
+            </div>
+            <p>A mensagem HTTP <strong>não viaja sozinha</strong>: é encapsulada em <span class="kw kw-green">TCP</span> e depois em <span class="kw kw-gold">IP</span>. O que circula na rede são <span class="kw kw-gold">pacotes IP</span> contendo os dados da requisição.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">5</span> Transmissão</span>
+            <h2>Passo 5 — Transmissão do Pacote IP pela Rede</h2>
+            <div class="scene">
+                <div class="node client"><span class="ni">💻</span><span class="nt">Cliente</span></div>
+                <div class="arrow-col" style="flex:1.6;">
+                    <div class="lbl">📦 Requisição HTTP sobre <span class="kw kw-green">TCP</span>/<span class="kw kw-gold">IP</span></div>
+                    <div class="bar"></div>
+                    <div class="lbl" style="color:#5a6b80;">🌐 atravessa a Internet</div>
+                </div>
+                <div class="node server"><span class="ni">🗄️</span><span class="nt">Servidor</span><span class="ns">203.0.113.10</span></div>
+            </div>
+            <p>O <span class="kw kw-gold">pacote IP</span> é transmitido pela rede até o servidor. A <strong>Internet</strong> realiza o transporte entre o cliente e o destino.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">6</span> Chegada ao servidor</span>
+            <h2>Passo 6 — O Pacote Chega ao Servidor</h2>
+            <div class="scene" style="align-items:center;">
+                <div class="arrow-col" style="flex:0.7;"><div class="lbl">📦 Pacote IP</div><div class="bar"></div></div>
+                <div class="node server" style="flex:2;">
+                    <span class="nt" style="margin-bottom:6px;">🖥️ Sistema Operacional</span>
+                    <div class="pkt-cap" style="font-size:0.78em;">Desempacota: <span class="kw kw-gold">IP</span> → <span class="kw kw-green">TCP</span> → <span class="kw kw-blue">HTTP</span></div>
+                </div>
+            </div>
+            <p>O <span class="kw kw-gray">Sistema Operacional</span> do servidor recebe os pacotes da rede e <strong>desencapsula</strong> as camadas. Depois, decide <strong>para qual aplicação</strong> os dados devem ir.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">7</span> Entrega à aplicação</span>
+            <h2>Passo 7 — Encaminhamento para a Porta 80</h2>
+            <div class="scene" style="align-items:center;">
+                <div class="node server" style="flex:1;"><span class="nt">🖥️ Sistema Operacional</span></div>
+                <div class="arrow-col"><div class="lbl">entrega na <span class="kw kw-red">porta 80</span></div><div class="bar"></div></div>
+                <div class="node server" style="flex:1.1; border-style:solid;">
+                    <span class="ni">⚙️</span><span class="nt">Servidor Web</span>
+                    <span class="ns">escutando a porta 80<br>(ex.: Apache, Nginx)</span>
+                </div>
+            </div>
+            <p>O <span class="kw kw-gray">Sistema Operacional</span> entrega os dados à aplicação que está <strong>escutando na <span class="kw kw-red">porta 80</span></strong>. Essa aplicação é o <span class="kw kw-gold">Servidor Web</span>.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">8</span> Processamento</span>
+            <h2>Passo 8 — O Servidor Processa a Requisição</h2>
+            <div class="scene">
+                <div class="node server" style="flex:1.1;"><span class="ni">⚙️</span><span class="nt">Servidor Web</span><span class="ns">interpreta o GET /</span></div>
+                <div class="arrow-col"><div class="bar"></div></div>
+                <div class="node" style="flex:1.4; border-color:#cbd4e0;">
+                    <span class="ns" style="text-align:left; line-height:1.6em;">
+                    📄 buscar um arquivo<br>
+                    🧩 executar uma aplicação (PHP, Node.js...)<br>
+                    🗃️ consultar dados (banco)<br>
+                    🛠️ montar a resposta</span>
+                </div>
+            </div>
+            <p>O <span class="kw kw-gold">Servidor Web</span> interpreta a requisição recebida, <strong>processa o pedido</strong> e recupera ou gera o recurso solicitado para preparar a resposta.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">9</span> Resposta</span>
+            <h2>Passo 9 — O Servidor Envia a Resposta HTTP</h2>
+            <div class="scene" style="align-items:center;">
+                <div style="flex:1.5;">
+                    <div class="ns" style="margin-bottom:4px; color:var(--ifsc-green); font-weight:700;">Resposta HTTP</div>
+                    <div class="msg-box resp" style="font-size:0.72em;">HTTP/1.1 200 OK<br>Content-Type: text/html<br><br>&lt;html&gt;...&lt;/html&gt;</div>
+                </div>
+                <div class="arrow-col">
+                    <div class="lbl">empacota e devolve</div>
+                    <div class="bar back"></div>
+                    <div class="lbl"><span class="kw kw-green">HTTP</span>→<span class="kw kw-green">TCP</span>→<span class="kw kw-gold">IP</span></div>
+                </div>
+                <div class="node client"><span class="ni">💻</span><span class="nt">Cliente</span></div>
+            </div>
+            <p>O servidor gera uma <span class="kw kw-green">Resposta HTTP</span> (linha de status + cabeçalhos + conteúdo HTML). Ela também é transportada pela rede sobre <span class="kw kw-green">TCP</span>/<span class="kw kw-gold">IP</span>.</p>
+        </section>
+
+        <section class="compact flow">
+            <span class="stage-tag"><span class="step-num">10</span> Renderização</span>
+            <h2>Passo 10 — O Navegador Renderiza a Página</h2>
+            <div class="scene" style="align-items:center;">
+                <div class="arrow-col" style="flex:0.7;"><div class="lbl"><span class="kw kw-green">Resposta HTTP</span></div><div class="bar back"></div></div>
+                <div class="node client" style="flex:1.6;">
+                    <span class="nt" style="margin-bottom:6px;">🖥️ Navegador</span>
+                    <span class="ns">interpreta o HTML e exibe a página →<br>depois busca CSS, imagens e JavaScript<br>(cada um é uma nova requisição)</span>
+                </div>
+            </div>
+            <p>O navegador recebe a <span class="kw kw-green">Resposta HTTP</span>, interpreta o conteúdo e faz a <span class="kw kw-gold">Renderização</span> da página para o usuário.</p>
+        </section>
+
+        <section class="compact">
+            <h2>HTTP e HTTPS</h2>
+            <p><span class="highlight">HTTP</span> (HyperText Transfer Protocol) é o conjunto de regras que define como cliente e servidor trocam mensagens na Web.</p>
+            <div class="cards">
+                <div class="card">
+                    <h3>HTTP</h3>
+                    <p>Texto trafega <strong>em claro</strong> — pode ser lido/alterado por terceiros.</p>
+                    <p>Porta padrão <strong>80</strong>.</p>
+                </div>
+                <div class="card" style="border-top-color: var(--ifsc-green);">
+                    <h3 style="color: var(--ifsc-green);">HTTPS 🔒</h3>
+                    <p>HTTP <strong>sobre TLS/SSL</strong>: tudo é criptografado.</p>
+                    <p>Garante <strong>sigilo, integridade e autenticidade</strong> (certificado).</p>
+                    <p>Porta padrão <strong>443</strong>. Hoje é o <strong>padrão</strong> da Web.</p>
+                </div>
+            </div>
+            <div class="formula-box small-text">
+                Uma mensagem HTTP sempre tem: <strong>linha inicial</strong> (método/URL ou status) + <strong>cabeçalhos</strong> (metadados) + <strong>corpo</strong> opcional (dados).
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Requisição × Resposta</h2>
+            <div class="two-col" style="align-items:flex-start;">
+                <div class="col-text">
+                    <h3 style="margin-top:0;">📤 Requisição</h3>
+                    <div class="formula-box mono" style="font-size:0.72em;">
+                        GET /produtos?id=10 HTTP/1.1<br>
+                        Host: www.exemplo.com.br<br>
+                        User-Agent: Mozilla/5.0<br>
+                        Accept: text/html<br><br>
+                        <span class="small-text">(corpo vazio em um GET)</span>
+                    </div>
+                </div>
+                <div class="col-text">
+                    <h3 style="margin-top:0;">📥 Resposta</h3>
+                    <div class="formula-box mono" style="font-size:0.72em; border-left-color: var(--ifsc-green);">
+                        HTTP/1.1 200 OK<br>
+                        Content-Type: text/html<br>
+                        Content-Length: 1024<br><br>
+                        &lt;html&gt;...&lt;/html&gt;
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Métodos (Verbos) HTTP</h2>
+            <p>O <strong>método</strong> diz qual <em>ação</em> o cliente quer realizar sobre o recurso:</p>
+            <table class="tbl">
+                <tr><th>Método</th><th>Ação</th><th>Exemplo de uso</th><th>Altera dados?</th></tr>
+                <tr><td><strong>GET</strong></td><td>Ler / buscar</td><td>Abrir uma página, listar produtos</td><td>Não</td></tr>
+                <tr><td><strong>POST</strong></td><td>Criar / enviar</td><td>Enviar formulário, cadastrar usuário</td><td>Sim</td></tr>
+                <tr><td><strong>PUT</strong></td><td>Substituir</td><td>Atualizar um registro inteiro</td><td>Sim</td></tr>
+                <tr><td><strong>PATCH</strong></td><td>Atualizar parcial</td><td>Mudar só o e-mail do usuário</td><td>Sim</td></tr>
+                <tr><td><strong>DELETE</strong></td><td>Remover</td><td>Apagar um produto</td><td>Sim</td></tr>
+            </table>
+            <div class="formula-box small-text">
+                Convenção <strong>REST</strong>: cada verbo mapeia uma operação <strong>CRUD</strong> (Create=POST, Read=GET, Update=PUT/PATCH, Delete=DELETE). GET nunca deve alterar o servidor.
+            </div>
+        </section>
+
+        <section class="compact">
+            <h2>Códigos de Status HTTP</h2>
+            <p>Toda resposta traz um número de 3 dígitos. O <strong>primeiro dígito</strong> indica a categoria:</p>
+            <div class="status-row"><span class="status-badge" style="background:#3498db;">1xx</span><span><strong>Informativo</strong> — requisição recebida, processo continua (raro no dia a dia).</span></div>
+            <div class="status-row"><span class="status-badge" style="background:var(--ifsc-green);">2xx</span><span><strong>Sucesso</strong> — <code>200 OK</code>, <code>201 Created</code>, <code>204 No Content</code>.</span></div>
+            <div class="status-row"><span class="status-badge" style="background:var(--accent-gold);">3xx</span><span><strong>Redirecionamento</strong> — <code>301 Moved Permanently</code>, <code>302 Found</code>.</span></div>
+            <div class="status-row"><span class="status-badge" style="background:#e67e22;">4xx</span><span><strong>Erro do cliente</strong> — <code>400 Bad Request</code>, <code>401 Unauthorized</code>, <code>403 Forbidden</code>, <code>404 Not Found</code>.</span></div>
+            <div class="status-row"><span class="status-badge" style="background:var(--accent-red);">5xx</span><span><strong>Erro do servidor</strong> — <code>500 Internal Server Error</code>, <code>502 Bad Gateway</code>, <code>503 Service Unavailable</code>.</span></div>
+            <div class="formula-box small-text">Dica de memorização: <strong>4xx a culpa é de quem pediu</strong>; <strong>5xx a culpa é de quem respondeu</strong>.</div>
+        </section>
+
+        <section class="compact" id="quiz-parte-5"><h2>Questionário — Como a Web Funciona</h2><p>Revise cliente-servidor, DNS, HTTP e o ciclo completo de uma requisição.</p>
+            <div class="quiz" data-quiz-id="ppi1-aula1-http">
+                <article class="quiz-question" data-question-id="ordem-fluxo">
+                    <div class="quiz-number">Questão 1 · objetiva</div>
+                    <p class="quiz-prompt">O que acontece imediatamente depois de o navegador descobrir o IP via DNS?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="monta-http" data-correct="true">Monta e envia a requisição HTTP</button>
+                        <button class="quiz-option" data-option-id="renderiza" data-feedback="A renderização só acontece depois que a resposta HTTP chega ao navegador — é o último passo do ciclo, não o primeiro depois do DNS.">Renderiza a página na tela</button>
+                        <button class="quiz-option" data-option-id="consulta-dns-de-novo" data-feedback="Uma vez resolvido o IP, o navegador não repete a consulta DNS — ele já pode montar e enviar a requisição.">Consulta o DNS outra vez para confirmar</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="porta-http">
+                    <div class="quiz-number">Questão 2 · objetiva</div>
+                    <p class="quiz-prompt">Por padrão, em qual porta um servidor Web escuta requisições HTTP (sem criptografia)?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="80" data-correct="true">Porta 80</button>
+                        <button class="quiz-option" data-option-id="53" data-feedback="A porta 53 é usada pelo DNS, para resolver nomes em IP — não pelo servidor Web.">Porta 53</button>
+                        <button class="quiz-option" data-option-id="443" data-feedback="A porta 443 é o padrão do HTTPS (HTTP com criptografia TLS). HTTP puro usa a porta 80.">Porta 443</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="status-4xx">
+                    <div class="quiz-number">Questão 3 · verdadeiro ou falso</div>
+                    <p class="quiz-prompt">Um código de status 404 indica um erro causado pelo servidor.</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="Códigos 4xx são erros do cliente (ex.: pediu um recurso que não existe). Erros do servidor são a faixa 5xx, como 500 Internal Server Error.">Verdadeiro</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+                <article class="quiz-question" data-question-id="metodo-post">
+                    <div class="quiz-number">Questão 4 · objetiva</div>
+                    <p class="quiz-prompt">Qual método HTTP é o mais adequado para enviar um formulário de cadastro?</p>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="post" data-correct="true">POST</button>
+                        <button class="quiz-option" data-option-id="get" data-feedback="GET é para leitura/busca e não deveria alterar dados no servidor. Criar um novo cadastro é uma operação de escrita.">GET</button>
+                        <button class="quiz-option" data-option-id="delete" data-feedback="DELETE remove um recurso existente — o oposto de criar um novo cadastro.">DELETE</button>
+                    </div>
+                    <div class="quiz-result" aria-live="polite"></div>
+                </article>
+            </div><div class="quiz-progress"></div></section>
+
+        <!-- ===================== ENCERRAMENTO ===================== -->
+        <section class="compact">
+            <h2>Recapitulando</h2>
+            <ul class="icon-list">
+                <li><span class="ic">▸</span>A <strong>Internet</strong> nasceu na Guerra Fria (ARPANET, 1969); a <strong>Web</strong> nasceu 20 anos depois, no CERN (1989-91) — são camadas diferentes.</li>
+                <li><span class="ic">▸</span>O <strong>W3C</strong> mantém os padrões abertos que fazem HTML, CSS e APIs da Web funcionarem igual em qualquer navegador.</li>
+                <li><span class="ic">▸</span>De páginas estáticas evoluímos para back-end dinâmico: <strong>PHP</strong> (1995) e, depois, <strong>JavaScript no servidor</strong> com <strong>Node.js</strong> (2009).</li>
+                <li><span class="ic">▸</span>A Web funciona no modelo <strong>cliente-servidor</strong>: URL → DNS → requisição HTTP → processamento → resposta → renderização.</li>
+                <li><span class="ic">▸</span><strong>Métodos</strong> dizem a ação (GET, POST, PUT, DELETE); <strong>status</strong> dizem o resultado (2xx ok, 4xx cliente, 5xx servidor).</li>
+            </ul>
+        </section>
+
+        <section class="compact">
+            <h2>Referências</h2>
+            <ul style="font-size:0.9em; line-height:1.5em;">
+                <li>MDN Web Docs. <em>Visão geral do HTTP</em>. developer.mozilla.org/pt-BR/docs/Web/HTTP.</li>
+                <li>MDN Web Docs. <em>Como a Web funciona</em>. developer.mozilla.org/pt-BR/docs/Learn/Getting_started_with_the_web.</li>
+                <li>W3C. <em>W3C Mission</em>. w3.org/Consortium/mission.</li>
+                <li>FIELDING, R. et al. <em>RFC 7230–7235: HTTP/1.1</em>. IETF, 2014.</li>
+                <li>KUROSE, J. F.; ROSS, K. W. <em>Redes de Computadores e a Internet</em>. 8. ed. Pearson, 2021.</li>
+                <li>W3C / CERN. <em>A Short History of the Web</em>. home.cern/science/computing/birth-web.</li>
+            </ul>
+        </section>
+
+        <section style="text-align:center;">
+            <h2 style="border:none;">Próxima aula</h2>
+            <p style="font-size:1.1em; margin-top:20px;"><strong>Encontro 2</strong></p>
+            <p style="font-size:1.05em;">Estrutura de uma página com <span class="highlight">HTML</span></p>
+            <p class="small-text" style="margin-top:30px;">Traga o site do W3C/MDN salvo nos favoritos — vamos usá-lo como referência o semestre inteiro.</p>
+        </section>
+
+    </div>
+</div>
+
+<div class="quiz-modal" id="quizFeedbackModal" role="dialog" aria-modal="true" aria-labelledby="quizModalTitle" aria-describedby="quizModalText">
+    <div class="quiz-modal-card">
+        <h3 id="quizModalTitle">Ainda não</h3>
+        <p id="quizModalText"></p>
+        <button class="quiz-modal-close" type="button">Entendi, tentar novamente</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        transition: 'fade',
+        slideNumber: 'c/t',
+        width: 1100,
+        height: 800,
+        margin: 0.02,
+        minScale: 0.2,
+        maxScale: 1.5,
+        plugins: [ RevealHighlight ]
+    });
+
+    // Rede de segurança contra transbordamento: se o conteúdo de um slide passar da altura
+    // útil (800px), reduz progressivamente a fonte daquele slide até caber.
+    (function () {
+        const SLIDE_H = 800;
+        function fit(slide) {
+            if (!slide) return;
+            slide.style.fontSize = '';
+            let scale = 1;
+            for (let i = 0; i < 12 && slide.scrollHeight > SLIDE_H; i++) {
+                scale -= 0.04;
+                slide.style.fontSize = (scale * (slide.classList.contains('compact') ? 0.80 : 1)) + 'em';
+            }
+        }
+        Reveal.on('ready', e => fit(e.currentSlide));
+        Reveal.on('slidechanged', e => fit(e.currentSlide));
+        window.addEventListener('resize', () => fit(Reveal.getCurrentSlide()));
+    })();
+
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', () => setTimeout(() => window.print(), 800));
+    }
+
+    // --- Simulação: Arquitetura Cliente-Servidor, passo a passo ---
+    (function () {
+        const root = document.getElementById('cs-sim');
+        if (!root) return;
+
+        const urlEl      = document.getElementById('cs-url');
+        const clientBox  = document.getElementById('cs-client-box');
+        const browserBody= document.getElementById('cs-browser-body');
+        const osTag      = document.getElementById('cs-os-tag');
+        const serverBox  = document.getElementById('cs-server-box');
+        const docroot    = document.getElementById('cs-docroot');
+        const dnsBox     = document.getElementById('cs-dns-box');
+        const dnsNs      = document.getElementById('cs-dns-ns');
+        const midLbl     = document.getElementById('cs-mid-lbl');
+        const packet     = document.getElementById('cs-packet');
+        const packetInner= document.getElementById('cs-packet-inner');
+        const capEl      = document.getElementById('csCaption');
+        const posEl      = document.getElementById('csPos');
+        const btnPrev    = document.getElementById('csPrev');
+        const btnNext    = document.getElementById('csNext');
+        const btnAll     = document.getElementById('csAll');
+        const btnReset   = document.getElementById('csReset');
+
+        const URL_TEXT = 'www.exemplo.com';
+
+        // Cada passo é declarativo: o que fica ativo/visível em cada lado, o texto do
+        // pacote central (se houver) e a legenda. `render()` interpreta esse estado —
+        // não há nada de específico de HTML/URL hardcoded fora daqui.
+        const STEPS = [
+            {
+                cap: 'O navegador está aberto, sem nenhuma página carregada. Tudo começa quando o usuário digita um endereço.',
+                url: '', urlTyping: false, browser: 'página em branco', browserLoaded: false,
+                osActive: false, dnsShow: false, dnsActive: false, dnsNs: 'porta 53',
+                serverActive: false, docrootActive: false, packet: null, mid: 'Clique em <b>avançar</b> para começar.'
+            },
+            {
+                cap: 'O usuário <b>digita a URL</b> na barra de endereço do navegador.',
+                url: URL_TEXT, urlTyping: true, browser: 'página em branco', browserLoaded: false,
+                osActive: false, dnsShow: false, dnsActive: false, dnsNs: 'porta 53',
+                serverActive: false, docrootActive: false, packet: null, mid: 'digitando <code>' + URL_TEXT + '</code>...'
+            },
+            {
+                cap: 'O usuário pressiona <b>Enter</b>. O navegador repassa o endereço para o <b>Sistema Operacional</b>, que vai descobrir o IP correspondente.',
+                url: URL_TEXT, urlTyping: false, browser: 'página em branco', browserLoaded: false,
+                osActive: true, dnsShow: false, dnsActive: false, dnsNs: 'porta 53',
+                serverActive: false, docrootActive: false, packet: null, mid: 'Enter ↵ — navegador aciona o <b>SO</b>'
+            },
+            {
+                cap: 'O Sistema Operacional faz uma <b>consulta DNS</b>: "qual o IP de <code>' + URL_TEXT + '</code>?" — usando a <b>porta 53</b>.',
+                url: URL_TEXT, urlTyping: false, browser: 'página em branco', browserLoaded: false,
+                osActive: true, dnsShow: true, dnsActive: true, dnsNs: 'consultando...',
+                serverActive: false, docrootActive: false,
+                packet: { dir: 'toDns', text: 'Qual o IP?' }, mid: 'SO → <b>Servidor DNS</b> (porta 53)'
+            },
+            {
+                cap: 'O DNS responde com o <b>endereço IP</b> do servidor. Agora o Sistema Operacional já sabe para onde mandar a requisição.',
+                url: URL_TEXT, urlTyping: false, browser: 'página em branco', browserLoaded: false,
+                osActive: true, dnsShow: true, dnsActive: true, dnsNs: '203.0.113.10',
+                serverActive: false, docrootActive: false,
+                packet: { dir: 'fromDns', text: '203.0.113.10' }, mid: '<b>Servidor DNS</b> → SO: IP encontrado'
+            },
+            {
+                cap: 'O navegador monta a mensagem <b>HTTP</b> (<code>GET /</code>) e o SO a encapsula em <b>TCP</b> e depois em <b>IP</b> — o pacote que de fato viaja pela rede.',
+                url: URL_TEXT, urlTyping: false, browser: 'página em branco', browserLoaded: false,
+                osActive: true, dnsShow: true, dnsActive: false, dnsNs: '203.0.113.10',
+                serverActive: false, docrootActive: false,
+                packet: { dir: 'toServer', stack: true, text: 'GET /' }, mid: 'Pacote IP monta-se: <b>HTTP</b> → <b>TCP</b> → <b>IP</b>'
+            },
+            {
+                cap: 'O pacote chega ao <b>Servidor Web</b>, que desencapsula as camadas, interpreta o pedido e busca o arquivo em <code>DOCUMENT_ROOT</code>.',
+                url: URL_TEXT, urlTyping: false, browser: 'página em branco', browserLoaded: false,
+                osActive: false, dnsShow: true, dnsActive: false, dnsNs: '203.0.113.10',
+                serverActive: true, docrootActive: true, packet: null, mid: 'Servidor processa: <b>GET /</b> → <code>index.html</code>'
+            },
+            {
+                cap: 'O servidor <b>encapsula o HTML</b> numa resposta HTTP (<code>200 OK</code>) e a envia de volta ao cliente.',
+                url: URL_TEXT, urlTyping: false, browser: 'página em branco', browserLoaded: false,
+                osActive: false, dnsShow: true, dnsActive: false, dnsNs: '203.0.113.10',
+                serverActive: true, docrootActive: true,
+                packet: { dir: 'toClient', stack: true, resp: true, text: '200 OK' }, mid: 'Resposta: <b>HTTP</b> → <b>TCP</b> → <b>IP</b>, de volta ao cliente'
+            },
+            {
+                cap: 'O navegador recebe a resposta e <b>renderiza</b> o HTML na tela. Fim do ciclo — cada CSS, imagem ou script vira uma nova requisição, do mesmo jeito.',
+                url: URL_TEXT, urlTyping: false, browser: '✅ página carregada!', browserLoaded: true,
+                osActive: false, dnsShow: true, dnsActive: false, dnsNs: '203.0.113.10',
+                serverActive: false, docrootActive: false, packet: null, mid: '<b>Renderização</b> concluída no navegador'
+            }
+        ];
+
+        let idx = -1, autoTimer = null, typeTimer = null;
+
+        function stopTyping() { if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; } }
+        function stopAuto() { if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; } stopTyping(); }
+
+        function setPacket(p) {
+            if (!p) { packet.classList.remove('cs-show'); return; }
+            packet.classList.toggle('cs-resp', !!p.resp);
+            packetInner.innerHTML = p.stack
+                ? '<div class="cs-stack-mini"><div class="csl ip">IP</div><div class="csl tcp">TCP</div><div class="csl http">' + p.text + '</div></div>'
+                : p.text;
+
+            // posiciona sem transição no ponto de partida, força reflow, depois anima até o destino
+            packet.style.transition = 'none';
+            const from = { toDns: '18%', fromDns: '82%', toServer: '8%', toClient: '92%' }[p.dir];
+            const to   = { toDns: '82%', fromDns: '18%', toServer: '92%', toClient: '8%' }[p.dir];
+            packet.style.left = from;
+            packet.classList.add('cs-show');
+            void packet.offsetWidth;
+            packet.style.transition = '';
+            requestAnimationFrame(() => { packet.style.left = to; });
+        }
+
+        function renderUrl(text, animate) {
+            stopTyping();
+            if (!animate || !text) {
+                urlEl.innerHTML = text ? text : '<span class="cs-cursor">&nbsp;</span>';
+                return;
+            }
+            let i = 0;
+            (function tick() {
+                const shown = text.slice(0, i);
+                urlEl.innerHTML = shown + '<span class="cs-cursor">&nbsp;</span>';
+                if (i < text.length) { i++; typeTimer = setTimeout(tick, 55); }
+            })();
+        }
+
+        function render(animateLast) {
+            const st = idx >= 0 ? STEPS[idx] : STEPS[0];
+
+            renderUrl(st.url, animateLast && st.urlTyping);
+
+            browserBody.textContent = st.browser;
+            browserBody.classList.toggle('cs-loaded', st.browserLoaded);
+            clientBox.classList.toggle('cs-active', st.osActive || st.urlTyping);
+            osTag.classList.toggle('cs-active', st.osActive);
+
+            dnsBox.classList.toggle('cs-show', st.dnsShow);
+            dnsBox.classList.toggle('cs-active', st.dnsActive);
+            dnsNs.textContent = st.dnsNs;
+
+            serverBox.classList.toggle('cs-active', st.serverActive);
+            docroot.classList.toggle('cs-active', st.docrootActive);
+
+            midLbl.innerHTML = st.mid;
+            setPacket(st.packet);
+
+            capEl.innerHTML = st.cap;
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx <= 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled = idx >= STEPS.length - 1;
+        }
+
+        function go(to, animate) {
+            idx = Math.max(0, Math.min(STEPS.length - 1, to));
+            render(animate);
+        }
+        function next()  { stopAuto(); go(idx + 1, true); }
+        function prev()  { stopAuto(); go(idx - 1, false); }
+        function reset() { stopAuto(); go(0, false); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1, true);
+                autoTimer = setTimeout(tick, 2000);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', reset);
+
+        go(0, false);
+    })();
+
+    // --- Mini-timeline da História (Internet + Web, 1 bloco por marco) ---
+    (function () {
+        const marcos = ['Sputnik/ARPA', 'Licklider', 'ARPANET', 'TCP/IP/NSFNET', 'Proposta 1989', 'HTML/URL/HTTP', '1ª página 1991', 'Mosaic/W3C', 'JS/CSS', 'Web 2.0/Hoje'];
+        const html = (atual) => marcos.map((_, i) => {
+            let cls = 'pt';
+            if (atual !== null) {
+                if (i < atual) cls += ' done';
+                else if (i === atual) cls += ' on';
+            }
+            return `<span class="${cls}"><span class="d"></span></span>`;
+        }).join('');
+
+        const intro = document.getElementById('tlIntro');
+        if (intro) intro.innerHTML = html(null);
+
+        document.querySelectorAll('section[data-hist]').forEach(sec => {
+            const i = parseInt(sec.dataset.hist, 10);
+            const tl = sec.querySelector('.mini-tl');
+            if (tl) tl.innerHTML = html(i);
+            const lbl = sec.querySelector('.mini-tl-label');
+            if (lbl) lbl.textContent = marcos[i];
+        });
+    })();
+
+    // Motor generico de questionarios. O HTML declara apenas ids, resposta correta e
+    // explicacoes; comportamento e persistencia ficam desacoplados do conteudo.
+    (function () {
+        const STORAGE_PREFIX = 'ppi1-aula1.quiz.v1.';
+        const modal = document.getElementById('quizFeedbackModal');
+        const modalText = document.getElementById('quizModalText');
+        const modalClose = modal.querySelector('.quiz-modal-close');
+        let returnFocus = null;
+
+        function readState(quizId) {
+            try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + quizId)) || {}; }
+            catch (_) { return {}; }
+        }
+        function writeState(quizId, state) {
+            try { localStorage.setItem(STORAGE_PREFIX + quizId, JSON.stringify(state)); }
+            catch (_) { /* O questionario continua funcional se o armazenamento for bloqueado. */ }
+        }
+        function openFeedback(message, trigger) {
+            returnFocus = trigger;
+            modalText.textContent = message;
+            modal.classList.add('open');
+            modalClose.focus();
+        }
+        function closeFeedback() {
+            modal.classList.remove('open');
+            if (returnFocus) returnFocus.focus();
+        }
+        modalClose.addEventListener('click', closeFeedback);
+        modal.addEventListener('click', event => { if (event.target === modal) closeFeedback(); });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && modal.classList.contains('open')) {
+                event.stopPropagation();
+                closeFeedback();
+            }
+        }, true);
+
+        document.querySelectorAll('[data-quiz-id]').forEach(quiz => {
+            const quizId = quiz.dataset.quizId;
+            const state = readState(quizId);
+            const questions = Array.from(quiz.querySelectorAll('[data-question-id]'));
+            const progress = quiz.closest('section').querySelector('.quiz-progress');
+
+            function updateProgress() {
+                const hits = questions.filter(question => question.classList.contains('correct')).length;
+                progress.textContent = hits === questions.length
+                    ? 'Concluído: todas as respostas estão corretas.'
+                    : `${hits} de ${questions.length} questões concluídas`;
+            }
+
+            questions.forEach(question => {
+                const questionId = question.dataset.questionId;
+                const saved = state[questionId] || { wrong: [], correct: false };
+                const result = question.querySelector('.quiz-result');
+                const options = Array.from(question.querySelectorAll('.quiz-option'));
+                const reset = document.createElement('button');
+                reset.type = 'button';
+                reset.className = 'quiz-reset';
+                reset.textContent = '↶ Desfazer';
+                reset.setAttribute('aria-label', 'Desfazer respostas desta questão');
+                question.appendChild(reset);
+
+                reset.addEventListener('click', event => {
+                    event.stopPropagation();
+                    delete state[questionId];
+                    writeState(quizId, state);
+                    question.classList.remove('correct');
+                    options.forEach(option => {
+                        option.classList.remove('wrong', 'right');
+                        option.disabled = false;
+                    });
+                    result.textContent = '';
+                    updateProgress();
+                });
+
+                saved.wrong.forEach(optionId => {
+                    const option = options.find(item => item.dataset.optionId === optionId);
+                    if (option) option.classList.add('wrong');
+                });
+                if (saved.correct) {
+                    const right = options.find(item => item.dataset.correct === 'true');
+                    question.classList.add('correct');
+                    if (right) right.classList.add('right');
+                    options.forEach(item => item.disabled = !item.classList.contains('wrong'));
+                    result.textContent = '✓ Correto!';
+                }
+
+                options.forEach(option => option.addEventListener('click', event => {
+                    event.stopPropagation();
+                    if (option.classList.contains('wrong')) {
+                        openFeedback(option.dataset.feedback, option);
+                        return;
+                    }
+                    if (question.classList.contains('correct')) return;
+                    const current = state[questionId] || { wrong: [], correct: false };
+
+                    if (option.dataset.correct === 'true') {
+                        current.correct = true;
+                        question.classList.add('correct');
+                        option.classList.add('right');
+                        options.forEach(item => item.disabled = !item.classList.contains('wrong'));
+                        result.textContent = '✓ Correto! Muito bem.';
+                    } else {
+                        if (!current.wrong.includes(option.dataset.optionId)) current.wrong.push(option.dataset.optionId);
+                        option.classList.add('wrong');
+                        result.textContent = 'Essa tentativa foi marcada. Escolha outra alternativa.';
+                        openFeedback(option.dataset.feedback, option);
+                    }
+                    state[questionId] = current;
+                    writeState(quizId, state);
+                    updateProgress();
+                }));
+            });
+            updateProgress();
+        });
+    })();
+</script>
+</body>
+</html>
