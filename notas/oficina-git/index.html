@@ -1111,9 +1111,9 @@
                     <div class="quiz-number">Questão 1 · objetiva</div>
                     <p class="quiz-prompt">Onde fica o histórico principal em um sistema de controle de versão centralizado?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="cada-maquina" data-feedback="Nos sistemas centralizados, as máquinas dos desenvolvedores mantêm principalmente cópias de trabalho. O histórico principal pertence ao servidor central.">Em uma cópia completa na máquina de cada pessoa</button>
-                        <button class="quiz-option" data-option-id="servidor" data-correct="true">Em um servidor central compartilhado</button>
-                        <button class="quiz-option" data-option-id="arquivos" data-feedback="Arquivos numerados podem ser uma tentativa manual de guardar versões, mas não constituem o histórico de um sistema de controle de versão.">Em arquivos numerados enviados por e-mail</button>
+                        <button class="quiz-option" data-option-id="arquivos" data-feedback="Arquivos numerados podem ser uma tentativa manual de guardar versões, mas não constituem o histórico de um sistema de controle de versão.">(a) Em arquivos numerados enviados por e-mail</button>
+                        <button class="quiz-option" data-option-id="cada-maquina" data-feedback="Nos sistemas centralizados, as máquinas dos desenvolvedores mantêm principalmente cópias de trabalho. O histórico principal pertence ao servidor central.">(b) Em uma cópia completa na máquina de cada pessoa</button>
+                        <button class="quiz-option" data-option-id="servidor" data-correct="true">(c) Em um servidor central compartilhado</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1122,8 +1122,8 @@
                     <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
                     <p class="quiz-prompt">Sem conexão com o servidor, um desenvolvedor consegue registrar normalmente um commit no histórico central.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O commit precisa alcançar o repositório central. Sem conexão, a alteração pode ficar na cópia de trabalho, mas ainda não entra no histórico compartilhado.">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O commit precisa alcançar o repositório central. Sem conexão, a alteração pode ficar na cópia de trabalho, mas ainda não entra no histórico compartilhado.">(a) Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">(b) Falso</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1132,9 +1132,9 @@
                     <div class="quiz-number">Questão 3 · objetiva</div>
                     <p class="quiz-prompt">Qual limitação decorre diretamente da dependência de um servidor central?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="arquivos-apagados" data-feedback="O modelo centralizado não apaga automaticamente os arquivos locais. O problema é perder acesso às operações que dependem do servidor.">Todos os arquivos locais são apagados</button>
-                        <button class="quiz-option" data-option-id="operacoes-indisponiveis" data-correct="true">Operações que dependem do histórico ficam indisponíveis</button>
-                        <button class="quiz-option" data-option-id="sem-equipe" data-feedback="Esses sistemas foram criados justamente para permitir trabalho em equipe. A limitação é a dependência do ponto central e da conexão com ele.">O trabalho em equipe se torna impossível</button>
+                        <button class="quiz-option" data-option-id="operacoes-indisponiveis" data-correct="true">(a) Operações que dependem do histórico ficam indisponíveis</button>
+                        <button class="quiz-option" data-option-id="sem-equipe" data-feedback="Esses sistemas foram criados justamente para permitir trabalho em equipe. A limitação é a dependência do ponto central e da conexão com ele.">(b) O trabalho em equipe se torna impossível</button>
+                        <button class="quiz-option" data-option-id="arquivos-apagados" data-feedback="O modelo centralizado não apaga automaticamente os arquivos locais. O problema é perder acesso às operações que dependem do servidor.">(c) Todos os arquivos locais são apagados</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1301,9 +1301,9 @@
                     <div class="quiz-number">Questão 1 · objetiva</div>
                     <p class="quiz-prompt">O que cada desenvolvedor recebe ao clonar um repositório distribuído?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="arquivo-atual" data-feedback="Uma cópia apenas do estado atual é característica associada ao modelo centralizado apresentado. Em um DVCS, o clone também traz o histórico do projeto.">Somente a versão atual dos arquivos</button>
-                        <button class="quiz-option" data-option-id="historico-completo" data-correct="true">Uma cópia do repositório com seu histórico</button>
-                        <button class="quiz-option" data-option-id="atalho-servidor" data-feedback="O clone não é apenas um atalho para o servidor. Ele cria um repositório local que permite consultar o histórico e registrar commits sem conexão.">Apenas um atalho para o servidor central</button>
+                        <button class="quiz-option" data-option-id="atalho-servidor" data-feedback="O clone não é apenas um atalho para o servidor. Ele cria um repositório local que permite consultar o histórico e registrar commits sem conexão.">(a) Apenas um atalho para o servidor central</button>
+                        <button class="quiz-option" data-option-id="historico-completo" data-correct="true">(b) Uma cópia do repositório com seu histórico</button>
+                        <button class="quiz-option" data-option-id="arquivo-atual" data-feedback="Uma cópia apenas do estado atual é característica associada ao modelo centralizado apresentado. Em um DVCS, o clone também traz o histórico do projeto.">(c) Somente a versão atual dos arquivos</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1312,8 +1312,8 @@
                     <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
                     <p class="quiz-prompt">Em um sistema distribuído, operações como commit, diff e consulta ao histórico podem funcionar sem conexão com a rede.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-feedback="Essas operações usam o repositório armazenado na própria máquina. A rede será necessária posteriormente para trocar commits com outros repositórios.">Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">(a) Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="Essas operações usam o repositório armazenado na própria máquina. A rede será necessária posteriormente para trocar commits com outros repositórios.">(b) Falso</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1322,9 +1322,9 @@
                     <div class="quiz-number">Questão 3 · objetiva</div>
                     <p class="quiz-prompt">Qual é o papel de um servidor em um sistema distribuído?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="unico-historico" data-feedback="O histórico não vive exclusivamente no servidor: cada clone possui seu próprio repositório. Isso elimina a dependência de um único dono técnico do histórico.">Ser o único lugar onde o histórico existe</button>
-                        <button class="quiz-option" data-option-id="todo-commit" data-feedback="Commits são registrados primeiro no repositório local e não precisam passar imediatamente por um servidor.">Autorizar e registrar obrigatoriamente todo commit</button>
-                        <button class="quiz-option" data-option-id="ponto-encontro" data-correct="true">Servir como ponto de encontro para sincronização</button>
+                        <button class="quiz-option" data-option-id="unico-historico" data-feedback="O histórico não vive exclusivamente no servidor: cada clone possui seu próprio repositório. Isso elimina a dependência de um único dono técnico do histórico.">(a) Ser o único lugar onde o histórico existe</button>
+                        <button class="quiz-option" data-option-id="ponto-encontro" data-correct="true">(b) Servir como ponto de encontro para sincronização</button>
+                        <button class="quiz-option" data-option-id="todo-commit" data-feedback="Commits são registrados primeiro no repositório local e não precisam passar imediatamente por um servidor.">(c) Autorizar e registrar obrigatoriamente todo commit</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1480,10 +1480,10 @@
             <div class="quiz quiz-inline" data-quiz-id="modelo-commits">
                 <article class="quiz-question" data-question-id="conteudo-commit">
                     <div class="quiz-number">Pergunta rápida · verdadeiro ou falso</div>
-                    <p class="quiz-prompt">Um commit contém apenas as diferenças e adições feitas em relação ao commit anterior.</p>
+                    <p class="quiz-prompt">Um commit é uma fotografia completa do estado do projeto, embora internamente, por otimização, contenha apenas as diferenças em relação ao commit anterior.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="Conceitualmente, o Git registra cada commit como uma fotografia completa do estado do projeto. Ele pode usar deltas e compressão internamente para economizar espaço, mas isso é apenas um detalhe de armazenamento.">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="Conceitualmente, o Git registra cada commit como uma fotografia completa do estado do projeto — é assim que ele deve ser entendido e usado. O armazenamento em deltas e compressão é apenas uma otimização interna, transparente para quem usa o Git.">(a) Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">(b) Verdadeiro</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1491,8 +1491,8 @@
                     <div class="quiz-number">Pergunta rápida · verdadeiro ou falso</div>
                     <p class="quiz-prompt">Para reconstruir o estado do projeto no commit C3, o Git precisa acessar a árvore de objetos referenciada por esse commit.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-feedback="C3 aponta para uma árvore que descreve os diretórios e arquivos daquele estado. O Git usa essa árvore e os objetos referenciados por ela para reconstruir o projeto. O branch apenas aponta para um commit e não contém os arquivos.">Falso</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="C3 aponta para uma árvore que descreve os diretórios e arquivos daquele estado. O Git usa essa árvore e os objetos referenciados por ela para reconstruir o projeto. O branch apenas aponta para um commit e não contém os arquivos.">(a) Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">(b) Verdadeiro</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1542,9 +1542,9 @@
                     <div class="quiz-number">Questão 1 · objetiva</div>
                     <p class="quiz-prompt">Em qual região estão os arquivos que você vê e edita diretamente no disco?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="working-tree" data-correct="true">Working Tree</button>
-                        <button class="quiz-option" data-option-id="staging" data-feedback="A Staging Area guarda as mudanças selecionadas; ela não é o local onde você edita diretamente os arquivos.">Staging Area</button>
-                        <button class="quiz-option" data-option-id="git-dir" data-feedback="A pasta .git guarda os dados de controle de versão. Os arquivos visíveis e editáveis do projeto estão na Working Tree.">Pasta <code>.git</code></button>
+                        <button class="quiz-option" data-option-id="git-dir" data-feedback="A pasta .git guarda os dados de controle de versão. Os arquivos visíveis e editáveis do projeto estão na Working Tree.">(a) Pasta <code>.git</code></button>
+                        <button class="quiz-option" data-option-id="staging" data-feedback="A Staging Area guarda as mudanças selecionadas; ela não é o local onde você edita diretamente os arquivos.">(b) Staging Area</button>
+                        <button class="quiz-option" data-option-id="working-tree" data-correct="true">(c) Working Tree</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1553,9 +1553,9 @@
                     <div class="quiz-number">Questão 2 · objetiva</div>
                     <p class="quiz-prompt">No modelo apresentado, qual movimento representa o comando <code>git add</code>?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="wt-stage" data-correct="true">Working Tree → Staging Area</button>
-                        <button class="quiz-option" data-option-id="stage-wt" data-feedback="Esse é o sentido inverso. O git add seleciona mudanças da Working Tree e as coloca na Staging Area.">Staging Area → Working Tree</button>
-                        <button class="quiz-option" data-option-id="somente-wt" data-feedback="O arquivo continua existindo na Working Tree, mas o git add também registra sua versão selecionada na Staging Area.">Permanece somente na Working Tree</button>
+                        <button class="quiz-option" data-option-id="wt-stage" data-correct="true">(a) Working Tree → Staging Area</button>
+                        <button class="quiz-option" data-option-id="somente-wt" data-feedback="O arquivo continua existindo na Working Tree, mas o git add também registra sua versão selecionada na Staging Area.">(b) Permanece somente na Working Tree</button>
+                        <button class="quiz-option" data-option-id="stage-wt" data-feedback="Esse é o sentido inverso. O git add seleciona mudanças da Working Tree e as coloca na Staging Area.">(c) Staging Area → Working Tree</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1564,8 +1564,8 @@
                     <div class="quiz-number">Questão 3 · verdadeiro ou falso</div>
                     <p class="quiz-prompt">Depois de executar <code>git add</code>, a alteração deixa de existir na Working Tree.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O git add não move nem apaga o arquivo original. Ele registra na Staging Area uma versão das mudanças selecionadas, enquanto o arquivo continua na Working Tree.">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O git add não move nem apaga o arquivo original. Ele registra na Staging Area uma versão das mudanças selecionadas, enquanto o arquivo continua na Working Tree.">(a) Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">(b) Falso</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1574,9 +1574,9 @@
                     <div class="quiz-number">Questão 4 · objetiva</div>
                     <p class="quiz-prompt">Qual é o papel da Staging Area no ciclo apresentado?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="historico-definitivo" data-feedback="A Staging Area é temporária e pode ser alterada com novos comandos git add. Ela não representa um registro definitivo do histórico.">Guardar definitivamente todo o histórico</button>
-                        <button class="quiz-option" data-option-id="mudancas-selecionadas" data-correct="true">Guardar as mudanças selecionadas com <code>git add</code></button>
-                        <button class="quiz-option" data-option-id="editar-arquivos" data-feedback="Os arquivos são editados diretamente na Working Tree. A Staging Area recebe as mudanças selecionadas com git add.">Editar diretamente os arquivos do projeto</button>
+                        <button class="quiz-option" data-option-id="editar-arquivos" data-feedback="Os arquivos são editados diretamente na Working Tree. A Staging Area recebe as mudanças selecionadas com git add.">(a) Editar diretamente os arquivos do projeto</button>
+                        <button class="quiz-option" data-option-id="historico-definitivo" data-feedback="A Staging Area é temporária e pode ser alterada com novos comandos git add. Ela não representa um registro definitivo do histórico.">(b) Guardar definitivamente todo o histórico</button>
+                        <button class="quiz-option" data-option-id="mudancas-selecionadas" data-correct="true">(c) Guardar as mudanças selecionadas com <code>git add</code></button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1585,9 +1585,9 @@
                     <div class="quiz-number">Questão 5 · objetiva</div>
                     <p class="quiz-prompt">Qual é o principal efeito de executar <code>git init</code> em uma pasta?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="cria-git" data-correct="true">Criar a estrutura de controle na pasta <code>.git</code></button>
-                        <button class="quiz-option" data-option-id="apaga-arquivos" data-feedback="O git init não apaga os arquivos existentes. Ele adiciona à pasta a estrutura interna usada pelo Git.">Apagar os arquivos que já existem</button>
-                        <button class="quiz-option" data-option-id="seleciona-tudo" data-feedback="Criar a estrutura do Git não seleciona automaticamente os arquivos existentes. A seleção de mudanças é uma etapa separada.">Selecionar automaticamente todos os arquivos</button>
+                        <button class="quiz-option" data-option-id="cria-git" data-correct="true">(a) Criar a estrutura de controle na pasta <code>.git</code></button>
+                        <button class="quiz-option" data-option-id="seleciona-tudo" data-feedback="Criar a estrutura do Git não seleciona automaticamente os arquivos existentes. A seleção de mudanças é uma etapa separada.">(b) Selecionar automaticamente todos os arquivos</button>
+                        <button class="quiz-option" data-option-id="apaga-arquivos" data-feedback="O git init não apaga os arquivos existentes. Ele adiciona à pasta a estrutura interna usada pelo Git.">(c) Apagar os arquivos que já existem</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1596,8 +1596,8 @@
                     <div class="quiz-number">Questão 6 · verdadeiro ou falso</div>
                     <p class="quiz-prompt">O comando <code>git status</code> altera os arquivos ou a Staging Area ao mostrar a situação atual.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O git status é um comando de consulta: ele descreve o estado atual sem modificar os arquivos nem a Staging Area.">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">(a) Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="O git status é um comando de consulta: ele descreve o estado atual sem modificar os arquivos nem a Staging Area.">(b) Verdadeiro</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1720,9 +1720,9 @@
                     <div class="quiz-number">Questão 1 · objetiva</div>
                     <p class="quiz-prompt">O que o comando <code>git diff</code> compara por padrão?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="wt-stage" data-correct="true">Working Tree × Staging Area</button>
-                        <button class="quiz-option" data-option-id="stage-commit" data-feedback="Staging Area × último commit é a comparação feita por git diff --staged. Sem essa opção, git diff observa as mudanças ainda não preparadas.">Staging Area × último commit</button>
-                        <button class="quiz-option" data-option-id="commits" data-feedback="A comparação direta entre commits exige que eles sejam informados. O git diff sem argumentos compara Working Tree e Staging Area.">Dois commits do histórico</button>
+                        <button class="quiz-option" data-option-id="stage-commit" data-feedback="Staging Area × último commit é a comparação feita por git diff --staged. Sem essa opção, git diff observa as mudanças ainda não preparadas.">(a) Staging Area × último commit</button>
+                        <button class="quiz-option" data-option-id="wt-stage" data-correct="true">(b) Working Tree × Staging Area</button>
+                        <button class="quiz-option" data-option-id="commits" data-feedback="A comparação direta entre commits exige que eles sejam informados. O git diff sem argumentos compara Working Tree e Staging Area.">(c) Dois commits do histórico</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1731,9 +1731,9 @@
                     <div class="quiz-number">Questão 2 · objetiva</div>
                     <p class="quiz-prompt">O que <code>git diff --staged</code> permite visualizar?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="nao-preparadas" data-feedback="As mudanças que ainda não chegaram à Staging Area aparecem no git diff comum.">Mudanças ainda não preparadas</button>
-                        <button class="quiz-option" data-option-id="preparadas" data-correct="true">Mudanças preparadas em relação ao último commit</button>
-                        <button class="quiz-option" data-option-id="lista-historico" data-feedback="A listagem do histórico é responsabilidade de git log. O diff --staged mostra diferenças de conteúdo.">A lista completa do histórico</button>
+                        <button class="quiz-option" data-option-id="nao-preparadas" data-feedback="As mudanças que ainda não chegaram à Staging Area aparecem no git diff comum.">(a) Mudanças ainda não preparadas</button>
+                        <button class="quiz-option" data-option-id="preparadas" data-correct="true">(b) Mudanças preparadas em relação ao último commit</button>
+                        <button class="quiz-option" data-option-id="lista-historico" data-feedback="A listagem do histórico é responsabilidade de git log. O diff --staged mostra diferenças de conteúdo.">(c) A lista completa do histórico</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1742,8 +1742,8 @@
                     <div class="quiz-number">Questão 3 · verdadeiro ou falso</div>
                     <p class="quiz-prompt">Se <code>git diff</code> não produz saída, Working Tree e Staging Area não têm diferenças entre si.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-feedback="A ausência de saída significa que o par comparado pelo comando é igual. Ainda pode haver mudanças preparadas, visíveis com git diff --staged.">Falso</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="A ausência de saída significa que o par comparado pelo comando é igual. Ainda pode haver mudanças preparadas, visíveis com git diff --staged.">(a) Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">(b) Verdadeiro</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1752,9 +1752,9 @@
                     <div class="quiz-number">Questão 4 · objetiva</div>
                     <p class="quiz-prompt">Em que ordem o <code>git log</code> apresentou os commits?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="novo-antigo" data-correct="true">Do mais novo para o mais antigo</button>
-                        <button class="quiz-option" data-option-id="antigo-novo" data-feedback="No exemplo, git log parte de onde HEAD aponta e percorre os commits pais; por isso o mais recente aparece primeiro.">Do mais antigo para o mais novo</button>
-                        <button class="quiz-option" data-option-id="alfabetica" data-feedback="O histórico não é ordenado alfabeticamente pelas mensagens. Ele segue a cadeia de commits a partir de HEAD.">Em ordem alfabética</button>
+                        <button class="quiz-option" data-option-id="alfabetica" data-feedback="O histórico não é ordenado alfabeticamente pelas mensagens. Ele segue a cadeia de commits a partir de HEAD.">(a) Em ordem alfabética</button>
+                        <button class="quiz-option" data-option-id="antigo-novo" data-feedback="No exemplo, git log parte de onde HEAD aponta e percorre os commits pais; por isso o mais recente aparece primeiro.">(b) Do mais antigo para o mais novo</button>
+                        <button class="quiz-option" data-option-id="novo-antigo" data-correct="true">(c) Do mais novo para o mais antigo</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1763,8 +1763,8 @@
                     <div class="quiz-number">Questão 5 · verdadeiro ou falso</div>
                     <p class="quiz-prompt">Criar um branch significa copiar todos os arquivos e commits para uma nova pasta.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="Um branch é um ponteiro leve para um commit. Ao ser criado, ele aponta para o mesmo commit atual, sem copiar todo o projeto.">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-correct="true">Falso</button>
+                        <button class="quiz-option" data-option-id="falso" data-correct="true">(a) Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-feedback="Um branch é um ponteiro leve para um commit. Ao ser criado, ele aponta para o mesmo commit atual, sem copiar todo o projeto.">(b) Verdadeiro</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1773,9 +1773,9 @@
                     <div class="quiz-number">Questão 6 · objetiva</div>
                     <p class="quiz-prompt">No exemplo apresentado, para que foi usado <code>git switch</code>?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="trocar-branch" data-correct="true">Trocar o branch ativo</button>
-                        <button class="quiz-option" data-option-id="listar-log" data-feedback="A leitura do histórico foi feita com git log. O git switch altera qual branch está ativo.">Listar os commits do histórico</button>
-                        <button class="quiz-option" data-option-id="mostrar-diff" data-feedback="As diferenças de conteúdo são mostradas por git diff. O git switch foi usado para alternar entre branches.">Mostrar mudanças entre regiões</button>
+                        <button class="quiz-option" data-option-id="trocar-branch" data-correct="true">(a) Trocar o branch ativo</button>
+                        <button class="quiz-option" data-option-id="mostrar-diff" data-feedback="As diferenças de conteúdo são mostradas por git diff. O git switch foi usado para alternar entre branches.">(b) Mostrar mudanças entre regiões</button>
+                        <button class="quiz-option" data-option-id="listar-log" data-feedback="A leitura do histórico foi feita com git log. O git switch altera qual branch está ativo.">(c) Listar os commits do histórico</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1789,7 +1789,10 @@
             <p>Observe o estado final construído no slide 28 e use o diagrama para responder.</p>
             <div class="quiz-reference" id="quizBranchFinalDiagram" aria-label="Estado final do repositório: main em M após unir C5 e o ramo experimento em C4"></div>
             <script>
-                paint('quizBranchFinalDiagram', {
+                // Modelo do diagrama; o repaint de fato roda mais abaixo, junto com o
+                // restante da inicialização do Reveal (ver comentário perto de Reveal.initialize) —
+                // aqui ainda não existe o objeto Reveal, pois reveal.js só é carregado depois.
+                window.quizBranchFinalModel = {
                     wt:[{ name:'arquivo.txt', status:'clean', content:['Olá','Git','e versionamento','corrige um erro','com branches'] }],
                     stage:[{ name:'arquivo.txt', content:['Olá','Git','e versionamento','corrige um erro','com branches'] }],
                     local:{
@@ -1798,16 +1801,17 @@
                         snapshot:{ name:'arquivo.txt', content:['Olá','Git','e versionamento','corrige um erro','com branches'] },
                         fork:{ from:'C3', commits:['C4'], label:'experimento', mergedInto:'M' }
                     }
-                });
+                };
+                paint('quizBranchFinalDiagram', window.quizBranchFinalModel);
             </script>
             <div class="quiz" data-quiz-id="branch-final-visual">
                 <article class="quiz-question" data-question-id="head-no-diagrama">
                     <div class="quiz-number">Questão 1 · objetiva</div>
                     <p class="quiz-prompt">Segundo o diagrama, onde estão <code>HEAD</code> e o ponteiro <code>main</code>?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="m" data-correct="true">No commit de merge M</button>
-                        <button class="quiz-option" data-option-id="c4" data-feedback="C4 pertence ao ramo experimento. No estado final, HEAD acompanha main, que avançou até M.">No commit C4</button>
-                        <button class="quiz-option" data-option-id="c3" data-feedback="C3 é o ponto em que os caminhos se separaram. Depois dos novos commits e da união, main aponta para M.">No commit C3</button>
+                        <button class="quiz-option" data-option-id="c4" data-feedback="C4 pertence ao ramo experimento. No estado final, HEAD acompanha main, que avançou até M.">(a) No commit C4</button>
+                        <button class="quiz-option" data-option-id="c3" data-feedback="C3 é o ponto em que os caminhos se separaram. Depois dos novos commits e da união, main aponta para M.">(b) No commit C3</button>
+                        <button class="quiz-option" data-option-id="m" data-correct="true">(c) No commit de merge M</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1816,8 +1820,8 @@
                     <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
                     <p class="quiz-prompt">C4 e C5 representam caminhos diferentes que partiram do mesmo commit C3.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-feedback="As duas linhas saem visualmente de C3: C4 foi criado em experimento e C5 foi criado em main. Por isso os ramos divergiram a partir do mesmo ponto.">Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">(a) Verdadeiro</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="As duas linhas saem visualmente de C3: C4 foi criado em experimento e C5 foi criado em main. Por isso os ramos divergiram a partir do mesmo ponto.">(b) Falso</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1826,9 +1830,9 @@
                     <div class="quiz-number">Questão 3 · objetiva</div>
                     <p class="quiz-prompt">O que o commit M representa na ilustração?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="copia-c4" data-feedback="M não é uma simples cópia de C4. Ele reúne os dois caminhos que avançaram separadamente depois de C3.">Uma cópia do commit C4</button>
-                        <button class="quiz-option" data-option-id="uniao" data-correct="true">A união das histórias de C4 e C5</button>
-                        <button class="quiz-option" data-option-id="novo-branch" data-feedback="O diagrama não mostra M como um novo branch. Ele é um commit de merge em main, ligado aos dois caminhos anteriores.">A criação de um terceiro branch</button>
+                        <button class="quiz-option" data-option-id="novo-branch" data-feedback="O diagrama não mostra M como um novo branch. Ele é um commit de merge em main, ligado aos dois caminhos anteriores.">(a) A criação de um terceiro branch</button>
+                        <button class="quiz-option" data-option-id="uniao" data-correct="true">(b) A união das histórias de C4 e C5</button>
+                        <button class="quiz-option" data-option-id="copia-c4" data-feedback="M não é uma simples cópia de C4. Ele reúne os dois caminhos que avançaram separadamente depois de C3.">(c) Uma cópia do commit C4</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1857,9 +1861,9 @@
                     <div class="quiz-number">Questão 1 · um comando</div>
                     <p class="quiz-prompt">Após <code>git branch experimento</code>, o que muda no diagrama?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="ponteiro-c3" data-correct="true">Surge o ponteiro experimento em C3; HEAD continua em main</button>
-                        <button class="quiz-option" data-option-id="novo-commit" data-feedback="git branch não cria um commit. Ele cria somente um novo ponteiro no commit atual, que neste estado é C3.">Surge C4 e experimento aponta para ele</button>
-                        <button class="quiz-option" data-option-id="head-muda" data-feedback="Criar o branch não troca o branch ativo. HEAD continua ligado a main até que um comando como git switch seja executado.">HEAD passa imediatamente para experimento</button>
+                        <button class="quiz-option" data-option-id="ponteiro-c3" data-correct="true">(a) Surge o ponteiro experimento em C3; HEAD continua em main</button>
+                        <button class="quiz-option" data-option-id="head-muda" data-feedback="Criar o branch não troca o branch ativo. HEAD continua ligado a main até que um comando como git switch seja executado.">(b) HEAD passa imediatamente para experimento</button>
+                        <button class="quiz-option" data-option-id="novo-commit" data-feedback="git branch não cria um commit. Ele cria somente um novo ponteiro no commit atual, que neste estado é C3.">(c) Surge C4 e experimento aponta para ele</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1869,26 +1873,39 @@
                     <p class="quiz-prompt">Qual é o resultado desta sequência?
                         <span class="quiz-command-sequence">
                             <code>git switch -c experimento</code>
-                            <codee>echo "ed">>arquivo.txt"</code>
+                            <code>echo "ed">>arquivo.txt</code>
                             <code>git add .</code>
                             <code>git commit</code>
                         </span>
                     </p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="experimento-c4" data-correct="true">C4 nasce em experimento; HEAD aponta para experimento e main fica em C3</button>
-                        <button class="quiz-option" data-option-id="main-c4" data-feedback="A troca colocou HEAD em experimento antes do commit. Por isso é esse branch que avança para C4; main permanece em C3.">C4 nasce em main; experimento fica em C3</button>
-                        <button class="quiz-option" data-option-id="ambos-c4" data-feedback="Os dois ponteiros começam juntos em C3, mas somente o branch ativo acompanha o novo commit. Um commit não move todos os branches.">main e experimento avançam juntos para C4</button>
+                        <button class="quiz-option" data-option-id="ambos-c4" data-feedback="Os dois ponteiros começam juntos em C3, mas somente o branch ativo acompanha o novo commit. Um commit não move todos os branches.">(a) main e experimento avançam juntos para C4</button>
+                        <button class="quiz-option" data-option-id="experimento-c4" data-correct="true">(b) C4 nasce em experimento; HEAD aponta para experimento e main fica em C3</button>
+                        <button class="quiz-option" data-option-id="main-c4" data-feedback="A troca colocou HEAD em experimento antes do commit. Por isso é esse branch que avança para C4; main permanece em C3.">(c) C4 nasce em main; experimento fica em C3</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
 
                 <article class="quiz-question" data-question-id="divergencia-merge">
                     <div class="quiz-number">Questão 3 · sequência</div>
-                    <p class="quiz-prompt">Experimento cria C4; main cria C5; em main executamos <code>git merge experimento</code>. Qual efeito é esperado?</p>
+                    <p class="quiz-prompt">Qual é o resultado desta sequência?
+                        <span class="quiz-command-sequence">
+                            <code>git branch experimento</code>
+                            <code>git switch experimento</code>
+                            <code>echo "olá">>arquivo.txt</code>
+                            <code>git add arquivo.txt</code>
+                            <code>git commit -m "C4"</code>
+                            <code>git switch main</code>
+                            <code>echo "corrige um erro">>arquivo.txt</code>
+                            <code>git add arquivo.txt</code>
+                            <code>git commit -m "C5"</code>
+                            <code>git merge experimento</code>
+                        </span>
+                    </p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="merge-m" data-correct="true">Nasce M com dois pais, unindo os caminhos de C4 e C5</button>
-                        <button class="quiz-option" data-option-id="apaga-c4" data-feedback="O merge não apaga o caminho de experimento. C4 continua no histórico e participa da união representada por M.">C4 é apagado e main permanece em C5</button>
-                        <button class="quiz-option" data-option-id="volta-c3" data-feedback="C3 é o ancestral comum usado para comparar os caminhos, mas o merge não faz os branches voltarem até ele.">Os dois branches voltam para C3</button>
+                        <button class="quiz-option" data-option-id="apaga-c4" data-feedback="O merge não apaga o caminho de experimento. C4 continua no histórico e participa da união representada por M.">(a) C4 é apagado e main permanece em C5</button>
+                        <button class="quiz-option" data-option-id="merge-m" data-correct="true">(b) Nasce M com dois pais, unindo os caminhos de C4 e C5</button>
+                        <button class="quiz-option" data-option-id="volta-c3" data-feedback="C3 é o ancestral comum usado para comparar os caminhos, mas o merge não faz os branches voltarem até ele.">(c) Os dois branches voltam para C3</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1917,9 +1934,9 @@
                     <div class="quiz-number">Questão 1 · um comando</div>
                     <p class="quiz-prompt"><code>git branch -c main copia-main</code><br>Qual é o efeito visível no diagrama?</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="dois-c3" data-correct="true">copia-main também aponta para C3; HEAD continua em main</button>
-                        <button class="quiz-option" data-option-id="cria-c4" data-feedback="Copiar um branch não cria um commit. O novo ponteiro nasce no mesmo commit apontado pelo branch copiado.">Um novo commit C4 é criado</button>
-                        <button class="quiz-option" data-option-id="move-head" data-feedback="A opção -c copia o branch, mas não troca automaticamente o branch ativo. HEAD continua ligado a main.">HEAD muda para copia-main</button>
+                        <button class="quiz-option" data-option-id="move-head" data-feedback="A opção -c copia o branch, mas não troca automaticamente o branch ativo. HEAD continua ligado a main.">(a) HEAD muda para copia-main</button>
+                        <button class="quiz-option" data-option-id="cria-c4" data-feedback="Copiar um branch não cria um commit. O novo ponteiro nasce no mesmo commit apontado pelo branch copiado.">(b) Um novo commit C4 é criado</button>
+                        <button class="quiz-option" data-option-id="dois-c3" data-correct="true">(c) copia-main também aponta para C3; HEAD continua em main</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1928,8 +1945,8 @@
                     <div class="quiz-number">Questão 2 · verdadeiro ou falso</div>
                     <p class="quiz-prompt"><code>git log --oneline</code><br>No estado inicial, a primeira linha exibida representa C3.</p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">Verdadeiro</button>
-                        <button class="quiz-option" data-option-id="falso" data-feedback="O log parte do commit apontado por HEAD e percorre seus pais. Como HEAD está em main e main aponta para C3, C3 aparece primeiro.">Falso</button>
+                        <button class="quiz-option" data-option-id="falso" data-feedback="O log parte do commit apontado por HEAD e percorre seus pais. Como HEAD está em main e main aponta para C3, C3 aparece primeiro.">(a) Falso</button>
+                        <button class="quiz-option" data-option-id="verdadeiro" data-correct="true">(b) Verdadeiro</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -1946,9 +1963,9 @@
                         </span>
                     </p>
                     <div class="quiz-options">
-                        <button class="quiz-option" data-option-id="copia-c4" data-correct="true">copia-main avança para C4; main fica em C3; o log mostra os dois ponteiros</button>
-                        <button class="quiz-option" data-option-id="main-c4" data-feedback="Após git switch, HEAD está ligado a copia-main. Assim, o novo commit movimenta copia-main, não main.">main avança para C4 e copia-main fica em C3</button>
-                        <button class="quiz-option" data-option-id="historico-duplicado" data-feedback="Copiar o branch não duplica os commits C1, C2 e C3. Os dois ponteiros compartilham a mesma história até C3, e somente copia-main avança para C4.">O log mostra duas cópias independentes de C1, C2 e C3</button>
+                        <button class="quiz-option" data-option-id="historico-duplicado" data-feedback="Copiar o branch não duplica os commits C1, C2 e C3. Os dois ponteiros compartilham a mesma história até C3, e somente copia-main avança para C4.">(a) O log mostra duas cópias independentes de C1, C2 e C3</button>
+                        <button class="quiz-option" data-option-id="copia-c4" data-correct="true">(b) copia-main avança para C4; main fica em C3; o log mostra os dois ponteiros</button>
+                        <button class="quiz-option" data-option-id="main-c4" data-feedback="Após git switch, HEAD está ligado a copia-main. Assim, o novo commit movimenta copia-main, não main.">(c) main avança para C4 e copia-main fica em C3</button>
                     </div>
                     <div class="quiz-result" aria-live="polite"></div>
                 </article>
@@ -2233,6 +2250,20 @@ git pull origin main   # equivale a: git fetch + git merge</code></pre>
         Reveal.on('ready', e => fit(e.currentSlide));
         Reveal.on('slidechanged', e => fit(e.currentSlide));
         window.addEventListener('resize', () => fit(Reveal.getCurrentSlide()));
+    })();
+
+    // O diagrama do slide 30 usa `fork`, que gmAlignForks() posiciona medindo o layout
+    // real na tela — só dá certo com o slide visível. Repintamos ao entrar nele (e no
+    // "ready", caso a apresentação já abra nesse slide via hash).
+    (function () {
+        const slide = document.getElementById('slide-quiz-branch-final');
+        if (!slide || !window.quizBranchFinalModel) return;
+        function syncToSlide(event) {
+            if (event && event.currentSlide && event.currentSlide !== slide) return;
+            paint('quizBranchFinalDiagram', window.quizBranchFinalModel);
+        }
+        Reveal.on('slidechanged', syncToSlide);
+        Reveal.on('ready', syncToSlide);
     })();
 
     document.getElementById('btnPdf').addEventListener('click', function () {
