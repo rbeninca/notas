@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDM — Desenvolvimento para Dispositivos Móveis</title>
+    <style>
+        :root {
+            --ifsc-green: #2e7d32;
+            --ifsc-dark:  #1b5e20;
+            --android-green: #3ddc84;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f4f8f4; color: #24312a;
+        }
+        header {
+            background: linear-gradient(135deg, var(--ifsc-dark), var(--ifsc-green));
+            color: #fff; padding: 40px 24px 32px;
+        }
+        header .eyebrow { font-size: 0.8em; letter-spacing: 2px; text-transform: uppercase; opacity: 0.85; }
+        header h1 { margin: 6px 0 0; font-size: 1.9em; }
+        main { max-width: 820px; margin: 0 auto; padding: 28px 24px 60px; }
+        h2 { color: var(--ifsc-dark); font-size: 1.05em; text-transform: uppercase; letter-spacing: 0.5px;
+             border-bottom: 2px solid #cfe3cf; padding-bottom: 6px; margin: 34px 0 14px; }
+        h2:first-of-type { margin-top: 0; }
+        ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+        li a {
+            display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;
+            background: #fff; border: 1px solid #dfe9df; border-radius: 10px; padding: 14px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform .12s, box-shadow .12s, border-color .12s;
+        }
+        li a:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); border-color: var(--android-green); }
+        .ic { font-size: 1.4em; flex-shrink: 0; }
+        .meta { display: flex; flex-direction: column; }
+        .ttl { font-weight: 700; }
+        .sub { font-size: 0.82em; color: #647569; margin-top: 2px; }
+        footer { text-align: center; font-size: 0.8em; color: #8a988e; padding: 20px; }
+        footer a { color: inherit; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="eyebrow">IFSC · ADS4</div>
+    <h1>DDM — Desenvolvimento para Dispositivos Móveis</h1>
+</header>
+
+<main>
+    <h2>Aulas</h2>
+    <ul>
+        <li><a href="slide-ddm-aula1.html">
+            <span class="ic">📱</span>
+            <span class="meta"><span class="ttl">Aula 1 — História, Arquitetura e Primeiro App Android</span><span class="sub">Encontro 1 · 03/08/2026</span></span>
+        </a></li>
+        <li><a href="slide-ddm-aula2.html">
+            <span class="ic">🔄</span>
+            <span class="meta"><span class="ttl">Aula 2 — Activities, Layouts e Ciclo de Vida</span><span class="sub">Encontro 2 · 10/08/2026</span></span>
+        </a></li>
+    </ul>
+
+    <h2>Simulações complementares</h2>
+    <ul>
+        <li><a href="app nativo hibrido.html">
+            <span class="ic">🧩</span>
+            <span class="meta"><span class="ttl">Frameworks: Nativo, Híbrido e PWA</span><span class="sub">Simulação interativa · também embutida na Aula 1</span></span>
+        </a></li>
+        <li><a href="frameworks.html">
+            <span class="ic">🎨</span>
+            <span class="meta"><span class="ttl">Deep Dive: Execução de Frameworks</span><span class="sub">Simulação interativa · também embutida na Aula 1</span></span>
+        </a></li>
+    </ul>
+</main>
+
+<footer>Professor: Romulo de Aguiar Beninca</footer>
+
+</body>
+</html>
