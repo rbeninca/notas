@@ -257,30 +257,31 @@
 
         /* ===================== Simulação: setContentView() e findViewById() ===================== */
         .svm-sim { display:flex; flex-direction:column; gap:8px; }
-        .svm-stage { display:flex; align-items:flex-start; gap:22px; }
+        .svm-stage { display:flex; flex-direction:column; gap:10px; }
 
-        .svm-code-col { flex:1.15; min-width:0; }
         .svm-code-col pre { margin:0; }
         .svm-code-col .ln-hl { display:inline-block; border-radius:4px; padding:0 3px; transition:background .25s, box-shadow .25s; }
         .svm-code-col .ln-hl.svm-active { background:rgba(46,125,50,0.28); box-shadow:0 0 0 1px rgba(46,125,50,0.5); }
 
-        .svm-phone-col { flex:0 0 160px; }
-        .svm-phone-col .ab-phone { width:160px; }
-        .svm-phone-col .ab-screen { min-height:230px; max-height:230px; }
+        .svm-lower { display:flex; align-items:flex-start; gap:18px; }
+
+        .svm-phone-col { flex:0 0 130px; }
+        .svm-phone-col .ab-phone { width:130px; }
+        .svm-phone-col .ab-screen { min-height:150px; max-height:150px; }
         .svm-phone-col .ab-view { transition:box-shadow .25s; }
         .svm-phone-col .ab-view.svm-linked { box-shadow:0 0 0 2px var(--ifsc-green), 0 2px 6px rgba(0,0,0,0.15); }
 
-        .svm-mem-col { flex:1.05; min-width:0; }
-        .svm-mem-box { background:#0f1420; border-radius:10px; padding:10px 12px; min-height:230px; }
-        .svm-mem-title { color:#8a93a8; font-size:0.6em; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; text-align:center; }
-        .svm-mem-objs { display:flex; flex-direction:column; gap:6px; }
-        .svm-obj { background:#1b2233; border:1px solid #2c374d; border-radius:7px; padding:6px 9px; font-family:'Consolas','Menlo',monospace;
-            font-size:0.6em; color:#cfe0f7; opacity:0; transform:translateY(-10px) scale(0.9); transition:opacity .35s, transform .35s, box-shadow .25s; }
+        .svm-mem-col { flex:1; min-width:0; }
+        .svm-mem-box { background:#0f1420; border-radius:10px; padding:8px 12px; min-height:150px; }
+        .svm-mem-title { color:#8a93a8; font-size:0.58em; letter-spacing:1px; text-transform:uppercase; margin-bottom:5px; text-align:center; }
+        .svm-mem-objs { display:flex; flex-direction:column; gap:5px; }
+        .svm-obj { background:#1b2233; border:1px solid #2c374d; border-radius:7px; padding:5px 9px; font-family:'Consolas','Menlo',monospace;
+            font-size:0.58em; color:#cfe0f7; opacity:0; transform:translateY(-10px) scale(0.9); transition:opacity .35s, transform .35s, box-shadow .25s; }
         .svm-obj.svm-show { opacity:1; transform:translateY(0) scale(1); }
         .svm-obj.svm-linked { border-color:var(--ifsc-green); box-shadow:0 0 0 2px rgba(139,195,74,0.35); }
         .svm-obj .k { color:#7ee787; }
         .svm-obj .addr { color:#e3b341; }
-        .svm-obj .var-line { color:#9aa4b2; font-size:0.94em; margin-top:2px; display:none; }
+        .svm-obj .var-line { color:#9aa4b2; font-size:0.94em; margin-top:1px; display:none; }
         .svm-obj.svm-linked .var-line { display:block; }
 
         .svm-toolbar { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
@@ -425,7 +426,6 @@ protected void onCreate(Bundle savedInstanceState) {
 
         <section class="compact">
             <h2>Simulação: setContentView() e findViewById()</h2>
-            <p class="small-text">Acompanhe o que acontece na <strong>memória RAM</strong> quando o layout é inflado, e como o código encontra cada componente.</p>
             <div id="svm-sim" class="svm-sim">
                 <div class="svm-stage">
                     <div class="svm-code-col">
@@ -444,17 +444,19 @@ protected void onCreate(Bundle savedInstanceState) {
 }</code></pre>
                     </div>
 
-                    <div class="svm-phone-col">
-                        <div class="ab-phone">
-                            <div class="ab-statusbar"></div>
-                            <div class="ab-screen" id="svm-screen"></div>
+                    <div class="svm-lower">
+                        <div class="svm-phone-col">
+                            <div class="ab-phone">
+                                <div class="ab-statusbar"></div>
+                                <div class="ab-screen" id="svm-screen"></div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="svm-mem-col">
-                        <div class="svm-mem-box">
-                            <div class="svm-mem-title">Memória RAM</div>
-                            <div class="svm-mem-objs" id="svm-mem"></div>
+                        <div class="svm-mem-col">
+                            <div class="svm-mem-box">
+                                <div class="svm-mem-title">Memória RAM</div>
+                                <div class="svm-mem-objs" id="svm-mem"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1033,6 +1035,121 @@ protected void onCreate(Bundle savedInstanceState) {
                 }));
             });update();
         });
+    })();
+
+    // ===================== Simulação: setContentView() e findViewById() =====================
+    (function () {
+        const root = document.getElementById('svm-sim');
+        if (!root) return;
+
+        const codeEl   = document.getElementById('svm-code');
+        const screenEl = document.getElementById('svm-screen');
+        const memEl    = document.getElementById('svm-mem');
+        const capEl    = document.getElementById('svmCaption');
+        const posEl    = document.getElementById('svmPos');
+        const btnPrev  = document.getElementById('svmPrev');
+        const btnNext  = document.getElementById('svmNext');
+        const btnAll   = document.getElementById('svmAll');
+        const btnReset = document.getElementById('svmReset');
+
+        const lines = Array.from(codeEl.querySelectorAll('.ln-hl'));
+        const lineByKey = {};
+        lines.forEach(el => { lineByKey[el.dataset.ln] = el; });
+
+        // Cada objeto que aparece na memória quando o layout é inflado.
+        const OBJS = [
+            { id: 'tv', view: 'tv', cls: 'TextView', addr: '@a1f3', text: 'Bem-vindo!', varName: 'tvTitulo', findKey: 'find1' },
+            { id: 'btn', view: 'btn', cls: 'Button', addr: '@c92e', text: 'Entrar', varName: 'btnEntrar', findKey: 'find2' }
+        ];
+
+        // Passos declarativos: o que fica destacado no código, visível na tela, presente
+        // na memória e "ligado" (linkado) a uma variável local.
+        const STEPS = [
+            {
+                cap: 'Tela vazia, nada na memória.',
+                activeLine: null, screenShow: false, memShow: [], linked: []
+            },
+            {
+                cap: 'A Activity começa a montar a interface.',
+                activeLine: 'oncreate', screenShow: false, memShow: [], linked: []
+            },
+            {
+                cap: '<code>setContentView()</code> infla o XML: cada tag vira um <b>objeto na memória RAM</b>.',
+                activeLine: 'setcontent', screenShow: true, memShow: ['tv', 'btn'], linked: []
+            },
+            {
+                cap: '<code>findViewById()</code> localiza o objeto pelo ID e guarda em <code>tvTitulo</code>.',
+                activeLine: 'find1', screenShow: true, memShow: ['tv', 'btn'], linked: ['tv']
+            },
+            {
+                cap: 'O mesmo para <code>btnEntrar</code>: localiza o <code>Button</code> já existente.',
+                activeLine: 'find2', screenShow: true, memShow: ['tv', 'btn'], linked: ['tv', 'btn']
+            }
+        ];
+
+        let idx = -1, autoTimer = null;
+        function stopAuto() { if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; } }
+
+        function renderScreen(show) {
+            if (!show) { screenEl.innerHTML = ''; return; }
+            if (screenEl.children.length) return; // já montada, não recria (evita re-disparar animação de entrada)
+            screenEl.innerHTML =
+                '<div class="ab-view tv" id="svm-view-tv">Bem-vindo!</div>' +
+                '<div class="ab-view btn" id="svm-view-btn">Entrar</div>';
+        }
+
+        function renderMem(memShow, linked) {
+            memEl.innerHTML = OBJS.map(o => {
+                const show = memShow.includes(o.id);
+                const isLinked = linked.includes(o.id);
+                return '<div class="svm-obj' + (show ? ' svm-show' : '') + (isLinked ? ' svm-linked' : '') + '" id="svm-obj-' + o.id + '">' +
+                    '<span class="k">' + o.cls + '</span> <span class="addr">' + o.addr + '</span> "' + o.text + '"' +
+                    '<div class="var-line">→ variável local <b>' + o.varName + '</b></div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function render() {
+            const st = idx >= 0 ? STEPS[idx] : STEPS[0];
+
+            lines.forEach(el => el.classList.toggle('svm-active', el.dataset.ln === st.activeLine));
+            renderScreen(st.screenShow);
+            renderMem(st.memShow, st.linked);
+
+            OBJS.forEach(o => {
+                const viewEl = document.getElementById('svm-view-' + o.id);
+                if (viewEl) viewEl.classList.toggle('svm-linked', st.linked.includes(o.id));
+            });
+
+            capEl.innerHTML = st.cap;
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx <= 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled = idx >= STEPS.length - 1;
+        }
+
+        function go(to) {
+            idx = Math.max(0, Math.min(STEPS.length - 1, to));
+            render();
+        }
+        function next()  { stopAuto(); go(idx + 1); }
+        function prev()  { stopAuto(); go(idx - 1); }
+        function reset() { stopAuto(); go(0); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1);
+                autoTimer = setTimeout(tick, 2200);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', reset);
+
+        go(0);
     })();
 
     // ===================== Simulação: montador de Activity =====================
