@@ -255,6 +255,45 @@
         .ab-pre { margin:0; max-height:280px; }
         .ab-pre code { font-size:0.62em; }
 
+        /* ===================== Simulação: setContentView() e findViewById() ===================== */
+        .svm-sim { display:flex; flex-direction:column; gap:8px; }
+        .svm-stage { display:flex; align-items:flex-start; gap:22px; }
+
+        .svm-code-col { flex:1.15; min-width:0; }
+        .svm-code-col pre { margin:0; }
+        .svm-code-col .ln-hl { display:inline-block; border-radius:4px; padding:0 3px; transition:background .25s, box-shadow .25s; }
+        .svm-code-col .ln-hl.svm-active { background:rgba(46,125,50,0.28); box-shadow:0 0 0 1px rgba(46,125,50,0.5); }
+
+        .svm-phone-col { flex:0 0 160px; }
+        .svm-phone-col .ab-phone { width:160px; }
+        .svm-phone-col .ab-screen { min-height:230px; max-height:230px; }
+        .svm-phone-col .ab-view { transition:box-shadow .25s; }
+        .svm-phone-col .ab-view.svm-linked { box-shadow:0 0 0 2px var(--ifsc-green), 0 2px 6px rgba(0,0,0,0.15); }
+
+        .svm-mem-col { flex:1.05; min-width:0; }
+        .svm-mem-box { background:#0f1420; border-radius:10px; padding:10px 12px; min-height:230px; }
+        .svm-mem-title { color:#8a93a8; font-size:0.6em; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; text-align:center; }
+        .svm-mem-objs { display:flex; flex-direction:column; gap:6px; }
+        .svm-obj { background:#1b2233; border:1px solid #2c374d; border-radius:7px; padding:6px 9px; font-family:'Consolas','Menlo',monospace;
+            font-size:0.6em; color:#cfe0f7; opacity:0; transform:translateY(-10px) scale(0.9); transition:opacity .35s, transform .35s, box-shadow .25s; }
+        .svm-obj.svm-show { opacity:1; transform:translateY(0) scale(1); }
+        .svm-obj.svm-linked { border-color:var(--ifsc-green); box-shadow:0 0 0 2px rgba(139,195,74,0.35); }
+        .svm-obj .k { color:#7ee787; }
+        .svm-obj .addr { color:#e3b341; }
+        .svm-obj .var-line { color:#9aa4b2; font-size:0.94em; margin-top:2px; display:none; }
+        .svm-obj.svm-linked .var-line { display:block; }
+
+        .svm-toolbar { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+        .svm-toolbar button { border:1px solid #cfe3cf; background:#f6faf6; color:var(--ifsc-dark); border-radius:7px;
+            padding:6px 12px; font-size:0.62em; font-weight:700; cursor:pointer; transition:.15s; }
+        .svm-toolbar button:hover:not(:disabled) { background:var(--ifsc-green); color:#fff; border-color:var(--ifsc-green); }
+        .svm-toolbar button:disabled { opacity:0.4; cursor:default; }
+        .svm-toolbar .svm-reset { border-color:#f3c9c4; background:#fdf3f2; color:var(--accent-red); margin-left:auto; }
+        .svm-toolbar .svm-reset:hover { background:var(--accent-red); color:#fff; }
+        .svm-pos { font-size:0.58em; color:#778; font-weight:700; margin-left:4px; }
+        .svm-caption { text-align:center; font-size:0.66em; color:#445; min-height:2.6em; margin-top:2px; }
+        .svm-caption code { background:#eef4fc; padding:0 4px; border-radius:3px; }
+
         /* ===================== Simulação: ciclo de vida interativo ===================== */
         .lifecycle-sim { display:flex; flex-direction:column; gap:8px; }
         .lc-sim-toolbar { display:flex; flex-wrap:wrap; gap:6px; }
@@ -385,6 +424,53 @@ protected void onCreate(Bundle savedInstanceState) {
         </section>
 
         <section class="compact">
+            <h2>Simulação: setContentView() e findViewById()</h2>
+            <p class="small-text">Acompanhe o que acontece na <strong>memória RAM</strong> quando o layout é inflado, e como o código encontra cada componente.</p>
+            <div id="svm-sim" class="svm-sim">
+                <div class="svm-stage">
+                    <div class="svm-code-col">
+                        <pre><code class="language-java" id="svm-code">public class MainActivity extends AppCompatActivity {
+    TextView tvTitulo;
+    Button btnEntrar;
+
+    <span class="ln-hl" data-ln="oncreate">@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);</span>
+        <span class="ln-hl" data-ln="setcontent">setContentView(R.layout.activity_main);</span>
+
+        <span class="ln-hl" data-ln="find1">tvTitulo = findViewById(R.id.tvTitulo);</span>
+        <span class="ln-hl" data-ln="find2">btnEntrar = findViewById(R.id.btnEntrar);</span>
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="svm-phone-col">
+                        <div class="ab-phone">
+                            <div class="ab-statusbar"></div>
+                            <div class="ab-screen" id="svm-screen"></div>
+                        </div>
+                    </div>
+
+                    <div class="svm-mem-col">
+                        <div class="svm-mem-box">
+                            <div class="svm-mem-title">Memória RAM</div>
+                            <div class="svm-mem-objs" id="svm-mem"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="svm-toolbar">
+                    <button id="svmPrev" type="button">◀ voltar</button>
+                    <button id="svmNext" type="button">avançar ▶</button>
+                    <button id="svmAll" type="button">executar até o fim</button>
+                    <span class="svm-pos" id="svmPos"></span>
+                    <button id="svmReset" type="button" class="svm-reset">↺ recomeçar</button>
+                </div>
+                <p class="svm-caption" id="svmCaption"></p>
+            </div>
+        </section>
+
+        <section class="compact">
             <h2>Declarando a Activity no Manifest</h2>
             <p class="small-text">Toda Activity precisa aparecer em <code>AndroidManifest.xml</code> — é assim que o sistema Android sabe que ela existe:</p>
             <pre><code class="language-xml">&lt;application ... &gt;
@@ -505,68 +591,8 @@ protected void onCreate(Bundle savedInstanceState) {
 
         <section class="compact" style="text-align:center;">
             <h2>Os 7 callbacks</h2>
-            <div class="lifecycle-wrap">
-                <svg class="lifecycle-svg" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <marker id="lcArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                            <path d="M0,0 L10,5 L0,10 Z" fill="#333"/>
-                        </marker>
-                    </defs>
-
-                    <!-- Arestas (desenhadas antes das caixas para ficarem por baixo) -->
-                    <path class="lc-edge-path fragment fade-in" d="M110,190 C140,160 155,145 168,128" />
-                    <text class="lc-edge-label fragment fade-in" x="112" y="155">onCreate()</text>
-
-                    <path class="lc-edge-path fragment fade-in" d="M255,95 C270,75 285,55 300,38" />
-                    <text class="lc-edge-label fragment fade-in" x="243" y="65">onStart()</text>
-
-                    <path class="lc-edge-path fragment fade-in" d="M370,95 C355,75 340,55 328,38" />
-                    <text class="lc-edge-label fragment fade-in" x="430" y="48">onResume()</text>
-
-                    <path class="lc-edge-path fragment fade-in" d="M348,50 C355,63 360,73 366,90" />
-                    <text class="lc-edge-label fragment fade-in" x="375" y="78">onPause()</text>
-
-                    <path class="lc-edge-path fragment fade-in" d="M414,127 C414,148 414,168 414,186" />
-                    <text class="lc-edge-label fragment fade-in" x="464" y="160">onStop()</text>
-
-                    <path class="lc-edge-path fragment fade-in" d="M412,220 C320,240 220,240 128,222" />
-                    <text class="lc-edge-label fragment fade-in" x="260" y="252">onRestart()</text>
-
-                    <path class="lc-edge-path fragment fade-in" d="M485,225 C500,235 512,242 520,248" />
-                    <text class="lc-edge-label fragment fade-in" x="548" y="222">onDestroy()</text>
-
-                    <!-- Estados -->
-                    <g class="lc-node fragment fade-up" data-lc="created">
-                        <rect x="0" y="167" width="120" height="46" rx="23" fill="#8bc34a"/>
-                        <text x="60" y="186">Created</text>
-                    </g>
-                    <g class="lc-node fragment fade-up" data-lc="started">
-                        <rect x="176" y="80" width="120" height="46" rx="23" fill="#9ccc4f"/>
-                        <text x="236" y="99">Started</text>
-                        <text class="lc-sub" x="236" y="114">(visible)</text>
-                    </g>
-                    <g class="lc-node fragment fade-up" data-lc="resumed">
-                        <rect x="262" y="0" width="120" height="46" rx="23" fill="#a8d857"/>
-                        <text x="322" y="19">Resumed</text>
-                        <text class="lc-sub" x="322" y="34">(visible)</text>
-                    </g>
-                    <g class="lc-node fragment fade-up" data-lc="paused">
-                        <rect x="354" y="80" width="120" height="46" rx="23" fill="#d4d84f"/>
-                        <text x="414" y="99">Paused</text>
-                        <text class="lc-sub" x="414" y="114">(partially visible)</text>
-                    </g>
-                    <g class="lc-node fragment fade-up" data-lc="stopped">
-                        <rect x="354" y="167" width="120" height="46" rx="23" fill="#ffb347"/>
-                        <text x="414" y="186">Stopped</text>
-                        <text class="lc-sub" x="414" y="201">(hidden)</text>
-                    </g>
-                    <g class="lc-node lc-destroyed fragment fade-up" data-lc="destroyed">
-                        <rect x="490" y="245" width="100" height="42" rx="6" fill="#dcdcdc"/>
-                        <text x="540" y="271">Destroyed</text>
-                    </g>
-                </svg>
-            </div>
-            <p class="small-text" style="margin-top:6px;">Fluxo típico: <code>onCreate → onStart → onResume</code> (visível e interativa) → <code>onPause → onStop</code> (some de vista) → <code>onDestroy</code> ou <code>onRestart → onStart</code> (volta).</p>
+            <img src="assets/android-activity-lifecycle.png" alt="Diagrama oficial do ciclo de vida da Activity: Activity launched, onCreate, onStart, onResume, Activity running, onPause, onStop, onDestroy, Activity shut down, com onRestart voltando de onStop para onStart" style="max-height:480px; box-shadow:0 6px 20px rgba(0,0,0,0.15); border-radius:8px;">
+            <p class="small-text" style="margin-top:6px;">Fonte: developer.android.com/guide/components/activities/activity-lifecycle. Fluxo típico: <code>onCreate → onStart → onResume</code> (visível e interativa) → <code>onPause → onStop</code> (some de vista) → <code>onDestroy</code> ou <code>onRestart → onStart</code> (volta).</p>
         </section>
 
         <section class="compact" style="padding-bottom:2px;">

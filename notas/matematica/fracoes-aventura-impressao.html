@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>A Aventura das Frações — Para Imprimir</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    color-scheme: light;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #3a3a3a;
+    --border:         #0b0b0b;
+
+    --blue:    #2a78d6;
+    --orange:  #eb6834;
+    --aqua:    #1baf7a;
+    --yellow:  #eda100;
+    --violet:  #4a3aa7;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: var(--text-primary);
+    font-family: "Comic Sans MS", "Segoe Print", system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.4;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    text-align: center;
+    padding: 10px 16px 16px;
+    border-bottom: 3px solid var(--border);
+    margin-bottom: 10px;
+  }
+  .hero h1 {
+    font-size: 34px;
+    margin: 0 0 4px;
+    color: var(--violet);
+  }
+  .hero p { font-size: 17px; color: var(--text-secondary); margin: 0; }
+  .mascot { font-size: 46px; display: block; margin: 4px auto; }
+
+  .name-line {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 12px;
+    font-size: 16px;
+    flex-wrap: wrap;
+  }
+  .name-line span { border-bottom: 2px solid var(--text-primary); padding: 2px 10px; min-width: 160px; display: inline-block; }
+
+  /* ---------- SECTION CARD (print-friendly, no shadow) ---------- */
+  section.card {
+    background: #ffffff;
+    border: 3px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin: 18px 0;
+    break-inside: avoid;
+  }
+  section.card h2 {
+    font-size: 23px;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--blue);
+  }
+  section.card h2 .badge { font-size: 24px; }
+  section.card > p.intro {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-top: 0;
+  }
+
+  .fraction-display {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1;
+    margin: 0 6px;
+    vertical-align: middle;
+  }
+  .fraction-display .num { padding-bottom: 3px; border-bottom: 3px solid var(--text-primary); padding: 0 6px 4px; }
+  .fraction-display .den { padding: 4px 6px 0; }
+
+  /* ---------- PIZZA VISUAL ---------- */
+  .pizza-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin: 14px 0;
+  }
+  .pizza-item { text-align: center; }
+  .pizza-item .cap { margin-top: 6px; font-size: 15px; font-weight: bold; color: var(--text-secondary); }
+
+  /* ---------- BAR VISUAL ---------- */
+  .bar-visual {
+    display: flex;
+    width: 100%;
+    max-width: 460px;
+    height: 48px;
+    margin: 12px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 3px solid var(--text-primary);
+  }
+  .bar-visual .seg {
+    flex: 1;
+    border-right: 3px solid var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .bar-visual .seg:last-child { border-right: none; }
+  .bar-visual .seg.empty { background: #ffffff; }
+
+  /* ---------- TIP BOX (hatch pattern instead of yellow fill for ink-saving, but keep light bg) ---------- */
+  .tip {
+    background: #ffffff;
+    border: 3px dashed var(--yellow);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .tip .icon { font-size: 22px; }
+
+  /* ---------- PRINT ACTIVITY: color-the-slices ---------- */
+  .instructions {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  /* ---------- QUIZ (paper version: circle the answer) ---------- */
+  .quiz-item {
+    border: 3px dashed var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin: 14px 0;
+  }
+  .quiz-question { font-size: 17px; font-weight: bold; margin-bottom: 10px; }
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .opt-box {
+    border: 3px solid var(--blue);
+    color: var(--blue);
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 18px;
+    font-weight: bold;
+    min-width: 70px;
+    text-align: center;
+  }
+
+  /* ---------- WRITING LINES ---------- */
+  .write-line {
+    border-bottom: 2px dotted #666;
+    height: 30px;
+    margin: 6px 0;
+  }
+  .answer-box {
+    display: inline-block;
+    width: 60px;
+    height: 46px;
+    border: 3px solid var(--blue);
+    border-radius: 10px;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+
+  /* ---------- MATCH ACTIVITY (draw a line) ---------- */
+  .match-columns {
+    display: flex;
+    justify-content: space-between;
+    max-width: 480px;
+    margin: 16px auto;
+    font-size: 19px;
+    font-weight: bold;
+  }
+  .match-columns .col { display: flex; flex-direction: column; gap: 22px; }
+  .match-columns .item {
+    border: 3px solid var(--violet);
+    color: var(--violet);
+    border-radius: 10px;
+    padding: 8px 16px;
+    text-align: center;
+    min-width: 110px;
+  }
+
+  /* ---------- ANSWER KEY (last page) ---------- */
+  .answer-key {
+    border: 3px solid var(--aqua);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-top: 24px;
+  }
+  .answer-key h2 { color: var(--aqua); margin-top: 0; }
+  .answer-key ol { font-size: 16px; }
+
+  .page-break { break-before: page; }
+
+  @media print {
+    body { background: #ffffff; }
+    .wrap { padding: 0 10px; }
+    section.card { border-width: 2px; }
+    a[href]:after { content: ""; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="mascot">🍕</span>
+    <h1>A Aventura das Frações</h1>
+    <p>Caderno de atividades — aprenda brincando!</p>
+    <div class="name-line">
+      <span>Nome: ______________________</span>
+      <span>Data: ___/___/______</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <section class="card">
+    <h2><span class="badge">1️⃣</span> O que é uma fração?</h2>
+    <p class="intro">Fração é quando a gente <strong>divide alguma coisa em pedaços iguais</strong> e pega uma parte dela!</p>
+
+    <div class="tip">
+      <span class="icon">💡</span>
+      <div>Pensa assim: você tem uma pizza inteira e vai repartir com os amigos. Cada pedaço é uma <strong>fração</strong> da pizza toda!</div>
+    </div>
+
+    <p style="text-align:center; font-size:16px;">
+      Essa pizza foi cortada em <strong>4 pedaços iguais</strong>. Um pedaço já está pintado. Ele representa:
+    </p>
+
+    <div class="pizza-row">
+      <div class="pizza-item">
+        <svg width="150" height="150" viewBox="0 0 160 160" role="img" aria-label="Pizza dividida em 4 partes, 1 parte pintada">
+          <circle cx="80" cy="80" r="75" fill="#ffffff" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M80 80 L80 5 A75 75 0 0 1 155 80 Z" fill="var(--orange)" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="80" y2="155" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="5" y2="80" stroke="#0b0b0b" stroke-width="3"/>
+        </svg>
+        <div class="cap">1 pedaço de 4 = <span class="fraction-display"><span class="num">1</span><span class="den">4</span></span></div>
+      </div>
+    </div>
+
+    <p style="text-align:center; font-size:16px;">
+      Lê-se <strong>"um quarto"</strong>. O número de <strong>cima</strong> é quantos pedaços você pegou (numerador).
+      O número de <strong>baixo</strong> é em quantos pedaços a pizza foi cortada (denominador)!
+    </p>
+
+    <div style="display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin-top:14px;">
+      <div style="text-align:center;">
+        <div style="font-size:34px;">⬆️</div>
+        <strong style="color:var(--blue); font-size:16px;">Numerador</strong>
+        <p style="font-size:13px; color:var(--text-secondary); max-width:150px;">quantos pedaços você PEGOU</p>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:34px;">⬇️</div>
+        <strong style="color:var(--orange); font-size:16px;">Denominador</strong>
+        <p style="font-size:13px; color:var(--text-secondary); max-width:150px;">em quantos pedaços foi CORTADO</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: color the slices -->
+  <section class="card">
+    <h2><span class="badge">2️⃣</span> Atividade: pinte a fração!</h2>
+    <p class="instructions">✏️ Pinte a quantidade de pedaços pedida em cada pizza.</p>
+
+    <div class="pizza-row">
+      <div class="pizza-item">
+        <svg width="130" height="130" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="75" fill="#ffffff" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="80" y2="5" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="155" y2="80" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="80" y2="155" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="5" y2="80" stroke="#0b0b0b" stroke-width="3"/>
+        </svg>
+        <div class="cap">Pinte <span class="fraction-display" style="font-size:18px;"><span class="num">2</span><span class="den">4</span></span></div>
+      </div>
+
+      <div class="pizza-item">
+        <svg width="130" height="130" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="75" fill="#ffffff" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="80" y2="5" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="128.97" y2="20.7" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="155" y2="80" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="128.97" y2="139.3" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="80" y2="155" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="31.03" y2="139.3" stroke="#0b0b0b" stroke-width="3"/>
+        </svg>
+        <div class="cap">Pinte <span class="fraction-display" style="font-size:18px;"><span class="num">4</span><span class="den">6</span></span></div>
+      </div>
+
+      <div class="pizza-item">
+        <svg width="130" height="130" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="75" fill="#ffffff" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="80" y2="5" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="145" y2="45" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="145" y2="115" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="80" y2="155" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="15" y2="115" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="15" y2="45" stroke="#0b0b0b" stroke-width="3"/>
+        </svg>
+        <div class="cap">Pinte <span class="fraction-display" style="font-size:18px;"><span class="num">3</span><span class="den">6</span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: chocolate bar -->
+  <section class="card">
+    <h2><span class="badge">3️⃣</span> A barra de chocolate</h2>
+    <p class="intro">Frações também aparecem em barras! Essa barra tem 6 pedacinhos, e 2 já foram pintados:</p>
+
+    <div class="bar-visual" aria-label="Barra de chocolate com 6 partes, 2 pintadas">
+      <div class="seg empty">🍫</div>
+      <div class="seg empty">🍫</div>
+      <div class="seg" style="background:var(--violet); color:white;">😋</div>
+      <div class="seg" style="background:var(--violet); color:white;">😋</div>
+      <div class="seg empty">🍫</div>
+      <div class="seg empty">🍫</div>
+    </div>
+    <p style="text-align:center; font-size:16px;">
+      2 pedacinhos de 6 → <span class="fraction-display"><span class="num">2</span><span class="den">6</span></span> (lê-se <strong>"dois sextos"</strong>)
+    </p>
+
+    <p class="instructions">✏️ Agora é sua vez! Pinte 3 pedacinhos dessa barra de 5:</p>
+    <div class="bar-visual" style="max-width:400px;">
+      <div class="seg empty"></div>
+      <div class="seg empty"></div>
+      <div class="seg empty"></div>
+      <div class="seg empty"></div>
+      <div class="seg empty"></div>
+    </div>
+    <p style="text-align:center; font-size:16px;">Que fração você pintou? <span class="answer-box"></span></p>
+  </section>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 4: quiz -->
+  <section class="card">
+    <h2><span class="badge">4️⃣</span> Quiz relâmpago!</h2>
+    <p class="instructions">✏️ Faça um círculo na resposta certa.</p>
+
+    <div class="quiz-item">
+      <div class="quiz-question">🍕 Uma pizza cortada em 4 pedaços. Você comeu 1. Qual fração representa isso?</div>
+      <div class="options">
+        <span class="opt-box">1/2</span>
+        <span class="opt-box">1/4</span>
+        <span class="opt-box">4/1</span>
+        <span class="opt-box">3/4</span>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">🍫 Numa barra de 6 pedaços, você comeu 2. Que fração é essa?</div>
+      <div class="options">
+        <span class="opt-box">6/2</span>
+        <span class="opt-box">2/4</span>
+        <span class="opt-box">2/6</span>
+        <span class="opt-box">1/6</span>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">🤔 Na fração 3/5, qual número é o denominador?</div>
+      <div class="options">
+        <span class="opt-box">3</span>
+        <span class="opt-box">5</span>
+        <span class="opt-box">8</span>
+        <span class="opt-box">15</span>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">⚖️ Qual fração é MAIOR: 1/2 ou 1/4?</div>
+      <div class="options">
+        <span class="opt-box">1/2</span>
+        <span class="opt-box">1/4</span>
+        <span class="opt-box">São iguais</span>
+      </div>
+    </div>
+
+    <div class="tip">
+      <span class="icon">🧠</span>
+      <div>Truque: pense em pizza! Quando a pizza é cortada em MENOS pedaços, cada pedaço fica MAIOR. Por isso, metade de uma pizza (1/2) é sempre maior que 1 quarto (1/4)!</div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: match game (draw a line) -->
+  <section class="card">
+    <h2><span class="badge">5️⃣</span> Ligue os pares!</h2>
+    <p class="instructions">✏️ Desenhe uma linha ligando a fração à sua forma de falar.</p>
+
+    <div class="match-columns">
+      <div class="col">
+        <div class="item">1/2</div>
+        <div class="item">1/4</div>
+        <div class="item">1/3</div>
+        <div class="item">3/4</div>
+      </div>
+      <div class="col">
+        <div class="item">um terço</div>
+        <div class="item">três quartos</div>
+        <div class="item">metade</div>
+        <div class="item">um quarto</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 6: final challenge -->
+  <section class="card">
+    <h2><span class="badge">🏆</span> Desafio Final</h2>
+    <p class="intro">Complete a fração que falta olhando o desenho!</p>
+
+    <div class="pizza-row">
+      <div class="pizza-item">
+        <svg width="140" height="140" viewBox="0 0 140 140" aria-label="Pizza dividida em 3, com 2 pintadas">
+          <circle cx="70" cy="70" r="65" fill="#ffffff" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M70 70 L70 5 A65 65 0 0 1 126.3 102.5 Z" fill="var(--aqua)" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M70 70 L126.3 102.5 A65 65 0 0 1 13.7 102.5 Z" fill="var(--aqua)" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M70 70 L13.7 102.5 A65 65 0 0 1 70 5 Z" fill="#ffffff" stroke="#0b0b0b" stroke-width="3"/>
+        </svg>
+      </div>
+    </div>
+
+    <div style="text-align:center; font-size:19px; margin:14px 0;">
+      Comi 2 pedaços de uma pizza cortada em 3. A fração é:
+      <span class="fraction-display"><span class="num">2</span><span class="den">?</span></span>
+      <span class="answer-box"></span>
+    </div>
+
+    <p class="instructions" style="margin-top:20px;">✏️ Agora desenhe você mesmo! Divida a pizza abaixo em 4 partes e pinte 3 delas.</p>
+    <div class="pizza-row">
+      <svg width="150" height="150" viewBox="0 0 160 160">
+        <circle cx="80" cy="80" r="75" fill="#ffffff" stroke="#0b0b0b" stroke-width="3"/>
+      </svg>
+    </div>
+    <p style="text-align:center; font-size:16px;">Que fração você desenhou? <span class="answer-box"></span></p>
+  </section>
+
+  <!-- ANSWER KEY -->
+  <div class="page-break"></div>
+  <div class="answer-key">
+    <h2>🔑 Gabarito (para o adulto responsável)</h2>
+    <p><strong>Atividade 2 — Pinte a fração:</strong> conferir visualmente se a quantidade de fatias pintadas bate com 2/4, 4/6 e 3/6.</p>
+    <p><strong>Atividade 3 — Barra de 5:</strong> qualquer resposta com 3 pedacinhos pintados = 3/5.</p>
+    <ol>
+      <li>1/4</li>
+      <li>2/6</li>
+      <li>5</li>
+      <li>1/2</li>
+    </ol>
+    <p><strong>Ligue os pares:</strong> 1/2 → metade · 1/4 → um quarto · 1/3 → um terço · 3/4 → três quartos</p>
+    <p><strong>Desafio final:</strong> 2/3</p>
+  </div>
+
+</div>
+</body>
+</html>

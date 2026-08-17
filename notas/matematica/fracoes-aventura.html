@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>A Aventura das Frações</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --muted:          #898781;
+    --border:         rgba(11,11,11,0.10);
+
+    --blue:    #2a78d6;
+    --orange:  #eb6834;
+    --aqua:    #1baf7a;
+    --yellow:  #eda100;
+    --magenta: #e87ba4;
+    --violet:  #4a3aa7;
+    --red:     #e34948;
+
+    --good: #0ca30c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text-primary);
+    font-family: "Comic Sans MS", "Segoe Print", system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.4;
+    padding-bottom: 60px;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    text-align: center;
+    padding: 28px 16px 20px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 6vw, 44px);
+    margin: 0 0 6px;
+    color: var(--violet);
+  }
+  .hero p {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .mascot {
+    font-size: 64px;
+    display: block;
+    margin: 10px auto;
+    animation: bob 2.2s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+  }
+
+  /* ---------- PROGRESS BAR ---------- */
+  .progress-shell {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--surface-1);
+    border-bottom: 3px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 22px;
+    background: #e1e0d9;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 2px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--aqua), var(--good));
+    border-radius: 999px;
+    transition: width 0.5s ease;
+  }
+  .progress-label {
+    font-weight: bold;
+    font-size: 15px;
+    white-space: nowrap;
+    color: var(--violet);
+  }
+  .star-count {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--yellow);
+    white-space: nowrap;
+  }
+
+  /* ---------- SECTION CARD ---------- */
+  section.card {
+    background: var(--surface-1);
+    border: 3px solid var(--border);
+    border-radius: 22px;
+    padding: 22px 20px;
+    margin: 22px 0;
+    box-shadow: 0 4px 0 rgba(11,11,11,0.06);
+  }
+  section.card h2 {
+    font-size: 26px;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--blue);
+  }
+  section.card h2 .badge {
+    font-size: 28px;
+  }
+  section.card > p.intro {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-top: 0;
+  }
+
+  .fraction-display {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+    margin: 0 6px;
+    vertical-align: middle;
+  }
+  .fraction-display .num { padding-bottom: 3px; border-bottom: 3px solid var(--text-primary); padding: 0 6px 4px; }
+  .fraction-display .den { padding: 4px 6px 0; }
+
+  /* ---------- PIZZA VISUAL ---------- */
+  .pizza-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin: 18px 0;
+  }
+  .pizza-item { text-align: center; }
+  .pizza-item .cap { margin-top: 8px; font-size: 18px; font-weight: bold; color: var(--text-secondary); }
+
+  /* ---------- BAR VISUAL ---------- */
+  .bar-visual {
+    display: flex;
+    width: 100%;
+    max-width: 480px;
+    height: 54px;
+    margin: 14px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 3px solid var(--text-primary);
+  }
+  .bar-visual .seg {
+    flex: 1;
+    border-right: 3px solid var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+  }
+  .bar-visual .seg:last-child { border-right: none; }
+  .bar-visual .seg.empty { background: #e1e0d9 !important; color: var(--muted); }
+
+  /* ---------- INTERACTIVE PIZZA (click slices) ---------- */
+  .make-fraction-box {
+    text-align: center;
+    margin: 16px 0;
+  }
+  .make-fraction-box .prompt {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+  .slice-count-label {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+  .check-btn {
+    display: block;
+    margin: 14px auto 0;
+    background: var(--aqua);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 19px;
+    font-weight: bold;
+    padding: 12px 28px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #0c8f63;
+    font-family: inherit;
+  }
+  .check-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #0c8f63; }
+  .feedback {
+    margin-top: 12px;
+    font-size: 19px;
+    font-weight: bold;
+    min-height: 28px;
+  }
+  .feedback.ok { color: var(--good); }
+  .feedback.no { color: var(--red); }
+
+  /* ---------- QUIZ ---------- */
+  .quiz-item {
+    border: 3px dashed var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 16px 0;
+    background: #fdfdfc;
+  }
+  .quiz-question {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  .opt-btn {
+    background: white;
+    border: 3px solid var(--blue);
+    color: var(--blue);
+    border-radius: 12px;
+    padding: 12px 10px;
+    font-size: 19px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.1s ease;
+  }
+  .opt-btn:hover { transform: scale(1.04); }
+  .opt-btn.correct { background: var(--good); border-color: var(--good); color: white; }
+  .opt-btn.wrong { background: var(--red); border-color: var(--red); color: white; }
+  .opt-btn:disabled { cursor: default; }
+
+  /* ---------- MEMORY / MATCH GAME ---------- */
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .match-card {
+    aspect-ratio: 1;
+    background: var(--blue);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+    font-family: inherit;
+  }
+  .match-card.matched { background: var(--good); cursor: default; opacity: 0.85; }
+  .match-card.shake { animation: shake 0.4s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  /* ---------- TIP BOX ---------- */
+  .tip {
+    background: #fff8e6;
+    border: 3px solid var(--yellow);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 17px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .tip .icon { font-size: 26px; }
+
+  /* ---------- FOOTER CELEBRATION ---------- */
+  .celebration {
+    text-align: center;
+    padding: 30px 16px;
+    display: none;
+  }
+  .celebration.show { display: block; }
+  .celebration h2 { font-size: 32px; color: var(--violet); }
+  .celebration .big-emoji { font-size: 70px; }
+
+  button:focus-visible, .match-card:focus-visible { outline: 4px solid var(--violet); outline-offset: 2px; }
+
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted: #898781;
+      --border: rgba(255,255,255,0.14);
+    }
+    :root:where(:not([data-theme="light"])) .tip { background: #2a2210; }
+    :root:where(:not([data-theme="light"])) .quiz-item { background: #171716; }
+    :root:where(:not([data-theme="light"])) .opt-btn { background: #1a1a19; }
+    :root:where(:not([data-theme="light"])) .bar-visual .seg.empty { background: #383835; color: #c3c2b7; }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --page: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --muted: #898781;
+    --border: rgba(255,255,255,0.14);
+  }
+  :root[data-theme="dark"] .tip { background: #2a2210; }
+  :root[data-theme="dark"] .quiz-item { background: #171716; }
+  :root[data-theme="dark"] .opt-btn { background: #1a1a19; }
+  :root[data-theme="dark"] .bar-visual .seg.empty { background: #383835; color: #c3c2b7; }
+</style>
+</head>
+<body>
+<div class="progress-shell">
+  <span class="progress-label">Sua jornada</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="star-count" id="starCount">⭐ 0</span>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="mascot">🍕</span>
+    <h1>A Aventura das Frações</h1>
+    <p>Vamos aprender brincando com pizza, chocolate e muito mais!</p>
+  </div>
+
+  <!-- SECTION 1: O que é uma fração -->
+  <section class="card" id="sec1">
+    <h2><span class="badge">1️⃣</span> O que é uma fração?</h2>
+    <p class="intro">Fração é quando a gente <strong>divide alguma coisa em pedaços iguais</strong> e pega uma parte dela!</p>
+
+    <div class="tip">
+      <span class="icon">💡</span>
+      <div>
+        Pensa assim: você tem uma pizza inteira e vai repartir com os amigos.
+        Cada pedaço é uma <strong>fração</strong> da pizza toda!
+      </div>
+    </div>
+
+    <p style="text-align:center; font-size:18px;">
+      Olha essa pizza cortada em <strong>4 pedaços iguais</strong>. Se você comer <strong>1 pedaço</strong>, você comeu:
+    </p>
+
+    <div class="pizza-row">
+      <div class="pizza-item">
+        <svg width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="Pizza dividida em 4 partes, 1 parte comida">
+          <circle cx="80" cy="80" r="75" fill="#f4dca0" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M80 80 L80 5 A75 75 0 0 1 155 80 Z" fill="var(--orange)" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="80" y2="155" stroke="#0b0b0b" stroke-width="3"/>
+          <line x1="80" y1="80" x2="5" y2="80" stroke="#0b0b0b" stroke-width="3"/>
+          <circle cx="55" cy="55" r="5" fill="#c0392b"/>
+          <circle cx="105" cy="115" r="5" fill="#c0392b"/>
+          <circle cx="45" cy="105" r="5" fill="#c0392b"/>
+          <circle cx="115" cy="50" r="5" fill="#c0392b"/>
+        </svg>
+        <div class="cap">1 pedaço comido de 4 = <span class="fraction-display"><span class="num">1</span><span class="den">4</span></span></div>
+      </div>
+    </div>
+
+    <p style="text-align:center; font-size:18px;">
+      A fração <span class="fraction-display"><span class="num">1</span><span class="den">4</span></span> se lê
+      <strong>"um quarto"</strong>. O número de <strong>cima</strong> (numerador) é quantos pedaços você pegou.
+      O número de <strong>baixo</strong> (denominador) é em quantos pedaços a pizza foi cortada!
+    </p>
+
+    <div style="display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin-top:16px;">
+      <div style="text-align:center;">
+        <div style="font-size:40px;">⬆️</div>
+        <strong style="color:var(--blue); font-size:18px;">Numerador</strong>
+        <p style="font-size:15px; color:var(--text-secondary); max-width:160px;">quantos pedaços você PEGOU</p>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:40px;">⬇️</div>
+        <strong style="color:var(--orange); font-size:18px;">Denominador</strong>
+        <p style="font-size:15px; color:var(--text-secondary); max-width:160px;">em quantos pedaços foi CORTADO</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: Barra de chocolate -->
+  <section class="card" id="sec2">
+    <h2><span class="badge">2️⃣</span> A barra de chocolate</h2>
+    <p class="intro">Frações também aparecem em barras! Olha essa barra de chocolate com 6 pedacinhos:</p>
+
+    <div class="bar-visual" aria-label="Barra de chocolate com 6 partes, 2 comidas">
+      <div class="seg empty">🍫</div>
+      <div class="seg empty">🍫</div>
+      <div class="seg" style="background:var(--violet);">😋</div>
+      <div class="seg" style="background:var(--violet);">😋</div>
+      <div class="seg empty">🍫</div>
+      <div class="seg empty">🍫</div>
+    </div>
+    <p style="text-align:center; font-size:18px;">
+      Comi 2 pedacinhos de 6 → <span class="fraction-display"><span class="num">2</span><span class="den">6</span></span>
+      (lê-se <strong>"dois sextos"</strong>)
+    </p>
+
+    <div class="tip">
+      <span class="icon">🎯</span>
+      <div>Quanto MAIOR o número de baixo, MENORES ficam os pedaços — porque a barra foi cortada em mais partes!</div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: Monte sua fração (interativo) -->
+  <section class="card" id="sec3">
+    <h2><span class="badge">3️⃣</span> Monte sua pizza!</h2>
+    <p class="intro">Clique nos pedaços da pizza para "comer" e forme a fração pedida.</p>
+
+    <div class="make-fraction-box">
+      <div class="prompt" id="pizzaPrompt">Coma <span class="fraction-display" style="font-size:22px;"><span class="num">3</span><span class="den">8</span></span> da pizza (clique nos pedaços!)</div>
+      <svg id="clickPizza" width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="Pizza interativa de 8 pedaços"></svg>
+      <div class="slice-count-label" id="sliceCountLabel">Pedaços comidos: 0 de 8</div>
+      <button class="check-btn" onclick="checkPizza()">✅ Conferir</button>
+      <div class="feedback" id="pizzaFeedback"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: Quiz rápido -->
+  <section class="card" id="sec4">
+    <h2><span class="badge">4️⃣</span> Quiz relâmpago!</h2>
+    <p class="intro">Escolha a resposta certa. Vai ganhar uma estrela ⭐ a cada acerto!</p>
+
+    <div class="quiz-item">
+      <div class="quiz-question">🍕 Uma pizza cortada em 4 pedaços. Você comeu 1. Qual fração representa isso?</div>
+      <div class="options">
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">1/2</button>
+        <button class="opt-btn" data-correct="true" onclick="answerQuiz(this)">1/4</button>
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">4/1</button>
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">3/4</button>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">🍫 Numa barra de 6 pedaços, você comeu 2. Que fração é essa?</div>
+      <div class="options">
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">6/2</button>
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">2/4</button>
+        <button class="opt-btn" data-correct="true" onclick="answerQuiz(this)">2/6</button>
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">1/6</button>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">🤔 Na fração 3/5, qual número é o denominador?</div>
+      <div class="options">
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">3</button>
+        <button class="opt-btn" data-correct="true" onclick="answerQuiz(this)">5</button>
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">8</button>
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">15</button>
+      </div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-question">⚖️ Qual fração é MAIOR: 1/2 ou 1/4?</div>
+      <div class="options">
+        <button class="opt-btn" data-correct="true" onclick="answerQuiz(this)">1/2</button>
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">1/4</button>
+        <button class="opt-btn" data-correct="false" onclick="answerQuiz(this)">São iguais</button>
+      </div>
+    </div>
+
+    <div class="tip">
+      <span class="icon">🧠</span>
+      <div>Truque: pense em pizza! Se a pizza é cortada em MENOS pedaços (4), cada pedaço é MAIOR do que se ela for cortada em MAIS pedaços (2 é maior denominador que... opa, pense: metade de uma pizza (1/2) é sempre maior que 1 quarto (1/4)!</div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: Jogo da memória -->
+  <section class="card" id="sec5">
+    <h2><span class="badge">5️⃣</span> Jogo da Memória das Frações</h2>
+    <p class="intro">Encontre os pares: a fração e o desenho que combina com ela!</p>
+    <div class="match-grid" id="matchGrid"></div>
+    <div class="feedback ok" id="matchFeedback" style="text-align:center;"></div>
+  </section>
+
+  <!-- SECTION 6: Desafio final -->
+  <section class="card" id="sec6">
+    <h2><span class="badge">🏆</span> Desafio Final</h2>
+    <p class="intro">Complete a fração que falta olhando o desenho!</p>
+
+    <div class="pizza-row">
+      <div class="pizza-item">
+        <svg width="140" height="140" viewBox="0 0 140 140" aria-label="Pizza dividida em 3, com 2 comidos">
+          <circle cx="70" cy="70" r="65" fill="#f4dca0" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M70 70 L70 5 A65 65 0 0 1 126.3 102.5 Z" fill="var(--aqua)" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M70 70 L126.3 102.5 A65 65 0 0 1 13.7 102.5 Z" fill="var(--aqua)" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M70 70 L13.7 102.5 A65 65 0 0 1 70 5 Z" fill="#f4dca0" stroke="#0b0b0b" stroke-width="3"/>
+        </svg>
+      </div>
+    </div>
+
+    <div style="text-align:center; font-size:22px; margin:16px 0;">
+      Comi 2 pedaços de uma pizza cortada em 3. A fração é:
+      <span class="fraction-display"><span class="num">2</span><span class="den">?</span></span>
+    </div>
+
+    <div style="text-align:center;">
+      <input type="number" id="finalAnswer" min="0" max="9" style="width:70px; font-size:26px; text-align:center; border:3px solid var(--blue); border-radius:10px; padding:6px; font-family:inherit;" aria-label="Digite o denominador">
+      <button class="check-btn" style="display:inline-block; margin-left:10px;" onclick="checkFinal()">✅ Conferir</button>
+    </div>
+    <div class="feedback" id="finalFeedback" style="text-align:center;"></div>
+  </section>
+
+  <div class="celebration" id="celebration">
+    <div class="big-emoji">🎉🏆🎉</div>
+    <h2>Você é um mestre das frações!</h2>
+    <p style="font-size:19px;">Parabéns por completar toda a aventura. Mostra pra alguém o que aprendeu!</p>
+  </div>
+
+</div>
+
+<script>
+  let stars = 0;
+  let progressSteps = 0;
+  const TOTAL_STEPS = 7; // quiz(4) + pizza(1) + match(1) + final(1)
+
+  function updateProgress() {
+    const pct = Math.min(100, Math.round((progressSteps / TOTAL_STEPS) * 100));
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('starCount').textContent = '⭐ ' + stars;
+    if (pct >= 100) {
+      document.getElementById('celebration').classList.add('show');
+    }
+  }
+
+  function addStar() {
+    stars++;
+    progressSteps++;
+    updateProgress();
+  }
+  function addStep() {
+    progressSteps++;
+    updateProgress();
+  }
+
+  /* ---------- Interactive pizza (section 3) ---------- */
+  const totalSlices = 8;
+  const targetEaten = 3;
+  let eaten = new Set();
+
+  function buildClickPizza() {
+    const svg = document.getElementById('clickPizza');
+    const cx = 110, cy = 110, r = 100;
+    const colors = ['#f4dca0'];
+    let html = '';
+    for (let i = 0; i < totalSlices; i++) {
+      const a0 = (i / totalSlices) * 2 * Math.PI - Math.PI/2;
+      const a1 = ((i+1) / totalSlices) * 2 * Math.PI - Math.PI/2;
+      const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+      const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+      html += `<path data-i="${i}" d="M${cx} ${cy} L${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z"
+        fill="#f4dca0" stroke="#0b0b0b" stroke-width="3" style="cursor:pointer" onclick="toggleSlice(${i})"/>`;
+    }
+    svg.innerHTML = html;
+  }
+
+  function toggleSlice(i) {
+    const path = svg_path(i);
+    if (eaten.has(i)) {
+      eaten.delete(i);
+      path.setAttribute('fill', '#f4dca0');
+    } else {
+      eaten.add(i);
+      path.setAttribute('fill', getComputedStyle(document.documentElement).getPropertyValue('--orange').trim() || '#eb6834');
+    }
+    document.getElementById('sliceCountLabel').textContent = `Pedaços comidos: ${eaten.size} de ${totalSlices}`;
+  }
+  function svg_path(i) {
+    return document.querySelector(`#clickPizza path[data-i="${i}"]`);
+  }
+
+  function checkPizza() {
+    const fb = document.getElementById('pizzaFeedback');
+    if (eaten.size === targetEaten) {
+      fb.textContent = '🎉 Isso aí! Você comeu 3/8 da pizza certinho!';
+      fb.className = 'feedback ok';
+      addStar();
+    } else if (eaten.size === 0) {
+      fb.textContent = '🍕 Clique nos pedaços da pizza primeiro!';
+      fb.className = 'feedback no';
+    } else {
+      fb.textContent = `Quase lá! Você comeu ${eaten.size} pedaços, mas precisa comer 3. Tenta de novo!`;
+      fb.className = 'feedback no';
+    }
+  }
+  buildClickPizza();
+
+  /* ---------- Quiz (section 4) ---------- */
+  function answerQuiz(btn) {
+    const group = btn.parentElement;
+    const buttons = group.querySelectorAll('.opt-btn');
+    const isCorrect = btn.dataset.correct === 'true';
+    buttons.forEach(b => b.disabled = true);
+    if (isCorrect) {
+      btn.classList.add('correct');
+      addStar();
+    } else {
+      btn.classList.add('wrong');
+      group.querySelector('[data-correct="true"]').classList.add('correct');
+    }
+  }
+
+  /* ---------- Memory game (section 5) ---------- */
+  const pairs = [
+    { id: 'a', label: '1/2', visual: '🍕 (½)' },
+    { id: 'a', label: '½ pizza', visual: '🍕 metade' },
+    { id: 'b', label: '1/4', visual: '🍫 ¼' },
+    { id: 'b', label: '¼ barra', visual: '🍫 um quarto' },
+    { id: 'c', label: '3/4', visual: '🥧 ¾' },
+    { id: 'c', label: '¾ torta', visual: '🥧 três quartos' },
+  ];
+  // Simpler & clearer: fraction <-> plain-language pairs
+  const memoryPairs = [
+    ['1/2', 'metade'],
+    ['1/4', 'um quarto'],
+    ['1/3', 'um terço'],
+    ['3/4', 'três quartos'],
+  ];
+  let cards = [];
+  memoryPairs.forEach(([frac, word], idx) => {
+    cards.push({ key: idx, text: frac });
+    cards.push({ key: idx, text: word });
+  });
+  // shuffle
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+
+  let flipped = [];
+  let lockBoard = false;
+  let matchedCount = 0;
+
+  function buildMatchGrid() {
+    const grid = document.getElementById('matchGrid');
+    grid.innerHTML = '';
+    cards.forEach((c, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'match-card';
+      btn.dataset.idx = idx;
+      btn.dataset.key = c.key;
+      btn.textContent = '❓';
+      btn.setAttribute('aria-label', 'Carta virada para baixo');
+      btn.onclick = () => flipCard(idx);
+      grid.appendChild(btn);
+    });
+  }
+
+  function flipCard(idx) {
+    if (lockBoard) return;
+    const btn = document.querySelector(`.match-card[data-idx="${idx}"]`);
+    if (btn.classList.contains('matched') || flipped.includes(idx)) return;
+
+    btn.textContent = cards[idx].text;
+    flipped.push(idx);
+
+    if (flipped.length === 2) {
+      lockBoard = true;
+      const [i1, i2] = flipped;
+      const b1 = document.querySelector(`.match-card[data-idx="${i1}"]`);
+      const b2 = document.querySelector(`.match-card[data-idx="${i2}"]`);
+      if (cards[i1].key === cards[i2].key) {
+        setTimeout(() => {
+          b1.classList.add('matched');
+          b2.classList.add('matched');
+          matchedCount++;
+          flipped = [];
+          lockBoard = false;
+          document.getElementById('matchFeedback').textContent = `✅ Par encontrado! (${matchedCount}/${memoryPairs.length})`;
+          if (matchedCount === memoryPairs.length) {
+            document.getElementById('matchFeedback').textContent = '🏆 Você encontrou todos os pares! Mandou bem!';
+            addStar();
+          }
+        }, 500);
+      } else {
+        b1.classList.add('shake');
+        b2.classList.add('shake');
+        setTimeout(() => {
+          b1.textContent = '❓';
+          b2.textContent = '❓';
+          b1.classList.remove('shake');
+          b2.classList.remove('shake');
+          flipped = [];
+          lockBoard = false;
+        }, 800);
+      }
+    }
+  }
+  buildMatchGrid();
+
+  /* ---------- Final challenge (section 6) ---------- */
+  function checkFinal() {
+    const val = document.getElementById('finalAnswer').value;
+    const fb = document.getElementById('finalFeedback');
+    if (val === '3') {
+      fb.textContent = '🎉 Perfeito! A pizza foi cortada em 3 pedaços, então é 2/3!';
+      fb.className = 'feedback ok';
+      addStar();
+    } else if (val === '') {
+      fb.textContent = 'Digite um número na caixinha!';
+      fb.className = 'feedback no';
+    } else {
+      fb.textContent = 'Não foi essa! Conta quantas fatias tem a pizza toda e tenta de novo. 🍕';
+      fb.className = 'feedback no';
+    }
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
