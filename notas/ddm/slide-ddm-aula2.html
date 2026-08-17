@@ -261,7 +261,8 @@
 
         .svm-code-col pre { margin:0; }
         .svm-code-col .ln-hl { display:inline-block; border-radius:4px; padding:0 3px; transition:background .25s, box-shadow .25s; }
-        .svm-code-col .ln-hl.svm-active { background:rgba(46,125,50,0.28); box-shadow:0 0 0 1px rgba(46,125,50,0.5); }
+        .svm-code-col .ln-hl.svm-active { background:rgba(46,125,50,0.28); box-shadow:0 0 0 1px rgba(46,125,50,0.5); animation:svm-run .6s ease-out; }
+        @keyframes svm-run { 0% { background:rgba(46,125,50,0.65); } 100% { background:rgba(46,125,50,0.28); } }
 
         .svm-lower { display:flex; align-items:flex-start; gap:18px; }
 
@@ -270,6 +271,8 @@
         .svm-phone-col .ab-screen { min-height:150px; max-height:150px; }
         .svm-phone-col .ab-view { transition:box-shadow .25s; }
         .svm-phone-col .ab-view.svm-linked { box-shadow:0 0 0 2px var(--ifsc-green), 0 2px 6px rgba(0,0,0,0.15); }
+        .svm-phone-col .ab-view.svm-click { animation:svm-tap .35s ease-out; }
+        @keyframes svm-tap { 0% { transform:scale(1); } 40% { transform:scale(0.94); } 100% { transform:scale(1); } }
 
         .svm-mem-col { flex:1; min-width:0; }
         .svm-mem-box { background:#0f1420; border-radius:10px; padding:8px 12px; min-height:150px; }
@@ -433,13 +436,15 @@ protected void onCreate(Bundle savedInstanceState) {
     TextView tvTitulo;
     Button btnEntrar;
 
-    <span class="ln-hl" data-ln="oncreate">@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);</span>
-        <span class="ln-hl" data-ln="setcontent">setContentView(R.layout.activity_main);</span>
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        <span class="ln-hl" data-ln="find1">tvTitulo = findViewById(R.id.tvTitulo);</span>
-        <span class="ln-hl" data-ln="find2">btnEntrar = findViewById(R.id.btnEntrar);</span>
+        tvTitulo = findViewById(R.id.tvTitulo);
+        btnEntrar = findViewById(R.id.btnEntrar);
+
+        btnEntrar.setOnClickListener(v -> tvTitulo.setText("Clicou!"));
     }
 }</code></pre>
                     </div>
@@ -1052,9 +1057,36 @@ protected void onCreate(Bundle savedInstanceState) {
         const btnAll   = document.getElementById('svmAll');
         const btnReset = document.getElementById('svmReset');
 
-        const lines = Array.from(codeEl.querySelectorAll('.ln-hl'));
-        const lineByKey = {};
-        lines.forEach(el => { lineByKey[el.dataset.ln] = el; });
+        // O RevealHighlight roda hljs.highlightElement() automaticamente sobre todo
+        // <code class="language-*"> da apresentação. Se colocássemos <span> de destaque
+        // no HTML de origem, o highlight.js os tratava como texto e os escapava na tela.
+        // Por isso: deixamos o código puro no HTML e, aqui, embrulhamos cada linha-alvo
+        // num <span> DEPOIS do highlight já ter processado o bloco (por índice de linha,
+        // preservando por dentro o markup de sintaxe que o hljs gerou).
+        const LINE_KEYS = { 4: 'oncreate', 5: 'oncreate', 6: 'oncreate', 7: 'setcontent', 9: 'find1', 10: 'find2', 12: 'listener' };
+        function wrapLines() {
+            const html = codeEl.innerHTML;
+            const rows = html.split('\n');
+            let i = 0;
+            while (i < rows.length) {
+                const key = LINE_KEYS[i];
+                if (key) {
+                    let j = i;
+                    while (LINE_KEYS[j + 1] === key) j++;
+                    const chunk = rows.slice(i, j + 1).join('\n');
+                    const span = '<span class="ln-hl" data-ln="' + key + '">' + chunk + '</span>';
+                    rows.splice(i, j - i + 1, span);
+                    i = i + 1;
+                } else {
+                    i++;
+                }
+            }
+            codeEl.innerHTML = rows.join('\n');
+        }
+        // 'ready' dispara depois que os plugins (incluindo RevealHighlight) já rodaram
+        // sobre os slides — só então o texto original está intacto para ser recortado.
+        if (window.Reveal && Reveal.isReady && Reveal.isReady()) wrapLines();
+        else Reveal.on('ready', wrapLines);
 
         // Cada objeto que aparece na memória quando o layout é inflado.
         const OBJS = [
@@ -1084,18 +1116,35 @@ protected void onCreate(Bundle savedInstanceState) {
             {
                 cap: 'O mesmo para <code>btnEntrar</code>: localiza o <code>Button</code> já existente.',
                 activeLine: 'find2', screenShow: true, memShow: ['tv', 'btn'], linked: ['tv', 'btn']
+            },
+            {
+                cap: 'O listener é registrado <b>no objeto</b> que <code>btnEntrar</code> referencia — a variável e a View na tela são <b>a mesma coisa</b> na memória.',
+                activeLine: 'listener', screenShow: true, memShow: ['tv', 'btn'], linked: ['tv', 'btn']
+            },
+            {
+                cap: 'Ao <b>clicar</b> no botão, a lambda roda e chama <code>tvTitulo.setText(...)</code> — como é o mesmo objeto, o texto muda <b>na tela</b>.',
+                activeLine: 'listener', screenShow: true, memShow: ['tv', 'btn'], linked: ['tv', 'btn'], click: true, tvText: 'Clicou!'
             }
         ];
 
         let idx = -1, autoTimer = null;
         function stopAuto() { if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; } }
 
-        function renderScreen(show) {
+        function renderScreen(show, tvText, click) {
             if (!show) { screenEl.innerHTML = ''; return; }
-            if (screenEl.children.length) return; // já montada, não recria (evita re-disparar animação de entrada)
-            screenEl.innerHTML =
-                '<div class="ab-view tv" id="svm-view-tv">Bem-vindo!</div>' +
-                '<div class="ab-view btn" id="svm-view-btn">Entrar</div>';
+            if (!screenEl.children.length) {
+                screenEl.innerHTML =
+                    '<div class="ab-view tv" id="svm-view-tv">Bem-vindo!</div>' +
+                    '<div class="ab-view btn" id="svm-view-btn">Entrar</div>';
+            }
+            const tvEl = document.getElementById('svm-view-tv');
+            const btnEl = document.getElementById('svm-view-btn');
+            if (tvEl) tvEl.textContent = tvText || 'Bem-vindo!';
+            if (btnEl && click) {
+                btnEl.classList.remove('svm-click');
+                void btnEl.offsetWidth; // reinicia a animação se o mesmo passo rodar de novo
+                btnEl.classList.add('svm-click');
+            }
         }
 
         function renderMem(memShow, linked) {
@@ -1112,8 +1161,8 @@ protected void onCreate(Bundle savedInstanceState) {
         function render() {
             const st = idx >= 0 ? STEPS[idx] : STEPS[0];
 
-            lines.forEach(el => el.classList.toggle('svm-active', el.dataset.ln === st.activeLine));
-            renderScreen(st.screenShow);
+            codeEl.querySelectorAll('.ln-hl').forEach(el => el.classList.toggle('svm-active', el.dataset.ln === st.activeLine));
+            renderScreen(st.screenShow, st.tvText, st.click);
             renderMem(st.memShow, st.linked);
 
             OBJS.forEach(o => {
