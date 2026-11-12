@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Exercicios — JavaScript Fundamentos — PPI1</title>
+  <style>
+    /* ============================================
+       RESET & BASE
+       ============================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --green-primary: #2e7d32;
+      --green-dark: #1b5e20;
+      --green-light: #e8f5e9;
+      --green-muted: #a5d6a7;
+      --gray-50: #fafafa;
+      --gray-100: #f5f5f5;
+      --gray-200: #eeeeee;
+      --gray-300: #e0e0e0;
+      --gray-400: #bdbdbd;
+      --gray-600: #757575;
+      --gray-700: #616161;
+      --gray-800: #424242;
+      --gray-900: #212121;
+      --blue-tag: #e3f2fd;
+      --blue-tag-text: #1565c0;
+      --orange-tag: #fff3e0;
+      --orange-tag-text: #e65100;
+      --red-tag: #fbe9e7;
+      --red-tag-text: #bf360c;
+      --code-bg: #1e1e2e;
+      --code-text: #cdd6f4;
+      --code-keyword: #cba6f7;
+      --code-string: #a6e3a1;
+      --code-comment: #6c7086;
+      --code-number: #fab387;
+      --code-function: #89b4fa;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.7;
+      color: var(--gray-900);
+      background: var(--gray-50);
+    }
+
+    a {
+      color: var(--green-primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* ============================================
+       HEADER
+       ============================================ */
+    .header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-primary) 100%);
+      color: #fff;
+      padding: 2.5rem 1rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -10%;
+      width: 120%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.02) 40px,
+        rgba(255,255,255,0.02) 80px
+      );
+    }
+
+    .header-content {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 0.3rem 1rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      letter-spacing: -0.5px;
+    }
+
+    .header h2 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      opacity: 0.9;
+      margin-bottom: 0.2rem;
+    }
+
+    .header-meta {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    .header-meta span {
+      display: inline-block;
+      margin: 0 0.5rem;
+    }
+
+    .header-meta .sep {
+      opacity: 0.4;
+    }
+
+    /* ============================================
+       CONTAINER
+       ============================================ */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* ============================================
+       TABLE OF CONTENTS
+       ============================================ */
+    .toc {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 2rem;
+      margin: 2rem auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--green-light);
+    }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+
+    .toc-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      transition: background 0.15s;
+      font-size: 0.92rem;
+    }
+
+    .toc-item:hover {
+      background: var(--green-light);
+      text-decoration: none;
+    }
+
+    .toc-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      background: var(--green-primary);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .toc-label {
+      color: var(--gray-800);
+      flex: 1;
+    }
+
+    .toc-diff {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .toc-diff.basico {
+      background: var(--blue-tag);
+      color: var(--blue-tag-text);
+    }
+
+    .toc-diff.inter {
+      background: var(--orange-tag);
+      color: var(--orange-tag-text);
+    }
+
+    .toc-diff.avancado {
+      background: var(--red-tag);
+      color: var(--red-tag-text);
+    }
+
+    /* ============================================
+       INSTRUCTIONS SECTION
+       ============================================ */
+    .instructions {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-left: 4px solid var(--green-primary);
+      border-radius: var(--radius);
+      padding: 1.5rem 2rem;
+      margin: 2rem auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .instructions h3 {
+      font-size: 1.05rem;
+      color: var(--green-dark);
+      margin-bottom: 0.8rem;
+    }
+
+    .instructions ol {
+      padding-left: 1.3rem;
+    }
+
+    .instructions li {
+      margin-bottom: 0.4rem;
+      color: var(--gray-800);
+      font-size: 0.92rem;
+    }
+
+    .instructions code {
+      background: var(--gray-100);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: var(--green-dark);
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+
+    /* ============================================
+       EXERCISE CARD
+       ============================================ */
+    .exercise {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      margin: 2rem auto;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .exercise:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .exercise-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.5rem 2rem 1rem;
+    }
+
+    .exercise-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: var(--green-primary);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(46,125,50,0.3);
+    }
+
+    .exercise-title-block {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .exercise-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      line-height: 1.3;
+    }
+
+    .exercise-file {
+      display: inline-block;
+      margin-top: 0.3rem;
+      font-size: 0.82rem;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      padding: 0.15rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .exercise-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0 2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .tag-basico {
+      background: var(--blue-tag);
+      color: var(--blue-tag-text);
+    }
+
+    .tag-inter {
+      background: var(--orange-tag);
+      color: var(--orange-tag-text);
+    }
+
+    .tag-avancado {
+      background: var(--red-tag);
+      color: var(--red-tag-text);
+    }
+
+    .tag-topic {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      font-weight: 500;
+      text-transform: none;
+    }
+
+    .exercise-body {
+      padding: 0 2rem 1.5rem;
+      font-size: 0.93rem;
+      color: var(--gray-800);
+    }
+
+    .exercise-body p {
+      margin-bottom: 0.7rem;
+    }
+
+    .exercise-body ul,
+    .exercise-body ol {
+      padding-left: 1.3rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .exercise-body li {
+      margin-bottom: 0.35rem;
+    }
+
+    .exercise-body strong {
+      color: var(--gray-900);
+    }
+
+    .sub-items {
+      list-style-type: lower-alpha;
+      padding-left: 1.5rem;
+      margin: 0.5rem 0 0.7rem;
+    }
+
+    .sub-items li {
+      margin-bottom: 0.3rem;
+    }
+
+    /* ============================================
+       CODE BLOCKS
+       ============================================ */
+    .code-block {
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      margin: 0.8rem 0;
+      overflow-x: auto;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .code-block .kw { color: var(--code-keyword); }
+    .code-block .str { color: var(--code-string); }
+    .code-block .cmt { color: var(--code-comment); font-style: italic; }
+    .code-block .num { color: var(--code-number); }
+    .code-block .fn { color: var(--code-function); }
+
+    .inline-code {
+      background: var(--gray-100);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--green-dark);
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+
+    /* ============================================
+       WIREFRAME MOCKUPS
+       ============================================ */
+    .wireframe {
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin: 1rem 0;
+      background: var(--gray-50);
+      font-size: 0.82rem;
+      color: var(--gray-600);
+    }
+
+    .wireframe-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-400);
+      margin-bottom: 0.5rem;
+    }
+
+    .wireframe-box {
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      padding: 0.4rem 0.6rem;
+      margin: 0.3rem 0;
+      background: #fff;
+      display: inline-block;
+    }
+
+    .wireframe-btn {
+      display: inline-block;
+      background: var(--green-muted);
+      color: var(--green-dark);
+      border: none;
+      border-radius: 4px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 0.2rem;
+    }
+
+    .wireframe-input {
+      display: inline-block;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
+      background: #fff;
+      color: var(--gray-400);
+      min-width: 120px;
+      font-size: 0.8rem;
+    }
+
+    .wireframe-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin: 0.4rem 0;
+      flex-wrap: wrap;
+    }
+
+    .wireframe-grid-calc {
+      display: grid;
+      grid-template-columns: repeat(4, 42px);
+      gap: 4px;
+      margin-top: 0.5rem;
+    }
+
+    .wireframe-grid-calc .wireframe-btn {
+      text-align: center;
+      padding: 0.3rem;
+      min-width: 0;
+    }
+
+    .wireframe-grid-ttt {
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-template-rows: repeat(3, 50px);
+      gap: 2px;
+      margin-top: 0.5rem;
+    }
+
+    .wireframe-grid-ttt div {
+      border: 1px solid var(--gray-300);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--gray-600);
+    }
+
+    .wireframe-color-boxes {
+      display: flex;
+      gap: 6px;
+      margin: 0.5rem 0;
+    }
+
+    .wireframe-color-box {
+      width: 50px;
+      height: 40px;
+      border-radius: 4px;
+      border: 1px solid var(--gray-300);
+    }
+
+    /* ============================================
+       EXPLANATION / NOTE BOXES
+       ============================================ */
+    .note-box {
+      background: var(--green-light);
+      border-left: 3px solid var(--green-primary);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.8rem 1rem;
+      margin: 0.8rem 0;
+      font-size: 0.88rem;
+    }
+
+    .note-box-title {
+      font-weight: 700;
+      color: var(--green-dark);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 0.3rem;
+    }
+
+    /* ============================================
+       FOLDER STRUCTURE
+       ============================================ */
+    .folder-tree {
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+    }
+
+    .folder-tree .folder { color: var(--code-function); font-weight: 600; }
+    .folder-tree .file { color: var(--code-string); }
+    .folder-tree .tree-line { color: var(--code-comment); }
+
+    /* ============================================
+       FOOTER
+       ============================================ */
+    .footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      margin-top: 3rem;
+      border-top: 1px solid var(--gray-200);
+      font-size: 0.82rem;
+      color: var(--gray-600);
+    }
+
+    /* ============================================
+       PRINT STYLES
+       ============================================ */
+    @media print {
+      body {
+        background: #fff;
+        font-size: 11pt;
+      }
+
+      .header {
+        background: var(--green-dark) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 1.5rem 1rem;
+      }
+
+      .exercise {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin: 1rem auto;
+      }
+
+      .toc {
+        break-after: page;
+      }
+
+      .wireframe {
+        break-inside: avoid;
+      }
+
+      .code-block {
+        background: #f4f4f4 !important;
+        color: #333 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 640px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .header h2 {
+        font-size: 0.95rem;
+      }
+
+      .exercise-header {
+        padding: 1rem 1rem 0.5rem;
+      }
+
+      .exercise-tags, .exercise-body {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .toc {
+        padding: 1rem;
+      }
+
+      .instructions {
+        padding: 1rem;
+      }
+
+      .wireframe-grid-calc {
+        grid-template-columns: repeat(4, 36px);
+      }
+
+      .exercise-number {
+        width: 36px;
+        height: 36px;
+        font-size: 0.95rem;
+      }
+
+      .header-meta span {
+        display: block;
+        margin: 0.2rem 0;
+      }
+
+      .header-meta .sep {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       HEADER
+       ========================================== -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-badge">IFSC &mdash; Instituto Federal de Santa Catarina</div>
+      <h1>Lista de Exercicios &mdash; JavaScript Fundamentos</h1>
+      <h2>Programacao para Internet I (PPI1) &mdash; ADS &mdash; 2026/2</h2>
+      <div class="header-meta">
+        <span>Prof. Romulo de Aguiar Beninca</span>
+        <span class="sep">|</span>
+        <span>romulo.beninca@ifsc.edu.br</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ==========================================
+         TABLE OF CONTENTS
+         ========================================== -->
+    <nav class="toc">
+      <div class="toc-title">Sumario dos Exercicios</div>
+      <div class="toc-grid">
+        <a href="#ex1" class="toc-item">
+          <span class="toc-num">1</span>
+          <span class="toc-label">O que e JavaScript?</span>
+          <span class="toc-diff basico">Basico</span>
+        </a>
+        <a href="#ex2" class="toc-item">
+          <span class="toc-num">2</span>
+          <span class="toc-label">Tipos de Variaveis e Operadores</span>
+          <span class="toc-diff basico">Basico</span>
+        </a>
+        <a href="#ex3" class="toc-item">
+          <span class="toc-num">3</span>
+          <span class="toc-label">Desafio do Event Loop</span>
+          <span class="toc-diff inter">Intermediario</span>
+        </a>
+        <a href="#ex4" class="toc-item">
+          <span class="toc-num">4</span>
+          <span class="toc-label">Calculo de IMC com if e switch</span>
+          <span class="toc-diff inter">Intermediario</span>
+        </a>
+        <a href="#ex5" class="toc-item">
+          <span class="toc-num">5</span>
+          <span class="toc-label">Gerador de Numeros Aleatorios</span>
+          <span class="toc-diff inter">Intermediario</span>
+        </a>
+        <a href="#ex6" class="toc-item">
+          <span class="toc-num">6</span>
+          <span class="toc-label">Laboratorio de Strings</span>
+          <span class="toc-diff inter">Intermediario</span>
+        </a>
+        <a href="#ex7" class="toc-item">
+          <span class="toc-num">7</span>
+          <span class="toc-label">Lista de Tarefas (To-Do List)</span>
+          <span class="toc-diff inter">Intermediario</span>
+        </a>
+        <a href="#ex8" class="toc-item">
+          <span class="toc-num">8</span>
+          <span class="toc-label">Mudanca de Cor de Fundo com Clique</span>
+          <span class="toc-diff basico">Basico</span>
+        </a>
+        <a href="#ex9" class="toc-item">
+          <span class="toc-num">9</span>
+          <span class="toc-label">Alteracao de Cores com Tecla de Espaco</span>
+          <span class="toc-diff inter">Intermediario</span>
+        </a>
+        <a href="#ex10" class="toc-item">
+          <span class="toc-num">10</span>
+          <span class="toc-label">Calculadora Aritmetica</span>
+          <span class="toc-diff inter">Intermediario</span>
+        </a>
+        <a href="#ex11" class="toc-item">
+          <span class="toc-num">11</span>
+          <span class="toc-label">Validador de Formulario com Eventos</span>
+          <span class="toc-diff inter">Intermediario</span>
+        </a>
+        <a href="#ex12" class="toc-item">
+          <span class="toc-num">12</span>
+          <span class="toc-label">Mini Agenda de Contatos com localStorage</span>
+          <span class="toc-diff avancado">Avancado</span>
+        </a>
+        <a href="#ex13" class="toc-item">
+          <span class="toc-num">13</span>
+          <span class="toc-label">Jogo da Velha (Tic-Tac-Toe)</span>
+          <span class="toc-diff avancado">Avancado</span>
+        </a>
+        <a href="#ex14" class="toc-item">
+          <span class="toc-num">14</span>
+          <span class="toc-label">Relogio Digital com setInterval (Bonus)</span>
+          <span class="toc-diff basico">Basico</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- ==========================================
+         INSTRUCTIONS
+         ========================================== -->
+    <section class="instructions">
+      <h3>Instrucoes Gerais</h3>
+      <ol>
+        <li>Crie uma pasta chamada <code>ppi1_lista_js</code> dentro do seu repositorio.</li>
+        <li>Para cada exercicio, crie o arquivo indicado (ex.: <code>1.html</code>, <code>2.html</code>, etc.).</li>
+        <li>Versione seu codigo com commits claros e descritivos a cada exercicio concluido.</li>
+        <li>Publique no GitHub com <code>git push</code>.</li>
+        <li>Ative o <strong>GitHub Pages</strong> para visualizacao online do projeto.</li>
+        <li>Todos os exercicios devem funcionar abrindo o arquivo <code>.html</code> diretamente no navegador.</li>
+        <li>Use <strong>JavaScript puro</strong> (sem frameworks ou bibliotecas externas).</li>
+      </ol>
+    </section>
+
+    <!-- ==========================================
+         EXERCISE 1
+         ========================================== -->
+    <article class="exercise" id="ex1">
+      <div class="exercise-header">
+        <div class="exercise-number">1</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">O que e JavaScript?</div>
+          <span class="exercise-file">1.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-basico">Basico</span>
+        <span class="tag tag-topic">console</span>
+        <span class="tag tag-topic">alert</span>
+        <span class="tag tag-topic">DOM</span>
+        <span class="tag tag-topic">getElementById</span>
+        <span class="tag tag-topic">setInterval</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma pagina HTML que explique o que e JavaScript. A pagina deve conter:</p>
+        <ol class="sub-items">
+          <li>Uma breve explicacao sobre a <strong>historia do JavaScript</strong> (criado por Brendan Eich em 1995, padronizado como ECMAScript).</li>
+          <li>Explicacao de que o JavaScript e uma linguagem executada no navegador (ambiente <em>sandbox</em>) e nao acessa recursos do sistema operacional diretamente.</li>
+          <li>Exemplos de uso de <span class="inline-code">document.getElementById()</span>, <span class="inline-code">console.log()</span> e <span class="inline-code">alert()</span>.</li>
+          <li>Uma secao que explique brevemente o conceito de <strong>Event Loop</strong>: como o JavaScript executa codigo de forma assincrona mesmo sendo single-threaded. Inclua um paragrafo explicativo e um diagrama simples (pode ser feito com CSS/HTML) mostrando a pilha de chamadas (call stack), a fila de tarefas (task queue) e a fila de microtarefas (microtask queue).</li>
+          <li>Um <strong>relogio digital ao vivo</strong> na pagina usando <span class="inline-code">setInterval()</span>: a cada segundo, atualize um elemento da pagina com a hora atual formatada (HH:MM:SS).</li>
+        </ol>
+
+        <div class="note-box">
+          <div class="note-box-title">Dica</div>
+          Use <span class="inline-code">new Date().toLocaleTimeString()</span> para obter a hora formatada, e <span class="inline-code">setInterval(funcao, 1000)</span> para atualizar a cada segundo.
+        </div>
+
+        <div class="code-block"><span class="cmt">// Exemplo do relogio:</span>
+<span class="kw">function</span> <span class="fn">atualizarRelogio</span>() {
+  <span class="kw">const</span> agora = <span class="kw">new</span> <span class="fn">Date</span>();
+  document.<span class="fn">getElementById</span>(<span class="str">"relogio"</span>).textContent = agora.<span class="fn">toLocaleTimeString</span>();
+}
+<span class="fn">setInterval</span>(atualizarRelogio, <span class="num">1000</span>);</div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 2
+         ========================================== -->
+    <article class="exercise" id="ex2">
+      <div class="exercise-header">
+        <div class="exercise-number">2</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Tipos de Variaveis e Operadores</div>
+          <span class="exercise-file">2.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-basico">Basico</span>
+        <span class="tag tag-topic">variaveis</span>
+        <span class="tag tag-topic">typeof</span>
+        <span class="tag tag-topic">coercao</span>
+        <span class="tag tag-topic">== vs ===</span>
+        <span class="tag tag-topic">truthy/falsy</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma pagina que explore os tipos de variaveis, operadores e particularidades do JavaScript:</p>
+        <ol class="sub-items">
+          <li>Declare variaveis dos tipos: <span class="inline-code">string</span>, <span class="inline-code">number</span>, <span class="inline-code">boolean</span>, <span class="inline-code">null</span>, <span class="inline-code">undefined</span>, <span class="inline-code">object</span> e <span class="inline-code">array</span>.</li>
+          <li>Use <span class="inline-code">typeof</span> para exibir o tipo de cada variavel na pagina (em uma tabela estilizada).</li>
+          <li>Demonstre operacoes entre tipos diferentes e exiba os resultados:
+            <ul>
+              <li><span class="inline-code">"5" + 3</span> (concatenacao)</li>
+              <li><span class="inline-code">"5" - 3</span> (coercao numerica)</li>
+              <li><span class="inline-code">"5" * "2"</span></li>
+              <li><span class="inline-code">true + 1</span></li>
+              <li><span class="inline-code">null + 5</span></li>
+            </ul>
+          </li>
+          <li><strong>Comparacao <span class="inline-code">==</span> vs <span class="inline-code">===</span></strong>: crie uma secao que compare pares de valores usando ambos os operadores e mostre os resultados em uma tabela. Exemplos:
+            <ul>
+              <li><span class="inline-code">0 == false</span> vs <span class="inline-code">0 === false</span></li>
+              <li><span class="inline-code">"" == false</span> vs <span class="inline-code">"" === false</span></li>
+              <li><span class="inline-code">null == undefined</span> vs <span class="inline-code">null === undefined</span></li>
+              <li><span class="inline-code">"1" == 1</span> vs <span class="inline-code">"1" === 1</span></li>
+            </ul>
+          </li>
+          <li><strong>Exploracao de truthy/falsy</strong>: crie uma lista de valores e, para cada um, exiba se e <em>truthy</em> ou <em>falsy</em> usando <span class="inline-code">Boolean(valor)</span> ou <span class="inline-code">!!valor</span>. Valores para testar: <span class="inline-code">0</span>, <span class="inline-code">""</span>, <span class="inline-code">null</span>, <span class="inline-code">undefined</span>, <span class="inline-code">NaN</span>, <span class="inline-code">false</span>, <span class="inline-code">"0"</span>, <span class="inline-code">"false"</span>, <span class="inline-code">[]</span>, <span class="inline-code">{}</span>, <span class="inline-code">1</span>, <span class="inline-code">" "</span>.</li>
+        </ol>
+
+        <div class="note-box">
+          <div class="note-box-title">Conceito importante</div>
+          Em JavaScript, <span class="inline-code">==</span> faz coercao de tipo antes de comparar, enquanto <span class="inline-code">===</span> compara valor <strong>e</strong> tipo sem coercao. A boa pratica e sempre usar <span class="inline-code">===</span>.
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 3
+         ========================================== -->
+    <article class="exercise" id="ex3">
+      <div class="exercise-header">
+        <div class="exercise-number">3</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Desafio do Event Loop</div>
+          <span class="exercise-file">3.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-inter">Intermediario</span>
+        <span class="tag tag-topic">Event Loop</span>
+        <span class="tag tag-topic">setTimeout</span>
+        <span class="tag tag-topic">Promise</span>
+        <span class="tag tag-topic">microtask</span>
+        <span class="tag tag-topic">macrotask</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma pagina interativa que ajude a entender o funcionamento do <strong>Event Loop</strong> do JavaScript. A pagina deve apresentar trechos de codigo e pedir ao aluno que preveja a ordem de execucao antes de clicar em "Executar".</p>
+
+        <p><strong>Desafio principal:</strong> apresente o seguinte codigo e peca ao aluno para prever a ordem de saida:</p>
+
+        <div class="code-block"><span class="fn">setTimeout</span>(() =&gt; console.<span class="fn">log</span>(<span class="str">"A"</span>), <span class="num">0</span>);
+console.<span class="fn">log</span>(<span class="str">"B"</span>);
+Promise.<span class="fn">resolve</span>().<span class="fn">then</span>(() =&gt; console.<span class="fn">log</span>(<span class="str">"C"</span>));
+console.<span class="fn">log</span>(<span class="str">"D"</span>);
+<span class="cmt">// Qual a ordem de saida?</span></div>
+
+        <ol class="sub-items">
+          <li>Exiba o trecho de codigo acima na pagina com destaque de sintaxe.</li>
+          <li>Crie um campo de texto onde o aluno digita sua previsao (ex.: "B, D, C, A").</li>
+          <li>Ao clicar no botao <strong>"Executar"</strong>, execute o codigo real e exiba a saida passo a passo, com um pequeno atraso entre cada linha para simular o processo (use <span class="inline-code">setTimeout</span> para revelar cada resultado progressivamente).</li>
+          <li>Compare a resposta do aluno com o resultado real e indique se acertou ou errou.</li>
+          <li>Exiba uma <strong>explicacao detalhada</strong> de por que a ordem e <strong>B, D, C, A</strong>:
+            <ul>
+              <li><strong>B e D</strong> sao sincronos &mdash; executam imediatamente na call stack.</li>
+              <li><strong>C</strong> e uma microtarefa (Promise) &mdash; executa apos o codigo sincrono, mas antes das macrotarefas.</li>
+              <li><strong>A</strong> e uma macrotarefa (setTimeout) &mdash; executa por ultimo, apos as microtarefas.</li>
+            </ul>
+          </li>
+          <li><strong>Desafios extras</strong> (opcionais): adicione mais 2-3 trechos de codigo com diferentes combinacoes de <span class="inline-code">setTimeout</span>, <span class="inline-code">Promise.resolve().then()</span> e codigo sincrono para o aluno praticar.</li>
+        </ol>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div class="wireframe-box" style="width:100%;padding:0.8rem;background:var(--code-bg);color:var(--code-text);font-family:monospace;font-size:0.78rem;">
+            setTimeout(() =&gt; console.log("A"), 0);<br>
+            console.log("B");<br>
+            Promise.resolve().then(() =&gt; console.log("C"));<br>
+            console.log("D");
+          </div>
+          <div class="wireframe-row" style="margin-top:0.8rem;">
+            <span style="font-size:0.8rem;font-weight:600;">Sua previsao:</span>
+            <span class="wireframe-input">B, D, C, A</span>
+            <span class="wireframe-btn">Executar</span>
+          </div>
+          <div style="margin-top:0.6rem;padding:0.5rem;border:1px solid var(--gray-300);border-radius:4px;background:#fff;font-size:0.78rem;">
+            Saida: <strong>B</strong> &rarr; <strong>D</strong> &rarr; <strong>C</strong> &rarr; <strong>A</strong>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 4
+         ========================================== -->
+    <article class="exercise" id="ex4">
+      <div class="exercise-header">
+        <div class="exercise-number">4</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Calculo de IMC com if e switch</div>
+          <span class="exercise-file">4.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-inter">Intermediario</span>
+        <span class="tag tag-topic">if/else</span>
+        <span class="tag tag-topic">switch</span>
+        <span class="tag tag-topic">parseFloat</span>
+        <span class="tag tag-topic">DOM</span>
+        <span class="tag tag-topic">formulario</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma pagina com um formulario para calcular o <strong>Indice de Massa Corporal (IMC)</strong>:</p>
+        <ol class="sub-items">
+          <li>Campos de entrada: <strong>Nome</strong>, <strong>Peso (kg)</strong> e <strong>Altura (m)</strong>.</li>
+          <li>Ao clicar em "Calcular", obtenha os valores com <span class="inline-code">document.getElementById()</span> e converta com <span class="inline-code">parseFloat()</span>.</li>
+          <li>Calcule o IMC: <span class="inline-code">IMC = peso / (altura * altura)</span>.</li>
+          <li>Use <span class="inline-code">if / else if / else</span> para classificar o resultado:
+            <ul>
+              <li>Abaixo de 18.5: Abaixo do peso</li>
+              <li>18.5 a 24.9: Peso normal</li>
+              <li>25.0 a 29.9: Sobrepeso</li>
+              <li>30.0 a 34.9: Obesidade grau I</li>
+              <li>35.0 a 39.9: Obesidade grau II</li>
+              <li>40.0 ou mais: Obesidade grau III</li>
+            </ul>
+          </li>
+          <li>Use <span class="inline-code">switch</span> para exibir uma <strong>imagem ou icone</strong> diferente para cada faixa (pode usar elementos HTML/CSS estilizados no lugar de imagens reais).</li>
+          <li>Exiba o resultado formatado: "Ola, [Nome]! Seu IMC e [valor]. Classificacao: [faixa]."</li>
+        </ol>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div class="wireframe-row">
+            <span style="font-size:0.8rem;">Nome:</span>
+            <span class="wireframe-input">Maria</span>
+          </div>
+          <div class="wireframe-row">
+            <span style="font-size:0.8rem;">Peso (kg):</span>
+            <span class="wireframe-input">65</span>
+            <span style="font-size:0.8rem;">Altura (m):</span>
+            <span class="wireframe-input">1.70</span>
+          </div>
+          <div class="wireframe-row">
+            <span class="wireframe-btn">Calcular IMC</span>
+          </div>
+          <div class="wireframe-box" style="width:100%;margin-top:0.3rem;">
+            Ola, Maria! Seu IMC e 22.49. Classificacao: Peso normal.
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 5
+         ========================================== -->
+    <article class="exercise" id="ex5">
+      <div class="exercise-header">
+        <div class="exercise-number">5</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Gerador de Numeros Aleatorios</div>
+          <span class="exercise-file">5.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-inter">Intermediario</span>
+        <span class="tag tag-topic">Math.random</span>
+        <span class="tag tag-topic">arrays</span>
+        <span class="tag tag-topic">objetos</span>
+        <span class="tag tag-topic">loops</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie um gerador de numeros aleatorios com as seguintes funcionalidades:</p>
+        <ol class="sub-items">
+          <li>Campos para definir o <strong>valor minimo</strong> e o <strong>valor maximo</strong> do intervalo.</li>
+          <li>Botao "Gerar" que produz um numero aleatorio dentro do intervalo e o exibe na tela.</li>
+          <li>Mantenha um <strong>historico dos numeros gerados</strong> usando um <strong>array de objetos</strong>. Cada objeto deve ter: <span class="inline-code">{ numero: 42, data: "10:35:22" }</span>.</li>
+          <li>Exiba o historico em uma lista na pagina, do mais recente ao mais antigo.</li>
+          <li>Exiba um <strong>contador de numeros repetidos</strong>: percorra o array e conte quantas vezes cada numero apareceu.</li>
+          <li>Botao "Limpar Historico" que esvazia o array e atualiza a tela.</li>
+        </ol>
+
+        <div class="code-block"><span class="cmt">// Estrutura sugerida para o historico:</span>
+<span class="kw">const</span> historico = [];
+
+<span class="kw">function</span> <span class="fn">gerarNumero</span>(min, max) {
+  <span class="kw">const</span> numero = Math.<span class="fn">floor</span>(Math.<span class="fn">random</span>() * (max - min + <span class="num">1</span>)) + min;
+  historico.<span class="fn">push</span>({
+    numero: numero,
+    data: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toLocaleTimeString</span>()
+  });
+  <span class="kw">return</span> numero;
+}</div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 6
+         ========================================== -->
+    <article class="exercise" id="ex6">
+      <div class="exercise-header">
+        <div class="exercise-number">6</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Laboratorio de Strings</div>
+          <span class="exercise-file">6.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-inter">Intermediario</span>
+        <span class="tag tag-topic">strings</span>
+        <span class="tag tag-topic">metodos de string</span>
+        <span class="tag tag-topic">palindromo</span>
+        <span class="tag tag-topic">loops</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma pagina que funcione como um <strong>laboratorio de manipulacao de strings</strong>. A pagina deve ter um campo de entrada de texto e varias secoes, cada uma realizando uma operacao diferente sobre o texto digitado:</p>
+        <ol class="sub-items">
+          <li><strong>Inverter string</strong>: exiba o texto invertido. Use <span class="inline-code">split("").reverse().join("")</span> ou implemente com um loop <span class="inline-code">for</span>.</li>
+          <li><strong>Capitalizar palavras</strong>: transforme a primeira letra de cada palavra em maiuscula. Use <span class="inline-code">split(" ")</span>, percorra o array e use <span class="inline-code">charAt(0).toUpperCase()</span>.</li>
+          <li><strong>Contar vogais</strong>: conte e exiba o numero de vogais (a, e, i, o, u) presentes no texto, ignorando acentos e maiusculas/minusculas.</li>
+          <li><strong>Remover espacos extras</strong>: remova espacos duplicados e espacos no inicio/fim. Use <span class="inline-code">trim()</span> e uma expressao regular ou loop.</li>
+          <li><strong>Verificar palindromo</strong>: verifique se o texto e um palindromo (lido da mesma forma de tras para frente, ignorando espacos e maiusculas). Exiba "E palindromo!" ou "Nao e palindromo."</li>
+          <li><strong>Estatisticas do texto</strong>: exiba o numero total de caracteres, numero de palavras e numero de frases (contando pontos, exclamacoes e interrogacoes).</li>
+        </ol>
+        <p>Todas as operacoes devem ser executadas <strong>em tempo real</strong> conforme o usuario digita (use o evento <span class="inline-code">input</span>), ou com um botao "Analisar".</p>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div class="wireframe-row">
+            <span class="wireframe-input" style="min-width:300px;">Digite seu texto aqui...</span>
+            <span class="wireframe-btn">Analisar</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:0.6rem;">
+            <div class="wireframe-box">Invertido: ...ogitra uet etigiD</div>
+            <div class="wireframe-box">Capitalizado: Digite Seu Texto...</div>
+            <div class="wireframe-box">Vogais: 8</div>
+            <div class="wireframe-box">Palindromo: Nao</div>
+            <div class="wireframe-box">Palavras: 4 | Caracteres: 22</div>
+            <div class="wireframe-box">Sem espacos extras: ...</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 7
+         ========================================== -->
+    <article class="exercise" id="ex7">
+      <div class="exercise-header">
+        <div class="exercise-number">7</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Lista de Tarefas (To-Do List)</div>
+          <span class="exercise-file">7.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-inter">Intermediario</span>
+        <span class="tag tag-topic">arrays</span>
+        <span class="tag tag-topic">DOM</span>
+        <span class="tag tag-topic">eventos</span>
+        <span class="tag tag-topic">classList</span>
+        <span class="tag tag-topic">createElement</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma <strong>lista de tarefas</strong> (To-Do List) interativa com as seguintes funcionalidades:</p>
+        <ol class="sub-items">
+          <li><strong>Adicionar tarefa</strong>: campo de texto e botao "Adicionar". Ao clicar (ou pressionar Enter), a tarefa e adicionada a lista. Nao permita adicionar tarefas com texto vazio.</li>
+          <li><strong>Marcar como concluida</strong>: ao clicar na tarefa, ela deve ser marcada como concluida (aplique uma classe CSS que risque o texto com <span class="inline-code">text-decoration: line-through</span> e mude a opacidade). Clicar novamente deve desmarcar.</li>
+          <li><strong>Remover tarefa</strong>: cada tarefa deve ter um botao "X" para remove-la da lista.</li>
+          <li><strong>Contador de tarefas</strong>: exiba no topo quantas tarefas estao <strong>pendentes</strong> e quantas estao <strong>concluidas</strong>.</li>
+          <li><strong>Filtros</strong>: tres botoes &mdash; "Todas", "Pendentes", "Concluidas" &mdash; que filtram as tarefas exibidas.</li>
+        </ol>
+
+        <p><strong>Requisito tecnico:</strong> use um <strong>array</strong> para armazenar as tarefas como objetos (<span class="inline-code">{ texto: "...", concluida: false }</span>) e reconstrua a lista na tela a cada mudanca.</p>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div style="max-width:320px;">
+            <div class="wireframe-row">
+              <span class="wireframe-input" style="flex:1;">Nova tarefa...</span>
+              <span class="wireframe-btn">Adicionar</span>
+            </div>
+            <div class="wireframe-row" style="margin-top:0.5rem;">
+              <span class="wireframe-btn" style="font-size:0.7rem;">Todas</span>
+              <span class="wireframe-btn" style="font-size:0.7rem;opacity:0.6;">Pendentes</span>
+              <span class="wireframe-btn" style="font-size:0.7rem;opacity:0.6;">Concluidas</span>
+              <span style="font-size:0.75rem;margin-left:auto;">2 pendentes | 1 concluida</span>
+            </div>
+            <div style="margin-top:0.4rem;">
+              <div class="wireframe-box" style="width:100%;display:flex;justify-content:space-between;">
+                Estudar JavaScript <span style="color:var(--red-tag-text);cursor:pointer;font-weight:700;">X</span>
+              </div>
+              <div class="wireframe-box" style="width:100%;display:flex;justify-content:space-between;text-decoration:line-through;opacity:0.5;">
+                Ler documentacao <span style="color:var(--red-tag-text);cursor:pointer;font-weight:700;">X</span>
+              </div>
+              <div class="wireframe-box" style="width:100%;display:flex;justify-content:space-between;">
+                Fazer exercicios <span style="color:var(--red-tag-text);cursor:pointer;font-weight:700;">X</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 8
+         ========================================== -->
+    <article class="exercise" id="ex8">
+      <div class="exercise-header">
+        <div class="exercise-number">8</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Mudanca de Cor de Fundo com Clique</div>
+          <span class="exercise-file">8.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-basico">Basico</span>
+        <span class="tag tag-topic">eventos</span>
+        <span class="tag tag-topic">Math.random</span>
+        <span class="tag tag-topic">style</span>
+        <span class="tag tag-topic">cores RGB</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma pagina com um botao que, ao ser clicado, muda a <strong>cor de fundo da pagina</strong> para uma cor aleatoria:</p>
+        <ol class="sub-items">
+          <li>Gere valores aleatorios para R, G e B (0 a 255) usando <span class="inline-code">Math.random()</span>.</li>
+          <li>Aplique a cor ao <span class="inline-code">document.body.style.backgroundColor</span> usando o formato <span class="inline-code">rgb(R, G, B)</span>.</li>
+          <li>Exiba o codigo da cor atual na pagina (tanto em formato RGB quanto em hexadecimal).</li>
+          <li>Bonus: adicione um historico visual mostrando as ultimas 5 cores geradas como pequenos quadrados coloridos.</li>
+        </ol>
+
+        <div class="code-block"><span class="cmt">// Gerar cor aleatoria em hexadecimal:</span>
+<span class="kw">function</span> <span class="fn">corAleatoria</span>() {
+  <span class="kw">const</span> r = Math.<span class="fn">floor</span>(Math.<span class="fn">random</span>() * <span class="num">256</span>);
+  <span class="kw">const</span> g = Math.<span class="fn">floor</span>(Math.<span class="fn">random</span>() * <span class="num">256</span>);
+  <span class="kw">const</span> b = Math.<span class="fn">floor</span>(Math.<span class="fn">random</span>() * <span class="num">256</span>);
+  <span class="kw">return</span> <span class="str">`rgb(${r}, ${g}, ${b})`</span>;
+}</div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 9
+         ========================================== -->
+    <article class="exercise" id="ex9">
+      <div class="exercise-header">
+        <div class="exercise-number">9</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Alteracao de Cores com Tecla de Espaco</div>
+          <span class="exercise-file">9.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-inter">Intermediario</span>
+        <span class="tag tag-topic">keydown</span>
+        <span class="tag tag-topic">cores hexadecimais</span>
+        <span class="tag tag-topic">arrays</span>
+        <span class="tag tag-topic">style</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma pagina com <strong>5 caixas coloridas</strong> dispostas lado a lado. Ao pressionar a <strong>barra de espaco</strong>, todas as caixas devem mudar para cores aleatorias simultaneamente:</p>
+        <ol class="sub-items">
+          <li>Crie 5 elementos <span class="inline-code">&lt;div&gt;</span> com tamanho fixo (ex.: 120px x 120px), dispostos em uma linha horizontal (use Flexbox).</li>
+          <li>Ao pressionar a tecla de espaco (evento <span class="inline-code">keydown</span>, verificando <span class="inline-code">event.code === "Space"</span>), gere uma cor hexadecimal aleatoria para cada caixa.</li>
+          <li>Exiba o <strong>codigo hexadecimal</strong> dentro de cada caixa (ex.: <span class="inline-code">#3A7F2B</span>).</li>
+          <li>Garanta que o texto seja legivel independentemente da cor de fundo (use texto branco com sombra, ou calcule o contraste).</li>
+          <li>Exiba uma instrucao na pagina: "Pressione ESPACO para gerar novas cores".</li>
+        </ol>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div style="text-align:center;font-size:0.78rem;margin-bottom:0.4rem;">Pressione ESPACO para gerar novas cores</div>
+          <div class="wireframe-color-boxes">
+            <div class="wireframe-color-box" style="background:#3a7f2b;display:flex;align-items:center;justify-content:center;width:80px;">
+              <span style="color:#fff;font-size:0.65rem;font-family:monospace;text-shadow:0 1px 2px rgba(0,0,0,0.5);">#3A7F2B</span>
+            </div>
+            <div class="wireframe-color-box" style="background:#c94f2e;display:flex;align-items:center;justify-content:center;width:80px;">
+              <span style="color:#fff;font-size:0.65rem;font-family:monospace;text-shadow:0 1px 2px rgba(0,0,0,0.5);">#C94F2E</span>
+            </div>
+            <div class="wireframe-color-box" style="background:#2e6fc9;display:flex;align-items:center;justify-content:center;width:80px;">
+              <span style="color:#fff;font-size:0.65rem;font-family:monospace;text-shadow:0 1px 2px rgba(0,0,0,0.5);">#2E6FC9</span>
+            </div>
+            <div class="wireframe-color-box" style="background:#c9b72e;display:flex;align-items:center;justify-content:center;width:80px;">
+              <span style="color:#fff;font-size:0.65rem;font-family:monospace;text-shadow:0 1px 2px rgba(0,0,0,0.5);">#C9B72E</span>
+            </div>
+            <div class="wireframe-color-box" style="background:#8b2ec9;display:flex;align-items:center;justify-content:center;width:80px;">
+              <span style="color:#fff;font-size:0.65rem;font-family:monospace;text-shadow:0 1px 2px rgba(0,0,0,0.5);">#8B2EC9</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 10
+         ========================================== -->
+    <article class="exercise" id="ex10">
+      <div class="exercise-header">
+        <div class="exercise-number">10</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Calculadora Aritmetica</div>
+          <span class="exercise-file">10.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-inter">Intermediario</span>
+        <span class="tag tag-topic">grid layout</span>
+        <span class="tag tag-topic">eventos</span>
+        <span class="tag tag-topic">operacoes</span>
+        <span class="tag tag-topic">DOM</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma <strong>calculadora aritmetica</strong> com interface visual semelhante a uma calculadora real:</p>
+        <ol class="sub-items">
+          <li>Use <strong>CSS Grid</strong> para criar o layout dos botoes (numeros 0-9, operacoes +, -, *, /, botao "=" e botao "C" para limpar).</li>
+          <li>Crie um <strong>visor</strong> (display) no topo que mostre os numeros digitados e o resultado.</li>
+          <li>Ao clicar em um numero, ele deve ser adicionado ao visor.</li>
+          <li>Ao clicar em uma operacao (+, -, *, /), armazene o primeiro numero e a operacao escolhida.</li>
+          <li>Ao clicar em "=", realize o calculo e exiba o resultado no visor.</li>
+          <li>Trate o caso de <strong>divisao por zero</strong> (exiba uma mensagem de erro no visor).</li>
+          <li>O botao "C" deve limpar o visor e reiniciar os valores.</li>
+        </ol>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div style="max-width:200px;">
+            <div class="wireframe-box" style="width:100%;text-align:right;font-size:1.2rem;font-family:monospace;padding:0.5rem;">42</div>
+            <div class="wireframe-grid-calc">
+              <span class="wireframe-btn">7</span>
+              <span class="wireframe-btn">8</span>
+              <span class="wireframe-btn">9</span>
+              <span class="wireframe-btn" style="background:#ffcc80;">/</span>
+              <span class="wireframe-btn">4</span>
+              <span class="wireframe-btn">5</span>
+              <span class="wireframe-btn">6</span>
+              <span class="wireframe-btn" style="background:#ffcc80;">*</span>
+              <span class="wireframe-btn">1</span>
+              <span class="wireframe-btn">2</span>
+              <span class="wireframe-btn">3</span>
+              <span class="wireframe-btn" style="background:#ffcc80;">-</span>
+              <span class="wireframe-btn">0</span>
+              <span class="wireframe-btn" style="background:#ef9a9a;">C</span>
+              <span class="wireframe-btn" style="background:#a5d6a7;">=</span>
+              <span class="wireframe-btn" style="background:#ffcc80;">+</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 11
+         ========================================== -->
+    <article class="exercise" id="ex11">
+      <div class="exercise-header">
+        <div class="exercise-number">11</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Validador de Formulario com Eventos</div>
+          <span class="exercise-file">11.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-inter">Intermediario</span>
+        <span class="tag tag-topic">eventos</span>
+        <span class="tag tag-topic">validacao</span>
+        <span class="tag tag-topic">focus/blur</span>
+        <span class="tag tag-topic">input</span>
+        <span class="tag tag-topic">submit</span>
+        <span class="tag tag-topic">regex</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie um <strong>formulario de cadastro</strong> com validacao em tempo real usando multiplos tipos de eventos JavaScript:</p>
+        <ol class="sub-items">
+          <li><strong>Campos do formulario:</strong>
+            <ul>
+              <li><strong>Nome completo</strong> (minimo 3 caracteres)</li>
+              <li><strong>E-mail</strong> (deve conter @ e um dominio valido)</li>
+              <li><strong>Senha</strong> (minimo 8 caracteres, pelo menos uma letra maiuscula e um numero)</li>
+              <li><strong>Confirmacao de senha</strong> (deve ser igual a senha)</li>
+              <li><strong>Idade</strong> (numero entre 16 e 120)</li>
+              <li><strong>Curso</strong> (select com opcoes; nao pode ficar vazio)</li>
+            </ul>
+          </li>
+          <li><strong>Eventos a implementar:</strong>
+            <ul>
+              <li><span class="inline-code">input</span> &mdash; valide em tempo real conforme o usuario digita (mostrando mensagens como "Muito curto", "Formato invalido", etc.).</li>
+              <li><span class="inline-code">focus</span> &mdash; ao focar em um campo, exiba uma dica sobre o que e esperado (ex.: "Minimo 8 caracteres, 1 maiuscula, 1 numero").</li>
+              <li><span class="inline-code">blur</span> &mdash; ao sair do campo, faca a validacao final e mostre um indicador verde (valido) ou vermelho (invalido).</li>
+              <li><span class="inline-code">change</span> &mdash; no campo select, valide a selecao.</li>
+              <li><span class="inline-code">submit</span> &mdash; ao enviar o formulario, verifique se todos os campos estao validos. Se sim, exiba uma mensagem de sucesso. Se nao, destaque os campos com erro. Use <span class="inline-code">event.preventDefault()</span> para evitar o envio real.</li>
+              <li><span class="inline-code">keydown</span> &mdash; no campo de idade, permita apenas numeros (bloqueie letras).</li>
+            </ul>
+          </li>
+          <li>Cada campo deve ter um indicador visual de status: borda verde quando valido, borda vermelha quando invalido, e uma mensagem de erro abaixo do campo.</li>
+        </ol>
+
+        <div class="note-box">
+          <div class="note-box-title">Sobre expressoes regulares</div>
+          Para validar o e-mail, use algo como: <span class="inline-code">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span>. Para a senha: <span class="inline-code">/^(?=.*[A-Z])(?=.*\d).{8,}$/</span>. Nao e necessario usar expressoes perfeitas &mdash; o objetivo e praticar logica de validacao.
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 12
+         ========================================== -->
+    <article class="exercise" id="ex12">
+      <div class="exercise-header">
+        <div class="exercise-number">12</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Mini Agenda de Contatos com localStorage</div>
+          <span class="exercise-file">12.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-avancado">Avancado</span>
+        <span class="tag tag-topic">localStorage</span>
+        <span class="tag tag-topic">JSON</span>
+        <span class="tag tag-topic">CRUD</span>
+        <span class="tag tag-topic">arrays de objetos</span>
+        <span class="tag tag-topic">DOM</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie uma <strong>mini agenda de contatos</strong> que salve os dados no navegador usando <span class="inline-code">localStorage</span>. A aplicacao deve implementar as quatro operacoes basicas (CRUD):</p>
+        <ol class="sub-items">
+          <li><strong>Criar (Create)</strong>: formulario com campos <strong>Nome</strong>, <strong>Telefone</strong> e <strong>E-mail</strong>. Ao salvar, adicione o contato a um array e persista no <span class="inline-code">localStorage</span>.</li>
+          <li><strong>Ler (Read)</strong>: ao carregar a pagina, leia os contatos salvos com <span class="inline-code">JSON.parse(localStorage.getItem("contatos"))</span> e exiba-os em uma tabela ou lista de cartoes.</li>
+          <li><strong>Atualizar (Update)</strong>: adicione um botao "Editar" em cada contato. Ao clicar, preencha o formulario com os dados atuais e permita a edicao. Ao salvar, atualize o contato no array e no <span class="inline-code">localStorage</span>.</li>
+          <li><strong>Excluir (Delete)</strong>: botao "Excluir" em cada contato, com uma confirmacao antes de remover (<span class="inline-code">confirm()</span>). Remova do array e atualize o <span class="inline-code">localStorage</span>.</li>
+          <li><strong>Busca</strong>: campo de busca que filtra os contatos por nome em tempo real (evento <span class="inline-code">input</span>).</li>
+        </ol>
+
+        <div class="code-block"><span class="cmt">// Salvar contatos no localStorage:</span>
+<span class="kw">function</span> <span class="fn">salvarContatos</span>(contatos) {
+  localStorage.<span class="fn">setItem</span>(<span class="str">"contatos"</span>, JSON.<span class="fn">stringify</span>(contatos));
+}
+
+<span class="cmt">// Carregar contatos do localStorage:</span>
+<span class="kw">function</span> <span class="fn">carregarContatos</span>() {
+  <span class="kw">const</span> dados = localStorage.<span class="fn">getItem</span>(<span class="str">"contatos"</span>);
+  <span class="kw">return</span> dados ? JSON.<span class="fn">parse</span>(dados) : [];
+}</div>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div style="max-width:400px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:0.5rem;">
+              <span class="wireframe-input" style="min-width:0;">Nome</span>
+              <span class="wireframe-input" style="min-width:0;">Telefone</span>
+              <span class="wireframe-input" style="min-width:0;">E-mail</span>
+            </div>
+            <div class="wireframe-row" style="margin-bottom:0.8rem;">
+              <span class="wireframe-btn">Salvar Contato</span>
+              <span class="wireframe-input" style="margin-left:auto;min-width:0;">Buscar...</span>
+            </div>
+            <div style="border:1px solid var(--gray-300);border-radius:4px;overflow:hidden;font-size:0.75rem;">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:0;background:var(--green-light);padding:0.4rem 0.5rem;font-weight:700;">
+                <span>Nome</span><span>Telefone</span><span>E-mail</span><span>Acoes</span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;padding:0.3rem 0.5rem;border-top:1px solid var(--gray-200);">
+                <span>Ana Silva</span><span>(48) 9999-1234</span><span>ana@mail.com</span>
+                <span>
+                  <span style="color:var(--blue-tag-text);cursor:pointer;">Editar</span>
+                  <span style="color:var(--red-tag-text);cursor:pointer;margin-left:4px;">Excluir</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 13
+         ========================================== -->
+    <article class="exercise" id="ex13">
+      <div class="exercise-header">
+        <div class="exercise-number">13</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Jogo da Velha (Tic-Tac-Toe)</div>
+          <span class="exercise-file">13.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-avancado">Avancado</span>
+        <span class="tag tag-topic">arrays 2D</span>
+        <span class="tag tag-topic">logica</span>
+        <span class="tag tag-topic">DOM</span>
+        <span class="tag tag-topic">eventos</span>
+        <span class="tag tag-topic">grid layout</span>
+      </div>
+      <div class="exercise-body">
+        <p>Crie o classico <strong>Jogo da Velha</strong> para dois jogadores. Este exercicio integra arrays, condicionais, loops, manipulacao do DOM e eventos &mdash; um projeto completo para consolidar os fundamentos:</p>
+        <ol class="sub-items">
+          <li><strong>Tabuleiro</strong>: crie um grid 3x3 usando CSS Grid. Cada celula deve ser clicavel.</li>
+          <li><strong>Estrutura de dados</strong>: represente o tabuleiro como um <strong>array bidimensional</strong> 3x3, inicializado com valores vazios (<span class="inline-code">""</span>).</li>
+          <li><strong>Alternancia de jogadores</strong>: comece com o jogador "X". A cada jogada, alterne entre "X" e "O". Exiba de quem e a vez no topo da pagina.</li>
+          <li><strong>Verificacao de vitoria</strong>: apos cada jogada, verifique as 8 combinacoes possiveis de vitoria (3 linhas, 3 colunas, 2 diagonais). Se alguem vencer, exiba uma mensagem e destaque a combinacao vencedora.</li>
+          <li><strong>Verificacao de empate</strong>: se todas as 9 celulas estiverem preenchidas e ninguem venceu, declare empate.</li>
+          <li><strong>Reiniciar jogo</strong>: botao "Novo Jogo" que limpa o tabuleiro e reinicia o estado.</li>
+          <li><strong>Placar</strong>: mantenha e exiba um placar de vitorias de X, vitorias de O e empates.</li>
+        </ol>
+
+        <div class="code-block"><span class="cmt">// Estrutura sugerida do tabuleiro:</span>
+<span class="kw">let</span> tabuleiro = [
+  [<span class="str">""</span>, <span class="str">""</span>, <span class="str">""</span>],
+  [<span class="str">""</span>, <span class="str">""</span>, <span class="str">""</span>],
+  [<span class="str">""</span>, <span class="str">""</span>, <span class="str">""</span>]
+];
+
+<span class="cmt">// Combinacoes vencedoras (indices):</span>
+<span class="kw">const</span> combinacoes = [
+  [[<span class="num">0</span>,<span class="num">0</span>],[<span class="num">0</span>,<span class="num">1</span>],[<span class="num">0</span>,<span class="num">2</span>]], <span class="cmt">// linha 0</span>
+  [[<span class="num">1</span>,<span class="num">0</span>],[<span class="num">1</span>,<span class="num">1</span>],[<span class="num">1</span>,<span class="num">2</span>]], <span class="cmt">// linha 1</span>
+  [[<span class="num">2</span>,<span class="num">0</span>],[<span class="num">2</span>,<span class="num">1</span>],[<span class="num">2</span>,<span class="num">2</span>]], <span class="cmt">// linha 2</span>
+  [[<span class="num">0</span>,<span class="num">0</span>],[<span class="num">1</span>,<span class="num">0</span>],[<span class="num">2</span>,<span class="num">0</span>]], <span class="cmt">// coluna 0</span>
+  [[<span class="num">0</span>,<span class="num">1</span>],[<span class="num">1</span>,<span class="num">1</span>],[<span class="num">2</span>,<span class="num">1</span>]], <span class="cmt">// coluna 1</span>
+  [[<span class="num">0</span>,<span class="num">2</span>],[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">2</span>,<span class="num">2</span>]], <span class="cmt">// coluna 2</span>
+  [[<span class="num">0</span>,<span class="num">0</span>],[<span class="num">1</span>,<span class="num">1</span>],[<span class="num">2</span>,<span class="num">2</span>]], <span class="cmt">// diagonal</span>
+  [[<span class="num">0</span>,<span class="num">2</span>],[<span class="num">1</span>,<span class="num">1</span>],[<span class="num">2</span>,<span class="num">0</span>]]  <span class="cmt">// anti-diagonal</span>
+];</div>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div style="text-align:center;">
+            <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem;">Vez do jogador: X</div>
+            <div class="wireframe-grid-ttt" style="margin:0 auto;">
+              <div>X</div><div>O</div><div>X</div>
+              <div></div><div>X</div><div></div>
+              <div>O</div><div></div><div></div>
+            </div>
+            <div style="margin-top:0.6rem;">
+              <span class="wireframe-btn">Novo Jogo</span>
+            </div>
+            <div style="font-size:0.75rem;margin-top:0.5rem;color:var(--gray-600);">
+              X: 2 | O: 1 | Empates: 0
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         EXERCISE 14
+         ========================================== -->
+    <article class="exercise" id="ex14">
+      <div class="exercise-header">
+        <div class="exercise-number">14</div>
+        <div class="exercise-title-block">
+          <div class="exercise-title">Relogio Digital com setInterval (Bonus)</div>
+          <span class="exercise-file">14.html</span>
+        </div>
+      </div>
+      <div class="exercise-tags">
+        <span class="tag tag-basico">Basico</span>
+        <span class="tag tag-topic">setInterval</span>
+        <span class="tag tag-topic">Date</span>
+        <span class="tag tag-topic">DOM</span>
+        <span class="tag tag-topic">CSS</span>
+      </div>
+      <div class="exercise-body">
+        <p><strong>Exercicio bonus:</strong> crie um <strong>relogio digital</strong> estilizado que exiba a hora atual e se atualize a cada segundo:</p>
+        <ol class="sub-items">
+          <li>Exiba a hora no formato <strong>HH:MM:SS</strong> com fonte grande e estilizada (estilo de relogio digital, com fundo escuro e numeros verdes ou brilhantes).</li>
+          <li>Exiba tambem a <strong>data completa</strong> abaixo do relogio (ex.: "Quinta-feira, 12 de novembro de 2026").</li>
+          <li>Use <span class="inline-code">setInterval()</span> com intervalo de 1000ms para atualizar a cada segundo.</li>
+          <li>Adicione um efeito visual: os dois-pontos (<span class="inline-code">:</span>) devem piscar (aparecer e desaparecer a cada segundo), simulando um relogio digital real.</li>
+          <li>Bonus: adicione um botao para alternar entre formato <strong>24 horas</strong> e <strong>12 horas (AM/PM)</strong>.</li>
+        </ol>
+
+        <div class="code-block"><span class="cmt">// Formatar com zero a esquerda:</span>
+<span class="kw">function</span> <span class="fn">pad</span>(n) {
+  <span class="kw">return</span> String(n).<span class="fn">padStart</span>(<span class="num">2</span>, <span class="str">"0"</span>);
+}
+
+<span class="kw">function</span> <span class="fn">atualizarRelogio</span>() {
+  <span class="kw">const</span> agora = <span class="kw">new</span> <span class="fn">Date</span>();
+  <span class="kw">const</span> horas = <span class="fn">pad</span>(agora.<span class="fn">getHours</span>());
+  <span class="kw">const</span> minutos = <span class="fn">pad</span>(agora.<span class="fn">getMinutes</span>());
+  <span class="kw">const</span> segundos = <span class="fn">pad</span>(agora.<span class="fn">getSeconds</span>());
+  <span class="cmt">// Atualizar o DOM...</span>
+}
+
+<span class="fn">setInterval</span>(atualizarRelogio, <span class="num">1000</span>);
+<span class="fn">atualizarRelogio</span>(); <span class="cmt">// Chamar imediatamente tambem</span></div>
+
+        <div class="wireframe">
+          <div class="wireframe-title">Sugestao de layout</div>
+          <div style="background:#1a1a2e;border-radius:8px;padding:1rem;text-align:center;max-width:300px;">
+            <div style="font-family:monospace;font-size:2rem;font-weight:700;color:#00ff88;letter-spacing:4px;text-shadow:0 0 10px rgba(0,255,136,0.4);">
+              14:35:22
+            </div>
+            <div style="color:#666;font-size:0.75rem;margin-top:0.3rem;">
+              Quinta-feira, 12 de novembro de 2026
+            </div>
+            <div style="margin-top:0.5rem;">
+              <span class="wireframe-btn" style="font-size:0.7rem;background:#333;color:#00ff88;">24h / 12h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ==========================================
+         FOLDER STRUCTURE
+         ========================================== -->
+    <section class="instructions" style="margin-top:2.5rem;">
+      <h3>Estrutura de Pastas e Arquivos</h3>
+      <p style="margin-bottom:0.8rem;font-size:0.92rem;">Organize seu repositorio da seguinte forma:</p>
+      <div class="folder-tree">
+<span class="tree-line">&boxdr;&boxh;&boxh;</span> <span class="folder">ppi1_lista_js/</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">1.html</span>  <span class="cmt">&larr; O que e JavaScript?</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">2.html</span>  <span class="cmt">&larr; Tipos de Variaveis e Operadores</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">3.html</span>  <span class="cmt">&larr; Desafio do Event Loop</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">4.html</span>  <span class="cmt">&larr; Calculo de IMC</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">5.html</span>  <span class="cmt">&larr; Gerador de Numeros Aleatorios</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">6.html</span>  <span class="cmt">&larr; Laboratorio de Strings</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">7.html</span>  <span class="cmt">&larr; Lista de Tarefas (To-Do)</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">8.html</span>  <span class="cmt">&larr; Mudanca de Cor com Clique</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">9.html</span>  <span class="cmt">&larr; Cores com Tecla de Espaco</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">10.html</span> <span class="cmt">&larr; Calculadora Aritmetica</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">11.html</span> <span class="cmt">&larr; Validador de Formulario</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">12.html</span> <span class="cmt">&larr; Agenda de Contatos (localStorage)</span>
+<span class="tree-line">&boxv;   &boxdr;&boxh;&boxh;</span> <span class="file">13.html</span> <span class="cmt">&larr; Jogo da Velha</span>
+<span class="tree-line">&boxv;   &boxur;&boxh;&boxh;</span> <span class="file">14.html</span> <span class="cmt">&larr; Relogio Digital (Bonus)</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+    <footer class="footer">
+      <p>Programacao para Internet I (PPI1) &mdash; ADS &mdash; IFSC &mdash; 2026/2</p>
+      <p>Prof. Romulo de Aguiar Beninca &mdash; romulo.beninca@ifsc.edu.br</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

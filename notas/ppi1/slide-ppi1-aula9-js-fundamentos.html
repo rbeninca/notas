@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPI1 — Aula 9: Fundamentos de JavaScript I</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --ifsc-green: #2e7d32;
+            --ifsc-dark:  #1b5e20;
+            --accent-red: #c0392b;
+            --accent-gold: #f39c12;
+            --accent-blue: #2980b9;
+            --web-purple: #6c3fa8;
+            --grid-color: #f0f0f0;
+            --js-yellow: #f0db4f;
+            --js-dark: #323330;
+        }
+        .reveal h1, .reveal h2 { color: var(--ifsc-green); font-weight: 800; text-transform: uppercase; }
+        .reveal h2 { border-bottom: 3px solid var(--ifsc-green); display: inline-block; padding-bottom: 4px; margin: 0 0 8px; line-height: 1.15em; }
+        .reveal h3 { color: var(--ifsc-dark); }
+        .reveal section { text-align: left; padding: 0 18px 8px; }
+        .reveal section > *:first-child { margin-top: 0; }
+        .reveal .slides { padding: 0; }
+        .reveal .slides > section, .reveal .slides > section > section { padding-top: 0; top: 0 !important; }
+        .reveal section p { margin: 8px 0; }
+        .reveal section ul, .reveal section ol { margin: 8px 0; }
+
+        .reveal section.compact { font-size: 0.80em; }
+        .reveal section.compact li { margin: 5px 0; }
+
+        .reveal pre { width: 100%; box-shadow: 0 3px 12px rgba(0,0,0,0.18); font-size: 0.60em; margin: 8px 0; }
+        .reveal pre code { padding: 12px 16px; max-height: 420px; border-radius: 6px; }
+
+        .formula-box {
+            background: #eef4fc; padding: 12px 16px; border-left: 6px solid var(--ifsc-green);
+            border-radius: 4px; margin: 10px 0; font-size: 0.88em; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        }
+        .warn-box { background: #fdf3f2; border-left: 6px solid var(--accent-red); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+        .tip-box  { background: #fff8e8; border-left: 6px solid var(--accent-gold); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+
+        .highlight { color: var(--ifsc-green); font-weight: bold; }
+        .web-highlight { color: var(--web-purple); font-weight: bold; }
+        .js-highlight { color: var(--js-dark); font-weight: bold; background: var(--js-yellow); padding: 1px 6px; border-radius: 3px; }
+        .small-text { font-size: 0.72em; color: #666; }
+        code, .mono { font-family: 'Courier New', monospace; }
+
+        table.tbl { width: 100%; font-size: 0.62em; border-collapse: collapse; margin-top: 10px; }
+        table.tbl th { background: var(--ifsc-green); color: white; padding: 8px; }
+        table.tbl td { border: 1px solid #ddd; padding: 6px 8px; }
+        table.tbl tr:nth-child(even) td { background: #f5f8fc; }
+
+        .two-col { display: flex; align-items: flex-start; gap: 24px; }
+        .two-col .col-text { flex: 1.2; }
+        .two-col .col-img { flex: 1; text-align: center; }
+        .two-col figcaption { font-size: 0.6em; color: #888; margin-top: 8px; }
+
+        .icon-list { list-style: none; margin-left: 0; }
+        .icon-list li { margin: 10px 0; padding-left: 4px; }
+        .icon-list .ic { color: var(--ifsc-green); margin-right: 8px; font-weight: 700; }
+
+        .timeline { position: relative; display: flex; justify-content: space-between; margin: 20px 0 10px; }
+        .timeline::before { content: ""; position: absolute; top: 12px; left: 4%; right: 4%; height: 3px; background: #d6e3f0; z-index: 0; }
+        .timeline .stage { position: relative; z-index: 1; flex: 1; text-align: center; padding: 0 4px; }
+        .timeline .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--ifsc-green); border: 4px solid #fff; box-shadow: 0 0 0 2px var(--ifsc-green); margin: 0 auto 10px; }
+        .timeline .stage h4 { color: #1a2b45; font-size: 0.82em; font-weight: 700; margin: 0 0 4px; }
+        .timeline .stage p { font-size: 0.62em; color: #555; margin: 0; line-height: 1.25em; }
+        .timeline.js-tl .dot { background: var(--js-dark); box-shadow: 0 0 0 2px var(--js-dark); }
+        .timeline.js-tl::before { background: #f0db4f55; }
+
+        .step-badge { display:inline-block; background: var(--ifsc-green); color:#fff; border-radius:50%;
+            width: 34px; height: 34px; line-height: 34px; text-align:center; font-weight:800; margin-right:10px; }
+
+        .topbar { position: fixed; top: 16px; right: 16px; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        @media print { .topbar { display: none !important; } }
+
+        #btnPdf { background: var(--ifsc-green);
+            color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: background 0.2s, transform 0.1s; }
+        #btnPdf:hover { background: var(--ifsc-dark); }
+        #btnPdf:active { transform: scale(0.96); }
+
+        .reveal .slide-number { background: var(--ifsc-green); color: #fff; font-size: 16px; padding: 4px 10px; border-radius: 4px; }
+        .pill { display:inline-block; background:#e7f0fb; color: var(--ifsc-dark); border-radius: 12px; padding: 2px 10px; font-size: 0.7em; font-weight:700; margin: 2px; }
+        .pill.js  { background: var(--js-yellow); color: var(--js-dark); }
+
+        .divider { text-align:center; }
+        .divider .part-no { font-size: 0.9em; letter-spacing: 3px; color: rgba(255,255,255,0.85); font-weight:700; }
+        .divider h1 { color:#fff !important; font-size: 2.2em; border:none; margin-top:6px; }
+        .divider p { color: rgba(255,255,255,0.9); font-size: 1.05em; }
+
+        .cards { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+        .card { flex: 1; min-width: 140px; background: #f5f8fc; border-radius: 8px; border-top: 5px solid var(--ifsc-green);
+            padding: 10px 14px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); }
+        .card h3 { margin: 0 0 4px; color: var(--ifsc-green); font-size: 0.9em; }
+        .card p { font-size: 0.72em; margin: 3px 0; }
+        .card.js-card { border-top-color: var(--js-dark); }
+        .card.js-card h3 { color: var(--js-dark); }
+
+        .kw { font-weight: 800; padding: 1px 6px; border-radius: 4px; }
+        .kw-blue  { background: #e3edfa; color: var(--ifsc-green); }
+        .kw-green { background: #e4f6ec; color: var(--ifsc-green); }
+        .kw-gold  { background: #fdf1dc; color: #c97c00; }
+        .kw-red   { background: #fde6e3; color: var(--accent-red); }
+        .kw-gray  { background: #eef1f6; color: #555; }
+        .kw-purple{ background: #f1e9f9; color: var(--web-purple); }
+
+        /* ===================== Type cards ===================== */
+        .type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 8px; }
+        .type-card { background: #fff; border: 2px solid #e0e8f0; border-radius: 10px; padding: 10px; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .type-card:hover { transform: translateY(-2px); }
+        .type-card .tc-name { font-weight: 800; font-size: 0.78em; color: var(--js-dark); }
+        .type-card .tc-ex { font-family: 'Courier New', monospace; font-size: 0.65em; color: #666; margin-top: 3px; }
+        .type-card .tc-typeof { font-size: 0.58em; color: var(--accent-blue); font-weight: 700; margin-top: 2px; }
+        .type-card.prim { border-color: var(--ifsc-green); }
+        .type-card.ref  { border-color: var(--accent-blue); }
+
+        /* ===================== Event Loop ===================== */
+        .el-container { position: relative; width: 100%; max-width: 750px; margin: 0 auto; }
+        .el-box { position: absolute; border-radius: 10px; padding: 10px; text-align: center; font-weight: 700;
+            font-size: 0.62em; border: 2px solid; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+        .el-callstack { left: 0; top: 0; width: 180px; min-height: 200px; border-color: var(--ifsc-green); background: #f0faf1; }
+        .el-callstack .el-title { color: var(--ifsc-green); font-size: 1.1em; margin-bottom: 8px; }
+        .el-stack-items { display: flex; flex-direction: column-reverse; gap: 4px; min-height: 140px; }
+        .el-stack-item { background: var(--ifsc-green); color: #fff; padding: 6px 8px; border-radius: 5px;
+            font-size: 0.9em; animation: elPush 0.3s ease-out; }
+        @keyframes elPush { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .el-webapis { right: 0; top: 0; width: 220px; min-height: 200px; border-color: var(--accent-blue); background: #f0f6fc; }
+        .el-webapis .el-title { color: var(--accent-blue); font-size: 1.1em; margin-bottom: 8px; }
+        .el-api-items { display: flex; flex-direction: column; gap: 4px; min-height: 140px; }
+        .el-api-item { background: var(--accent-blue); color: #fff; padding: 6px 8px; border-radius: 5px;
+            font-size: 0.9em; display: flex; justify-content: space-between; align-items: center; }
+        .el-api-timer { font-size: 0.85em; opacity: 0.85; }
+
+        .el-queue { left: 50%; transform: translateX(-50%); bottom: 0; width: 400px; min-height: 60px;
+            border-color: var(--accent-gold); background: #fdf8ee; }
+        .el-queue .el-title { color: #c97c00; font-size: 1.1em; margin-bottom: 8px; }
+        .el-queue-items { display: flex; gap: 4px; min-height: 30px; flex-wrap: wrap; }
+        .el-queue-item { background: var(--accent-gold); color: #fff; padding: 5px 8px; border-radius: 5px;
+            font-size: 0.9em; animation: elSlideIn 0.3s ease-out; }
+        @keyframes elSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        .el-console { left: 190px; right: 230px; top: 0; height: 92px; border-color: var(--js-dark);
+            background: #272822; color: #f8f8f2; text-align: left; font-family: 'Courier New', monospace; }
+        .el-console .el-title { color: var(--js-yellow); font-size: 1.1em; margin-bottom: 4px; font-family: inherit; }
+        .el-console-items { display: flex; flex-direction: column; gap: 2px; font-weight: 400; font-size: 0.95em; }
+        .el-console-item { animation: elPush 0.3s ease-out; }
+        .el-console-item::before { content: "> "; color: #75715e; }
+
+        .el-loop-arrow { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+        .el-loop-label { position: absolute; left: 50%; transform: translateX(-50%); text-align: center;
+            font-weight: 800; color: var(--ifsc-dark); font-size: 0.75em; }
+
+        .el-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+        .el-toolbar button { border: 1px solid #cfe3cf; background: #f6faf6; color: var(--ifsc-dark); border-radius: 7px;
+            padding: 6px 12px; font-size: 0.62em; font-weight: 700; cursor: pointer; transition: .15s; }
+        .el-toolbar button:hover:not(:disabled) { background: var(--ifsc-green); color: #fff; border-color: var(--ifsc-green); }
+        .el-toolbar button:disabled { opacity: 0.4; cursor: default; }
+        .el-toolbar .el-reset { border-color: #f3c9c4; background: #fdf3f2; color: var(--accent-red); margin-left: auto; }
+        .el-toolbar .el-reset:hover { background: var(--accent-red); color: #fff; }
+        .el-toolbar .el-pos { font-size: 0.58em; color: #778; font-weight: 700; margin-left: 4px; }
+        .el-caption { text-align: center; font-size: 0.66em; color: #445; min-height: 2.6em; margin-top: 2px; }
+        .el-caption b { color: var(--ifsc-dark); }
+        .el-caption code { background: #eef4fc; padding: 0 4px; border-radius: 3px; }
+
+        /* ===================== setInterval Demo ===================== */
+        .si-demo { display: flex; gap: 24px; align-items: flex-start; margin-top: 10px; }
+        .si-display { flex: 1; text-align: center; }
+        .si-counter { font-size: 4em; font-weight: 800; color: var(--ifsc-green); font-family: 'Courier New', monospace;
+            background: #f0faf1; border: 3px solid var(--ifsc-green); border-radius: 12px; padding: 16px 24px;
+            min-width: 180px; display: inline-block; transition: color 0.2s; }
+        .si-counter.running { color: var(--accent-blue); border-color: var(--accent-blue); background: #f0f6fc; }
+        .si-buttons { margin-top: 12px; display: flex; gap: 8px; justify-content: center; }
+        .si-buttons button { border: 1px solid #cfe3cf; background: #f6faf6; color: var(--ifsc-dark); border-radius: 7px;
+            padding: 8px 16px; font-size: 0.72em; font-weight: 700; cursor: pointer; transition: .15s; }
+        .si-buttons button:hover:not(:disabled) { background: var(--ifsc-green); color: #fff; border-color: var(--ifsc-green); }
+        .si-buttons button:disabled { opacity: 0.4; cursor: default; }
+        .si-buttons .si-stop { border-color: #f3c9c4; background: #fdf3f2; color: var(--accent-red); }
+        .si-buttons .si-stop:hover:not(:disabled) { background: var(--accent-red); color: #fff; }
+        .si-buttons .si-reset { border-color: #d6e3f0; background: #eef1f6; color: #556; }
+        .si-buttons .si-reset:hover:not(:disabled) { background: #556; color: #fff; }
+        .si-code { flex: 1.2; }
+
+        /* ===================== SVG Animations ===================== */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        @keyframes scopeGlow { 0%, 100% { stroke-opacity: 0.3; } 50% { stroke-opacity: 1; } }
+
+        /* Scope diagram */
+        .scope-diagram { display: flex; gap: 8px; margin-top: 8px; }
+        .scope-box { border-radius: 10px; padding: 10px 14px; font-size: 0.72em; position: relative; }
+        .scope-global { background: #fdf3f2; border: 2px solid var(--accent-red); flex: 1; }
+        .scope-fn { background: #eef4fc; border: 2px solid var(--accent-blue); margin: 8px; border-radius: 8px; padding: 8px 12px; }
+        .scope-block { background: #e4f6ec; border: 2px solid var(--ifsc-green); margin: 6px; border-radius: 6px; padding: 6px 10px; }
+        .scope-label { font-weight: 800; font-size: 0.85em; margin-bottom: 4px; }
+
+        /* Var comparison table */
+        .var-cmp { display: grid; grid-template-columns: 80px repeat(3, 1fr); gap: 0; font-size: 0.68em; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 2px solid #d6e3f0; }
+        .var-cmp .vc-h { background: var(--js-dark); color: var(--js-yellow); font-weight: 800; padding: 8px; text-align: center; }
+        .var-cmp .vc-r { background: #f5f8fc; font-weight: 700; padding: 7px 10px; border-bottom: 1px solid #e8edf3; }
+        .var-cmp .vc-c { padding: 7px 10px; border-bottom: 1px solid #e8edf3; text-align: center; }
+        .var-cmp .vc-yes { color: var(--ifsc-green); font-weight: 700; }
+        .var-cmp .vc-no  { color: var(--accent-red); font-weight: 700; }
+        .var-cmp .vc-warn { color: var(--accent-gold); font-weight: 700; }
+
+        /* ===================== Quiz ===================== */
+        .quiz { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:10px; }
+        .quiz.quiz-2col { grid-template-columns:repeat(2, 1fr); }
+        .quiz-question { position:relative; background:#f8fafc; border:1px solid #d9e1ea; border-radius:10px; padding:12px;
+            box-shadow:0 3px 10px rgba(30,50,80,0.08); }
+        .quiz-question.correct { border-color:var(--ifsc-green); background:#f2f7fd; animation:quizSuccess .55s ease-out; }
+        @keyframes quizSuccess { 0% { box-shadow: 0 0 0 0 rgba(46,125,50,.45); } 100% { box-shadow: 0 0 0 14px rgba(46,125,50,0); } }
+        .quiz-number { color:var(--ifsc-green); font-size:.58em; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
+        .quiz-prompt { min-height:48px; margin:4px 0 8px !important; font-size:.68em; line-height:1.28; font-weight:700; color:#263548; }
+        .quiz-options { display:grid; gap:6px; }
+        .quiz-option { display:block; width:100%; text-align:left; background:#fff; border:1.5px solid #d4dbe5;
+            border-radius:7px; padding:7px 10px; font-size:.62em; cursor:pointer; transition:.18s; font-weight:600; color:#344254; }
+        .quiz-option:hover:not(:disabled) { border-color:var(--ifsc-green); background:#f0faf1; }
+        .quiz-option.right { background:#e9f5ec; border-color:var(--ifsc-green); color:var(--ifsc-green); pointer-events:none; }
+        .quiz-option.wrong { background:#fef0ef; border-color:var(--accent-red); color:var(--accent-red); text-decoration:line-through; }
+        .quiz-result { font-size:.56em; font-weight:700; color:var(--ifsc-green); min-height:1.4em; margin-top:4px; }
+        .quiz-progress { text-align:right; font-size:.58em; color:#889; font-weight:700; margin-top:6px; }
+        .quiz-reset { position:absolute; top:6px; right:8px; background:none; border:1px solid #e1e6ec; border-radius:5px;
+            padding:2px 8px; font-size:.5em; color:#8899aa; cursor:pointer; transition:.15s; }
+        .quiz-reset:hover { border-color:var(--accent-red); color:var(--accent-red); }
+
+        .quiz-modal { position:fixed; inset:0; background:rgba(30,40,60,0.55); z-index:2000; display:flex; align-items:center;
+            justify-content:center; opacity:0; pointer-events:none; transition:opacity .25s; }
+        .quiz-modal.open { opacity:1; pointer-events:auto; }
+        .quiz-modal-card { background:#fff; border-radius:14px; padding:28px 32px; max-width:440px; width:90%;
+            box-shadow:0 12px 40px rgba(0,0,0,0.25); text-align:center; }
+        .quiz-modal-card h3 { color:var(--accent-red); margin:0 0 10px; font-size:1.1em; }
+        .quiz-modal-card p { font-size:0.88em; color:#445; line-height:1.45em; margin:0 0 18px; }
+        .quiz-modal-close { background:var(--ifsc-green); color:#fff; border:none; border-radius:8px; padding:10px 28px;
+            font-size:0.9em; font-weight:700; cursor:pointer; transition:.15s; }
+        .quiz-modal-close:hover { background:var(--ifsc-dark); }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <button id="btnPdf" title="Exportar para PDF">PDF</button>
+</div>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 1: CAPA                                                 -->
+        <!-- ============================================================ -->
+        <section style="text-align:center;">
+            <p class="small-text" style="margin-top:20px;">IFSC &mdash; Tecnologia em Análise e Desenvolvimento de Sistemas</p>
+            <h1 style="font-size:2em; margin:16px 0 6px; border:none;">Programação para Internet I</h1>
+            <h2 style="font-size:1.35em; border:none;">Encontro 9 &mdash; Fundamentos de JavaScript I</h2>
+            <div style="margin:20px 0;">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <rect x="0" y="0" width="80" height="80" rx="12" fill="#f0db4f"/>
+                    <text x="40" y="58" text-anchor="middle" font-family="'Courier New', monospace" font-size="38" font-weight="900" fill="#323330">JS</text>
+                </svg>
+            </div>
+            <p style="font-size:0.9em; color:#555;">Prof. Romulo de Aguiar Beninca &mdash; 12 nov. 2026</p>
+            <div style="margin-top:12px;">
+                <span class="pill js">JavaScript</span>
+                <span class="pill js">Event Loop</span>
+                <span class="pill js">Tipos</span>
+                <span class="pill js">Variáveis</span>
+                <span class="pill js">Arrays</span>
+                <span class="pill js">Objetos</span>
+                <span class="pill js">Controle de fluxo</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 2: ROTEIRO + DEVOLUTIVA AV1                            -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Roteiro do encontro</h2>
+            <div class="two-col" style="margin-top:8px;">
+                <div class="col-text">
+                    <ul class="icon-list">
+                        <li><span class="ic">1</span> História e contexto do JavaScript</li>
+                        <li><span class="ic">2</span> Ambiente de execução (sandbox) e onde executar</li>
+                        <li><span class="ic">3</span> Event Loop, Call Stack e setInterval</li>
+                        <li><span class="ic">4</span> Tipos primitivos e referência, typeof e coerção</li>
+                        <li><span class="ic">5</span> Variáveis: <code>let</code>, <code>const</code>, <code>var</code> e escopo</li>
+                        <li><span class="ic">6</span> Arrays e objetos</li>
+                        <li><span class="ic">7</span> Estruturas de seleção e repetição</li>
+                    </ul>
+                </div>
+                <div class="col-img">
+                    <div class="tip-box" style="font-size:0.78em;">
+                        <strong>Próxima aula (Encontro 10)</strong><br>
+                        Funções, escopo, closures, arrow functions, Strings e métodos de Array.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 3: DIVISOR - HISTORIA                                   -->
+        <!-- ============================================================ -->
+        <section data-background-color="#323330" class="divider">
+            <div class="part-no">PARTE 1</div>
+            <h1 style="color:var(--js-yellow) !important;">História do JavaScript</h1>
+            <p>De 10 dias de protótipo à linguagem mais usada da Web</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 4: TIMELINE HISTORICA                                   -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Linha do tempo do JavaScript</h2>
+            <div style="display:flex; gap:10px; margin-top:10px; align-items:flex-start;">
+
+                <!-- 1995 -->
+                <div style="flex:1; text-align:center;">
+                    <svg viewBox="0 0 120 110" width="108" style="display:block; margin:0 auto;">
+                        <!-- Netscape Navigator -->
+                        <circle cx="60" cy="44" r="40" fill="#0a4a2e"/>
+                        <circle cx="60" cy="44" r="34" fill="#1a8a4e"/>
+                        <text x="60" y="36" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="serif">NETSCAPE</text>
+                        <text x="60" y="48" text-anchor="middle" font-size="7.5" fill="#cfe8d8" font-weight="600">Navigator 2.0</text>
+                        <!-- Brendan Eich silhouette -->
+                        <circle cx="60" cy="92" r="12" fill="#f0db4f" stroke="#323330" stroke-width="1.5"/>
+                        <circle cx="60" cy="88" r="5" fill="#323330"/>
+                        <rect x="54" y="93" width="12" height="8" rx="3" fill="#323330"/>
+                        <text x="60" y="108" text-anchor="middle" font-size="6.5" fill="#666">Brendan Eich</text>
+                    </svg>
+                    <h4 style="color:#323330; font-size:0.82em; font-weight:800; margin:4px 0 2px;">1995</h4>
+                    <p style="font-size:0.56em; color:#555; line-height:1.25em; margin:0;">Brendan Eich cria o <strong>Mocha</strong> em 10 dias na Netscape. Renomeado para LiveScript e depois <strong>JavaScript</strong>.</p>
+                </div>
+
+                <!-- 1997 -->
+                <div style="flex:1; text-align:center;">
+                    <svg viewBox="0 0 120 110" width="108" style="display:block; margin:0 auto;">
+                        <!-- ECMA standard document -->
+                        <rect x="22" y="8" width="76" height="90" rx="5" fill="#fff" stroke="#2980b9" stroke-width="2.5"/>
+                        <rect x="22" y="8" width="76" height="22" rx="5" fill="#2980b9"/>
+                        <text x="60" y="24" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">ECMA-262</text>
+                        <line x1="32" y1="42" x2="88" y2="42" stroke="#d6e3f0" stroke-width="2"/>
+                        <line x1="32" y1="52" x2="78" y2="52" stroke="#d6e3f0" stroke-width="2"/>
+                        <line x1="32" y1="62" x2="84" y2="62" stroke="#d6e3f0" stroke-width="2"/>
+                        <line x1="32" y1="72" x2="70" y2="72" stroke="#d6e3f0" stroke-width="2"/>
+                        <!-- Checkmark seal -->
+                        <circle cx="86" cy="84" r="11" fill="#2e7d32"/>
+                        <polyline points="80,84 84,89 93,79" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <text x="60" y="108" text-anchor="middle" font-size="6.5" fill="#666">Padronização</text>
+                    </svg>
+                    <h4 style="color:#323330; font-size:0.82em; font-weight:800; margin:4px 0 2px;">1997</h4>
+                    <p style="font-size:0.56em; color:#555; line-height:1.25em; margin:0;">ECMA-262 padroniza a linguagem como <strong>ECMAScript</strong>. Portabilidade entre navegadores.</p>
+                </div>
+
+                <!-- 2009 -->
+                <div style="flex:1; text-align:center;">
+                    <svg viewBox="0 0 120 110" width="108" style="display:block; margin:0 auto;">
+                        <!-- Node.js logo -->
+                        <rect x="16" y="8" width="88" height="88" rx="12" fill="#333"/>
+                        <polygon points="60,22 88,38 88,70 60,86 32,70 32,38" fill="#68a063" opacity="0.9"/>
+                        <polygon points="60,27 83,40 83,66 60,79 37,66 37,40" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.35"/>
+                        <text x="60" y="57" text-anchor="middle" font-size="16" font-weight="900" fill="#fff" font-family="'Courier New',monospace">N</text>
+                        <text x="60" y="73" text-anchor="middle" font-size="8" fill="#a8d99c" font-weight="700">node.js</text>
+                        <text x="60" y="108" text-anchor="middle" font-size="6.5" fill="#666">Ryan Dahl</text>
+                    </svg>
+                    <h4 style="color:#323330; font-size:0.82em; font-weight:800; margin:4px 0 2px;">2009</h4>
+                    <p style="font-size:0.56em; color:#555; line-height:1.25em; margin:0;">Ryan Dahl lança o <strong>Node.js</strong>: JS fora do navegador, no servidor, com I/O não-bloqueante.</p>
+                </div>
+
+                <!-- 2015 -->
+                <div style="flex:1; text-align:center;">
+                    <svg viewBox="0 0 120 110" width="108" style="display:block; margin:0 auto;">
+                        <!-- ES6 badge -->
+                        <rect x="16" y="8" width="88" height="88" rx="12" fill="#f0db4f"/>
+                        <text x="60" y="46" text-anchor="middle" font-size="24" font-weight="900" fill="#323330" font-family="'Courier New',monospace">ES6</text>
+                        <text x="60" y="62" text-anchor="middle" font-size="8.5" fill="#555" font-weight="700">ES2015</text>
+                        <!-- Upgrade arrow -->
+                        <polygon points="60,70 51,80 55,80 55,90 65,90 65,80 69,80" fill="#2e7d32" opacity="0.8">
+                            <animateTransform attributeName="transform" type="translate" values="0,0;0,-3;0,0" dur="2s" repeatCount="indefinite"/>
+                        </polygon>
+                        <text x="60" y="108" text-anchor="middle" font-size="6.5" fill="#666">Grande atualização</text>
+                    </svg>
+                    <h4 style="color:#323330; font-size:0.82em; font-weight:800; margin:4px 0 2px;">2015</h4>
+                    <p style="font-size:0.56em; color:#555; line-height:1.25em; margin:0;"><strong>ES6</strong>: <code>let</code>, <code>const</code>, arrow functions, classes, Promises, módulos.</p>
+                </div>
+
+                <!-- 2026 -->
+                <div style="flex:1; text-align:center;">
+                    <svg viewBox="0 0 120 110" width="108" style="display:block; margin:0 auto;">
+                        <!-- Modern ecosystem -->
+                        <rect x="16" y="8" width="88" height="88" rx="12" fill="#eef4fc" stroke="#2980b9" stroke-width="1.5"/>
+                        <!-- Browser -->
+                        <rect x="24" y="18" width="30" height="24" rx="4" fill="#fff" stroke="#2980b9" stroke-width="1.5"/>
+                        <rect x="24" y="18" width="30" height="8" rx="4" fill="#2980b9"/>
+                        <circle cx="30" cy="22" r="1.8" fill="#fff"/>
+                        <circle cx="35" cy="22" r="1.8" fill="#fff"/>
+                        <!-- Server -->
+                        <rect x="66" y="18" width="30" height="24" rx="4" fill="#fff" stroke="#68a063" stroke-width="1.5"/>
+                        <rect x="72" y="24" width="18" height="3" rx="1" fill="#68a063"/>
+                        <rect x="72" y="30" width="18" height="3" rx="1" fill="#68a063" opacity="0.5"/>
+                        <rect x="72" y="36" width="18" height="3" rx="1" fill="#68a063" opacity="0.3"/>
+                        <!-- Mobile -->
+                        <rect x="30" y="52" width="20" height="34" rx="4" fill="#fff" stroke="#6c3fa8" stroke-width="1.5"/>
+                        <rect x="34" y="58" width="12" height="18" rx="1" fill="#e8def8"/>
+                        <circle cx="40" cy="81" r="1.8" fill="#6c3fa8"/>
+                        <!-- IoT chip -->
+                        <rect x="64" y="58" width="26" height="22" rx="4" fill="#fff" stroke="#f39c12" stroke-width="1.5"/>
+                        <rect x="70" y="64" width="14" height="10" rx="2" fill="#fdf8ee" stroke="#f39c12" stroke-width="1"/>
+                        <line x1="64" y1="68" x2="60" y2="68" stroke="#f39c12" stroke-width="1.5"/>
+                        <line x1="90" y1="68" x2="94" y2="68" stroke="#f39c12" stroke-width="1.5"/>
+                        <line x1="77" y1="58" x2="77" y2="54" stroke="#f39c12" stroke-width="1.5"/>
+                        <line x1="77" y1="80" x2="77" y2="84" stroke="#f39c12" stroke-width="1.5"/>
+                        <text x="60" y="108" text-anchor="middle" font-size="6.5" fill="#666">Ecossistema completo</text>
+                    </svg>
+                    <h4 style="color:#323330; font-size:0.82em; font-weight:800; margin:4px 0 2px;">2026</h4>
+                    <p style="font-size:0.56em; color:#555; line-height:1.25em; margin:0;">Evolução anual. JS é a única linguagem nativa de <strong>todos</strong> os navegadores.</p>
+                </div>
+            </div>
+
+            <!-- Linha conectora -->
+            <div style="text-align:center; margin:-2px 0 4px;">
+                <svg viewBox="0 0 700 14" width="100%" style="max-width:700px;">
+                    <line x1="70" y1="7" x2="630" y2="7" stroke="#f0db4f" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="70" cy="7" r="5" fill="#323330" stroke="#f0db4f" stroke-width="2"/>
+                    <circle cx="210" cy="7" r="5" fill="#323330" stroke="#f0db4f" stroke-width="2"/>
+                    <circle cx="350" cy="7" r="5" fill="#323330" stroke="#f0db4f" stroke-width="2"/>
+                    <circle cx="490" cy="7" r="5" fill="#323330" stroke="#f0db4f" stroke-width="2"/>
+                    <circle cx="630" cy="7" r="5" fill="#323330" stroke="#f0db4f" stroke-width="2">
+                        <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+
+            <div class="warn-box" style="font-size:0.78em; margin-top:2px;">
+                <strong>JavaScript &ne; Java.</strong> O nome foi uma estratégia de marketing da Netscape/Sun Microsystems em 1995. São linguagens com paradigmas, tipagem e ambientes de execução completamente distintos.
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 5: SANDBOX + ONDE EXECUTAR                              -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Ambiente de execução: sandbox</h2>
+            <p style="font-size:0.82em; margin-bottom:6px;">JavaScript no navegador executa em um <strong>sandbox</strong>: um ambiente isolado que <em>não</em> tem acesso direto ao sistema de arquivos, rede arbitrária ou hardware do usuário.</p>
+
+            <!-- DIAGRAMA NAVEGADOR -->
+            <div style="text-align:center;">
+                <svg viewBox="0 0 820 370" width="100%" style="max-width:820px;">
+                    <defs>
+                        <linearGradient id="browserGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#e8edf3"/>
+                            <stop offset="100%" stop-color="#f5f8fc"/>
+                        </linearGradient>
+                        <linearGradient id="pageGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#fff"/>
+                            <stop offset="100%" stop-color="#fafcff"/>
+                        </linearGradient>
+                        <linearGradient id="sandboxGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#fffde7" stop-opacity="0.6"/>
+                            <stop offset="100%" stop-color="#f0db4f" stop-opacity="0.12"/>
+                        </linearGradient>
+                        <marker id="arrNav" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker>
+                        <marker id="arrGreen" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2e7d32"/></marker>
+                        <marker id="arrBlue" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2980b9"/></marker>
+                        <marker id="arrGold" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#c97c00"/></marker>
+                    </defs>
+
+                    <!-- FRAGMENT 1: Navegador (caixa externa) — visível desde o início -->
+                    <rect x="10" y="10" width="800" height="350" rx="16" fill="url(#browserGrad)" stroke="#8899aa" stroke-width="2.5"/>
+                    <rect x="10" y="10" width="800" height="36" rx="16" fill="#d6dde6"/>
+                    <rect x="10" y="30" width="800" height="16" fill="#d6dde6"/>
+                    <circle cx="34" cy="28" r="7" fill="#ff5f57"/>
+                    <circle cx="56" cy="28" r="7" fill="#ffbd2e"/>
+                    <circle cx="78" cy="28" r="7" fill="#28c840"/>
+                    <rect x="100" y="18" width="600" height="20" rx="10" fill="#fff" stroke="#bcc5d0" stroke-width="1"/>
+                    <text x="130" y="33" font-size="10" fill="#888" font-family="'Courier New',monospace">https://meusite.com/index.html</text>
+                    <text x="410" y="8" text-anchor="middle" font-size="11" font-weight="800" fill="#667" letter-spacing="1px">NAVEGADOR</text>
+
+                    <!-- FRAGMENT 2: Página renderizada (esquerda) -->
+                    <g class="fragment" data-fragment-index="1">
+                        <rect x="24" y="56" width="340" height="280" rx="10" fill="url(#pageGrad)" stroke="#2980b9" stroke-width="2"/>
+                        <text x="194" y="76" text-anchor="middle" font-size="12" font-weight="800" fill="#2980b9">PÁGINA RENDERIZADA</text>
+                        <rect x="40" y="86" width="308" height="24" rx="5" fill="#2980b9"/>
+                        <text x="194" y="103" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Meu Site — Barra de Navegação</text>
+                        <rect x="40" y="116" width="150" height="100" rx="6" fill="#e3f2fd" stroke="#90caf9" stroke-width="1"/>
+                        <text x="115" y="136" text-anchor="middle" font-size="9" font-weight="700" fill="#1565c0">Conteúdo principal</text>
+                        <rect x="52" y="144" width="126" height="8" rx="2" fill="#bbdefb"/>
+                        <rect x="52" y="158" width="110" height="8" rx="2" fill="#bbdefb"/>
+                        <rect x="52" y="172" width="120" height="8" rx="2" fill="#bbdefb"/>
+                        <rect x="52" y="186" width="90" height="8" rx="2" fill="#bbdefb"/>
+                        <rect x="200" y="116" width="148" height="100" rx="6" fill="#e8f5e9" stroke="#a5d6a7" stroke-width="1"/>
+                        <text x="274" y="136" text-anchor="middle" font-size="9" font-weight="700" fill="#2e7d32">Sidebar</text>
+                        <rect x="212" y="144" width="124" height="24" rx="4" fill="#c8e6c9"/>
+                        <rect x="212" y="174" width="124" height="24" rx="4" fill="#c8e6c9"/>
+                    </g>
+
+                    <!-- FRAGMENT 3: DOM Tree -->
+                    <g class="fragment" data-fragment-index="2">
+                        <rect x="40" y="226" width="308" height="110" rx="6" fill="#fff8e1" stroke="#f39c12" stroke-width="1.5"/>
+                        <text x="194" y="244" text-anchor="middle" font-size="11" font-weight="800" fill="#c97c00">DOM (Document Object Model)</text>
+                        <rect x="155" y="252" width="78" height="18" rx="4" fill="#f39c12"/>
+                        <text x="194" y="265" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">&lt;html&gt;</text>
+                        <line x1="174" y1="270" x2="110" y2="282" stroke="#c97c00" stroke-width="1.2"/>
+                        <line x1="214" y1="270" x2="278" y2="282" stroke="#c97c00" stroke-width="1.2"/>
+                        <rect x="72" y="282" width="76" height="18" rx="4" fill="#ffe0b2" stroke="#f39c12" stroke-width="1"/>
+                        <text x="110" y="295" text-anchor="middle" font-size="8" font-weight="700" fill="#e65100">&lt;head&gt;</text>
+                        <rect x="240" y="282" width="76" height="18" rx="4" fill="#ffe0b2" stroke="#f39c12" stroke-width="1"/>
+                        <text x="278" y="295" text-anchor="middle" font-size="8" font-weight="700" fill="#e65100">&lt;body&gt;</text>
+                        <line x1="258" y1="300" x2="220" y2="312" stroke="#c97c00" stroke-width="1"/>
+                        <line x1="298" y1="300" x2="316" y2="312" stroke="#c97c00" stroke-width="1"/>
+                        <rect x="186" y="312" width="68" height="16" rx="3" fill="#fff3e0" stroke="#ffcc80" stroke-width="0.8"/>
+                        <text x="220" y="323" text-anchor="middle" font-size="7" fill="#e65100">&lt;div&gt;</text>
+                        <rect x="284" y="312" width="64" height="16" rx="3" fill="#fff3e0" stroke="#ffcc80" stroke-width="0.8"/>
+                        <text x="316" y="323" text-anchor="middle" font-size="7" fill="#e65100">&lt;script&gt;</text>
+                    </g>
+
+                    <!-- FRAGMENT 4: Sandbox JS (caixa direita) + Motor JS -->
+                    <g class="fragment" data-fragment-index="3">
+                        <rect x="378" y="56" width="418" height="294" rx="10" fill="url(#sandboxGrad)" stroke="#323330" stroke-width="2.5" stroke-dasharray="8 4"/>
+                        <rect x="460" y="60" width="254" height="22" rx="4" fill="#f0db4f"/>
+                        <text x="587" y="75" text-anchor="middle" font-size="11" font-weight="900" fill="#323330">SANDBOX JavaScript</text>
+                        <text x="420" y="75" font-size="9" font-weight="700" fill="#323330">&#128274;</text>
+                        <rect x="392" y="90" width="390" height="68" rx="8" fill="#e4f6ec" stroke="#2e7d32" stroke-width="2"/>
+                        <text x="587" y="110" text-anchor="middle" font-size="12" font-weight="800" fill="#2e7d32">Motor JS (V8 / SpiderMonkey)</text>
+                        <rect x="406" y="118" width="120" height="32" rx="5" fill="#2e7d32"/>
+                        <text x="466" y="139" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Call Stack (LIFO)</text>
+                        <rect x="540" y="118" width="110" height="32" rx="5" fill="#1b5e20"/>
+                        <text x="595" y="139" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Heap (Memória)</text>
+                        <rect x="664" y="118" width="106" height="32" rx="5" fill="#388e3c"/>
+                        <text x="717" y="139" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Escopo Global</text>
+                        <!-- Seta script → sandbox -->
+                        <path d="M348,320 L380,320" stroke="#323330" stroke-width="1.5" marker-end="url(#arrNav)" stroke-dasharray="4 2">
+                            <animate attributeName="stroke-dashoffset" from="12" to="0" dur="1.5s" repeatCount="indefinite"/>
+                        </path>
+                    </g>
+
+                    <!-- FRAGMENT 5: Web APIs + seta delega -->
+                    <g class="fragment" data-fragment-index="4">
+                        <rect x="392" y="172" width="190" height="110" rx="8" fill="#eef4fc" stroke="#2980b9" stroke-width="2"/>
+                        <text x="487" y="192" text-anchor="middle" font-size="11" font-weight="800" fill="#2980b9">Web APIs</text>
+                        <rect x="404" y="200" width="166" height="22" rx="4" fill="#fff" stroke="#90caf9" stroke-width="1"/>
+                        <text x="487" y="215" text-anchor="middle" font-size="9" fill="#1565c0">setTimeout / setInterval</text>
+                        <rect x="404" y="226" width="166" height="22" rx="4" fill="#fff" stroke="#90caf9" stroke-width="1"/>
+                        <text x="487" y="241" text-anchor="middle" font-size="9" fill="#1565c0">fetch / XMLHttpRequest</text>
+                        <rect x="404" y="252" width="166" height="22" rx="4" fill="#fff" stroke="#90caf9" stroke-width="1"/>
+                        <text x="487" y="267" text-anchor="middle" font-size="9" fill="#1565c0">addEventListener (eventos)</text>
+                        <!-- Seta Call Stack → Web APIs -->
+                        <path d="M466,152 L466,170" stroke="#2980b9" stroke-width="1.5" marker-end="url(#arrBlue)" stroke-dasharray="4 2">
+                            <animate attributeName="stroke-dashoffset" from="12" to="0" dur="1.5s" repeatCount="indefinite"/>
+                        </path>
+                        <text x="444" y="166" font-size="7" fill="#2980b9">delega</text>
+                        <!-- Seta Web APIs ↔ DOM -->
+                        <path d="M392,230 L364,230 L364,280" stroke="#2980b9" stroke-width="1.5" fill="none" marker-end="url(#arrBlue)" stroke-dasharray="4 2">
+                            <animate attributeName="stroke-dashoffset" from="12" to="0" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <text x="370" y="258" font-size="7" fill="#2980b9" transform="rotate(-90 370 258)">interage com DOM</text>
+                    </g>
+
+                    <!-- FRAGMENT 6: Callback Queue + Event Loop + setas de fluxo -->
+                    <g class="fragment" data-fragment-index="5">
+                        <rect x="392" y="310" width="390" height="50" rx="8" fill="#fdf8ee" stroke="#f39c12" stroke-width="2"/>
+                        <text x="587" y="330" text-anchor="middle" font-size="11" font-weight="800" fill="#c97c00">Callback Queue (FIFO)</text>
+                        <rect x="406" y="338" width="90" height="16" rx="3" fill="#f39c12" opacity="0.7"/>
+                        <text x="451" y="350" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">onClick cb</text>
+                        <rect x="502" y="338" width="90" height="16" rx="3" fill="#f39c12" opacity="0.5"/>
+                        <text x="547" y="350" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">setTimeout cb</text>
+                        <rect x="598" y="338" width="90" height="16" rx="3" fill="#f39c12" opacity="0.3"/>
+                        <text x="643" y="350" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">fetch cb</text>
+                        <!-- Seta Web APIs → Queue -->
+                        <path d="M487,284 L487,302" stroke="#c97c00" stroke-width="1.5" marker-end="url(#arrGold)" stroke-dasharray="4 2">
+                            <animate attributeName="stroke-dashoffset" from="12" to="0" dur="1.5s" repeatCount="indefinite"/>
+                        </path>
+                        <text x="500" y="297" font-size="7" fill="#c97c00">callback pronto</text>
+                        <!-- Event Loop -->
+                        <circle cx="680" cy="234" r="36" fill="none" stroke="#1b5e20" stroke-width="3" stroke-dasharray="8 4">
+                            <animateTransform attributeName="transform" type="rotate" from="0 680 234" to="360 680 234" dur="4s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="680" cy="234" r="26" fill="#e8f5e9"/>
+                        <text x="680" y="230" text-anchor="middle" font-size="9" font-weight="900" fill="#1b5e20">EVENT</text>
+                        <text x="680" y="242" text-anchor="middle" font-size="9" font-weight="900" fill="#1b5e20">LOOP</text>
+                        <!-- Seta Queue → Event Loop -->
+                        <path d="M680,310 L680,272" stroke="#1b5e20" stroke-width="1.5" fill="none" marker-end="url(#arrGreen)" stroke-dasharray="5 3">
+                            <animate attributeName="stroke-dashoffset" from="16" to="0" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <!-- Seta Event Loop → Call Stack -->
+                        <path d="M680,198 L680,164 L540,164 L540,152" stroke="#1b5e20" stroke-width="1.5" fill="none" marker-end="url(#arrGreen)" stroke-dasharray="5 3">
+                            <animate attributeName="stroke-dashoffset" from="16" to="0" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                        <text x="620" y="176" font-size="7" fill="#1b5e20">move para Call Stack</text>
+                    </g>
+
+                </svg>
+            </div>
+
+            <!-- FRAGMENT 7: Pode / Não pode — fora do navegador -->
+            <div class="fragment" data-fragment-index="6" style="display:flex; gap:14px; margin-top:6px; align-items:stretch;">
+                <div style="flex:1; background:#e4f6ec; border:2px solid #2e7d32; border-radius:8px; padding:8px 12px;">
+                    <strong style="color:#2e7d32; font-size:0.78em;">JS Pode (dentro do sandbox)</strong>
+                    <ul style="font-size:0.68em; margin:4px 0 0; padding-left:16px; line-height:1.5em;">
+                        <li>Manipular DOM</li>
+                        <li>Requisições HTTP (fetch/XHR)</li>
+                        <li>localStorage / sessionStorage</li>
+                        <li>APIs com permissão (câmera, geo)</li>
+                    </ul>
+                </div>
+                <div style="flex:1; background:#fdf3f2; border:2px solid #c0392b; border-radius:8px; padding:8px 12px;">
+                    <strong style="color:#c0392b; font-size:0.78em;">JS Não Pode (barreira de segurança)</strong>
+                    <ul style="font-size:0.68em; margin:4px 0 0; padding-left:16px; line-height:1.5em;">
+                        <li>Ler/escrever arquivos do SO</li>
+                        <li>Executar programas locais</li>
+                        <li>Acessar outras abas/domínios</li>
+                        <li>Acesso direto à rede/hardware</li>
+                    </ul>
+                </div>
+                <div style="flex:0.8; background:#eef4fc; border:2px solid #2980b9; border-radius:8px; padding:8px 12px;">
+                    <strong style="color:#2980b9; font-size:0.78em;">Onde executar JS</strong>
+                    <ul style="font-size:0.68em; margin:4px 0 0; padding-left:16px; line-height:1.5em;">
+                        <li>Console do navegador (<kbd>F12</kbd>)</li>
+                        <li>Tag <code>&lt;script&gt;</code> em HTML</li>
+                        <li>Arquivo <code>.js</code> externo</li>
+                        <li>Node.js no terminal</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 6: EVENTOS DOM + addEventListener                       -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Eventos DOM e addEventListener</h2>
+            <p style="font-size:0.82em;">O navegador dispara <strong>eventos</strong> quando o usuário interage com a página. JavaScript pode <em>escutar</em> esses eventos e executar uma função de callback.</p>
+
+            <div class="two-col" style="margin-top:8px; gap:16px;">
+                <div class="col-text" style="flex:1.2;">
+                    <pre><code class="language-html">&lt;button id="meuBtn"&gt;Clique aqui&lt;/button&gt;
+&lt;p id="msg"&gt;&lt;/p&gt;
+
+&lt;script&gt;
+  const btn = document.getElementById("meuBtn");
+  const msg = document.getElementById("msg");
+
+  btn.addEventListener("click", function() {
+      msg.textContent = "Botão clicado!";
+      msg.style.color = "#2e7d32";
+  });
+&lt;/script&gt;</code></pre>
+
+                    <div class="formula-box" style="font-size:0.72em; margin-top:8px;">
+                        <strong>elemento.addEventListener(evento, callback)</strong><br>
+                        Registra uma função que será chamada quando o <code>evento</code> ocorrer no <code>elemento</code>. O callback é <strong>assíncrono</strong> — fica aguardando na Web API até o evento acontecer.
+                    </div>
+                </div>
+                <div class="col-img" style="flex:1;">
+                    <!-- Diagrama visual do fluxo -->
+                    <svg viewBox="0 0 300 320" width="280" style="display:block; margin:0 auto;">
+                        <!-- Usuário -->
+                        <circle cx="150" cy="30" r="20" fill="#eef4fc" stroke="#2980b9" stroke-width="2"/>
+                        <text x="150" y="26" text-anchor="middle" font-size="8" font-weight="800" fill="#2980b9">Usuário</text>
+                        <text x="150" y="36" text-anchor="middle" font-size="7" fill="#2980b9">interage</text>
+
+                        <!-- Seta usuário → botão -->
+                        <line x1="150" y1="52" x2="150" y2="72" stroke="#2980b9" stroke-width="1.5" marker-end="url(#arrBlue)"/>
+
+                        <!-- Botão -->
+                        <rect x="80" y="76" width="140" height="34" rx="8" fill="#2e7d32"/>
+                        <text x="150" y="98" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Clique aqui</text>
+                        <text x="230" y="90" font-size="8" fill="#888">click!</text>
+
+                        <!-- Seta botão → evento -->
+                        <line x1="150" y1="112" x2="150" y2="132" stroke="#f39c12" stroke-width="1.5" marker-end="url(#arrGold)"/>
+
+                        <!-- Evento disparado -->
+                        <rect x="55" y="136" width="190" height="30" rx="6" fill="#fdf8ee" stroke="#f39c12" stroke-width="2"/>
+                        <text x="150" y="156" text-anchor="middle" font-size="10" font-weight="800" fill="#c97c00">Evento "click" disparado</text>
+
+                        <!-- Seta evento → callback -->
+                        <line x1="150" y1="168" x2="150" y2="188" stroke="#1b5e20" stroke-width="1.5" marker-end="url(#arrGreen)"/>
+
+                        <!-- Callback executado -->
+                        <rect x="30" y="192" width="240" height="48" rx="8" fill="#e4f6ec" stroke="#2e7d32" stroke-width="2"/>
+                        <text x="150" y="212" text-anchor="middle" font-size="9" font-weight="800" fill="#2e7d32">Callback executado</text>
+                        <text x="150" y="228" text-anchor="middle" font-size="8" font-family="'Courier New',monospace" fill="#333">msg.textContent = "Botão clicado!"</text>
+
+                        <!-- Resultado -->
+                        <line x1="150" y1="242" x2="150" y2="262" stroke="#555" stroke-width="1.5" marker-end="url(#arrNav)"/>
+                        <rect x="60" y="266" width="180" height="30" rx="6" fill="#f5f8fc" stroke="#d6e3f0" stroke-width="1.5"/>
+                        <text x="150" y="286" text-anchor="middle" font-size="10" font-weight="700" fill="#2e7d32">Botão clicado!</text>
+
+                        <text x="150" y="312" text-anchor="middle" font-size="8" fill="#888">A página é atualizada sem recarregar</text>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="tip-box" style="font-size:0.7em; margin-top:4px;">
+                <strong>Eventos comuns:</strong> <code>click</code>, <code>input</code>, <code>submit</code>, <code>keydown</code>, <code>mouseover</code>, <code>load</code>, <code>scroll</code>. Todos passam pelo Event Loop — o callback fica na fila até a Call Stack esvaziar.
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 7: DIVISOR - EVENT LOOP                                 -->
+        <!-- ============================================================ -->
+        <section data-background-color="#1b5e20" class="divider">
+            <div class="part-no">PARTE 2</div>
+            <h1>Event Loop</h1>
+            <p>Modelo de concorrência single-thread com fila de callbacks</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 7: EVENT LOOP - CONCEITOS + CICLO                       -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Como funciona o Event Loop?</h2>
+            <div style="display:flex; gap:14px; margin-top:6px;">
+                <!-- Código -->
+                <div style="flex:1.1;">
+                    <div style="background:#1e1e2e; border-radius:8px; padding:10px 14px; font-family:'Courier New',monospace; font-size:0.62em; color:#cdd6f4; line-height:1.6;">
+                        <div style="color:#6c7086; margin-bottom:4px;">// O código</div>
+                        <div><span style="color:#fab387;">1</span>  <span style="color:#89b4fa;">setTimeout</span>(() =&gt; console.log(<span style="color:#a6e3a1;">"A"</span>), <span style="color:#fab387;">0</span>);</div>
+                        <div><span style="color:#fab387;">2</span>  console.<span style="color:#89b4fa;">log</span>(<span style="color:#a6e3a1;">"B"</span>);</div>
+                        <div><span style="color:#fab387;">3</span>  <span style="color:#89b4fa;">Promise</span>.resolve().then(() =&gt; console.log(<span style="color:#a6e3a1;">"C"</span>));</div>
+                        <div><span style="color:#fab387;">4</span>  console.<span style="color:#89b4fa;">log</span>(<span style="color:#a6e3a1;">"D"</span>);</div>
+                    </div>
+                    <div class="fragment" data-fragment-index="1" style="margin-top:8px; background:#f0faf1; border:2px solid #2e7d32; border-radius:8px; padding:10px 12px;">
+                        <strong style="color:#2e7d32; font-size:0.78em;">Resultado final no console:</strong>
+                        <div style="font-family:'Courier New',monospace; font-size:1.4em; font-weight:900; color:#323330; margin-top:4px; letter-spacing:4px; text-align:center;">B, D, C, A</div>
+                        <p style="font-size:0.65em; color:#555; margin-top:4px; text-align:center;">Não é B, D, A, C — e não é na ordem do código!</p>
+                    </div>
+                </div>
+                <!-- Explicação das filas -->
+                <div style="flex:1.3;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div style="background:#eef4fc; border:2px solid #2980b9; border-radius:8px; padding:8px 10px;">
+                            <div style="font-size:0.72em; font-weight:800; color:#2980b9;">&#9679; Call Stack</div>
+                            <p style="font-size:0.62em; color:#445; margin:3px 0 0;">Executa o código síncrono (imediato). LIFO: último a entrar, primeiro a sair.</p>
+                        </div>
+                        <div style="background:#f3eafc; border:2px solid #7b2cbf; border-radius:8px; padding:8px 10px;">
+                            <div style="font-size:0.72em; font-weight:800; color:#7b2cbf;">&#9679; Microtask Queue</div>
+                            <p style="font-size:0.62em; color:#445; margin:3px 0 0;">Callbacks de <code>Promise.then()</code>. Tem <strong>prioridade</strong> sobre a Task Queue.</p>
+                        </div>
+                        <div style="background:#fdf8ee; border:2px solid #e67e00; border-radius:8px; padding:8px 10px;">
+                            <div style="font-size:0.72em; font-weight:800; color:#e67e00;">&#9679; Task Queue</div>
+                            <p style="font-size:0.62em; color:#445; margin:3px 0 0;">Callbacks de <code>setTimeout</code>, eventos DOM, <code>setInterval</code>.</p>
+                        </div>
+                        <div style="background:#e4f6ec; border:2px solid #2e7d32; border-radius:8px; padding:8px 10px;">
+                            <div style="font-size:0.72em; font-weight:800; color:#2e7d32;">&#9679; Event Loop</div>
+                            <p style="font-size:0.62em; color:#445; margin:3px 0 0;">Coordena: quando a Call Stack esvazia, executa Microtasks, depois Tasks.</p>
+                        </div>
+                    </div>
+
+                    <!-- Ciclo do Event Loop -->
+                    <div class="fragment" data-fragment-index="1" style="margin-top:10px;">
+                        <div style="font-size:0.78em; font-weight:800; color:#1b5e20; margin-bottom:6px;">Ciclo do Event Loop</div>
+                        <div style="display:flex; align-items:center; gap:6px; justify-content:center;">
+                            <div style="background:#2980b9; color:#fff; border-radius:8px; padding:6px 10px; text-align:center; font-size:0.62em; font-weight:700; min-width:100px;">
+                                <div style="font-size:1.3em;">&#10122;</div>Esvazia a<br>Call Stack
+                            </div>
+                            <div style="font-size:1.2em; color:#888;">&#10132;</div>
+                            <div style="background:#7b2cbf; color:#fff; border-radius:8px; padding:6px 10px; text-align:center; font-size:0.62em; font-weight:700; min-width:100px;">
+                                <div style="font-size:1.3em;">&#10123;</div>Executa todas<br>Microtasks
+                            </div>
+                            <div style="font-size:1.2em; color:#888;">&#10132;</div>
+                            <div style="background:#e67e00; color:#fff; border-radius:8px; padding:6px 10px; text-align:center; font-size:0.62em; font-weight:700; min-width:100px;">
+                                <div style="font-size:1.3em;">&#10124;</div>Executa uma<br>Task
+                            </div>
+                            <div style="font-size:1.2em; color:#888;">&#10132;</div>
+                            <div style="font-size:0.58em; color:#1b5e20; font-weight:700;">repete<br>o ciclo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 8: EVENT LOOP - SIMULAÇÃO PASSO A PASSO                 -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <!-- Código de referência fixo no topo — uma linha por instrução -->
+            <div style="background:#1e1e2e; border-radius:6px; padding:6px 12px; font-family:'Courier New',monospace; font-size:0.58em; color:#cdd6f4; line-height:1.7;">
+                <div><span style="color:#6c7086;">1</span>  <span style="color:#89b4fa;">setTimeout</span>(() =&gt; console.log(<span style="color:#a6e3a1;">"A"</span>), <span style="color:#fab387;">0</span>);</div>
+                <div><span style="color:#6c7086;">2</span>  console.<span style="color:#89b4fa;">log</span>(<span style="color:#a6e3a1;">"B"</span>);</div>
+                <div><span style="color:#6c7086;">3</span>  <span style="color:#89b4fa;">Promise</span>.resolve().then(() =&gt; console.log(<span style="color:#a6e3a1;">"C"</span>));</div>
+                <div><span style="color:#6c7086;">4</span>  console.<span style="color:#89b4fa;">log</span>(<span style="color:#a6e3a1;">"D"</span>);</div>
+            </div>
+
+            <!-- Grid de passos -->
+            <div id="elSteps" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:6px;">
+                <!-- Os 6 passos são gerados pelo JS -->
+            </div>
+
+            <!-- Linha do tempo + resultado -->
+            <div id="elTimeline" style="display:none; margin-top:8px; display:flex; gap:12px; align-items:center;">
+                <div style="flex:1;">
+                    <div style="font-size:0.7em; font-weight:800; color:#445;">Linha do tempo (ordem de execução)</div>
+                    <div id="elTimelineItems" style="display:flex; gap:6px; align-items:center; margin-top:4px;"></div>
+                </div>
+                <div id="elResult" style="background:#e4f6ec; border:2px solid #2e7d32; border-radius:8px; padding:8px 14px; text-align:center; display:none;">
+                    <div style="font-size:0.72em; font-weight:800; color:#2e7d32;">&#9989; Resultado final</div>
+                    <div style="font-family:'Courier New',monospace; font-size:1.3em; font-weight:900; color:#323330; letter-spacing:3px;">B, D, C, A</div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="el-toolbar" style="margin-top:6px;">
+                <button id="elPrev">&#9664; Anterior</button>
+                <button id="elNext">Próximo &#9654;</button>
+                <button id="elAll">&#9654;&#9654; Executar tudo</button>
+                <span class="el-pos" id="elPos">0 / 8</span>
+                <button id="elReset" class="el-reset">Reiniciar</button>
+            </div>
+            <div class="el-caption" id="elCaption" style="min-height:1.8em;">Clique em "Próximo" para iniciar a execução passo a passo.</div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 9: setInterval DEMO                                     -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>setInterval &mdash; execução periódica</h2>
+            <div class="si-demo">
+                <div class="si-display">
+                    <div class="si-counter" id="siCounter">0</div>
+                    <div class="si-buttons">
+                        <button id="siStart">Iniciar</button>
+                        <button id="siStop" class="si-stop">Parar</button>
+                        <button id="siReset" class="si-reset">Zerar</button>
+                    </div>
+                </div>
+                <div class="si-code">
+                    <pre><code class="language-javascript">// Executa a função a cada 1000ms (1s)
+let count = 0;
+const id = setInterval(function() {
+    count++;
+    console.log(count);
+}, 1000);
+
+// Para parar:
+clearInterval(id);</code></pre>
+                    <div class="formula-box" style="font-size:0.75em;">
+                        <strong>setInterval(callback, ms)</strong> &rarr; registra o callback na Web API. A cada <code>ms</code> milissegundos, o callback é enfileirado na Callback Queue. Retorna um <code>id</code> numérico para cancelamento via <code>clearInterval(id)</code>.
+                    </div>
+                </div>
+            </div>
+            <div class="warn-box" style="font-size:0.72em; margin-top:6px;">
+                <strong>setTimeout vs setInterval:</strong> <code>setTimeout(cb, ms)</code> executa o callback <em>uma única vez</em> após <code>ms</code>. <code>setInterval(cb, ms)</code> executa <em>repetidamente</em> a cada <code>ms</code>. Ambos são assíncronos e passam pelo Event Loop.
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 10: DIVISOR - TIPOS E VARIAVEIS                         -->
+        <!-- ============================================================ -->
+        <section data-background-color="#323330" class="divider">
+            <div class="part-no">PARTE 3</div>
+            <h1 style="color:var(--js-yellow) !important;">Tipos e Variáveis</h1>
+            <p>Tipagem dinâmica, primitivos, referência e declaração</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 11: TIPOS PRIMITIVOS + REFERENCIA                       -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Tipos em JavaScript</h2>
+            <p style="font-size:0.82em;">JavaScript possui <strong>tipagem dinâmica</strong>: o tipo é associado ao <em>valor</em>, não à variável. O operador <code>typeof</code> retorna o tipo em tempo de execução.</p>
+
+            <h3 style="font-size:0.85em; margin-top:10px;">Primitivos (imutáveis, copiados por valor)</h3>
+            <div class="type-grid">
+                <div class="type-card prim">
+                    <div class="tc-name">number</div>
+                    <div class="tc-ex">42, 3.14, NaN, Infinity</div>
+                    <div class="tc-typeof">typeof 42 === "number"</div>
+                </div>
+                <div class="type-card prim">
+                    <div class="tc-name">string</div>
+                    <div class="tc-ex">"texto", 'abc', `${x}`</div>
+                    <div class="tc-typeof">typeof "a" === "string"</div>
+                </div>
+                <div class="type-card prim">
+                    <div class="tc-name">boolean</div>
+                    <div class="tc-ex">true, false</div>
+                    <div class="tc-typeof">typeof true === "boolean"</div>
+                </div>
+                <div class="type-card prim">
+                    <div class="tc-name">undefined</div>
+                    <div class="tc-ex">let x; // x === undefined</div>
+                    <div class="tc-typeof">typeof x === "undefined"</div>
+                </div>
+                <div class="type-card prim">
+                    <div class="tc-name">null</div>
+                    <div class="tc-ex">let y = null;</div>
+                    <div class="tc-typeof" style="color:var(--accent-red);">typeof null === "object" (!)</div>
+                </div>
+                <div class="type-card prim">
+                    <div class="tc-name">bigint</div>
+                    <div class="tc-ex">9007199254740993n</div>
+                    <div class="tc-typeof">typeof 1n === "bigint"</div>
+                </div>
+                <div class="type-card prim">
+                    <div class="tc-name">symbol</div>
+                    <div class="tc-ex">Symbol("id")</div>
+                    <div class="tc-typeof">typeof Symbol() === "symbol"</div>
+                </div>
+            </div>
+
+            <h3 style="font-size:0.85em; margin-top:10px;">Referência (mutáveis, copiados por referência)</h3>
+            <div class="type-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="type-card ref">
+                    <div class="tc-name">Object</div>
+                    <div class="tc-ex">{ nome: "Ana", idade: 22 }</div>
+                </div>
+                <div class="type-card ref">
+                    <div class="tc-name">Array</div>
+                    <div class="tc-ex">[1, 2, 3]</div>
+                </div>
+                <div class="type-card ref">
+                    <div class="tc-name">Function</div>
+                    <div class="tc-ex">function() {}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 12: COERCAO E == vs ===                                 -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Coerção de tipo e comparação</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p style="font-size:0.82em;"><strong>Coerção implícita</strong>: o motor converte tipos automaticamente em certas operações.</p>
+                    <pre><code class="language-javascript">// Concatenação (string + qualquer)
+"5" + 3       // "53" (number -> string)
+"5" - 3       // 2   (string -> number)
+
+// Booleano implícito
+Boolean(0)    // false (falsy)
+Boolean("")   // false
+Boolean(null) // false
+Boolean(1)    // true  (truthy)
+Boolean("a")  // true</code></pre>
+                </div>
+                <div class="col-img">
+                    <div style="margin-top:4px;">
+                        <svg viewBox="0 0 280 250" width="270">
+                            <rect x="5" y="5" width="130" height="110" rx="10" fill="#fdf3f2" stroke="#c0392b" stroke-width="2"/>
+                            <text x="70" y="28" text-anchor="middle" font-size="13" font-weight="800" fill="#c0392b">== (abstrata)</text>
+                            <text x="70" y="50" text-anchor="middle" font-size="10" fill="#445">Converte tipos antes</text>
+                            <text x="70" y="68" text-anchor="middle" font-size="11" font-family="'Courier New',monospace" fill="#c0392b">"5" == 5 -> true</text>
+                            <text x="70" y="86" text-anchor="middle" font-size="11" font-family="'Courier New',monospace" fill="#c0392b">0 == false -> true</text>
+                            <text x="70" y="104" text-anchor="middle" font-size="11" font-family="'Courier New',monospace" fill="#c0392b">"" == 0 -> true</text>
+
+                            <rect x="145" y="5" width="130" height="110" rx="10" fill="#e4f6ec" stroke="#2e7d32" stroke-width="2"/>
+                            <text x="210" y="28" text-anchor="middle" font-size="13" font-weight="800" fill="#2e7d32">=== (estrita)</text>
+                            <text x="210" y="50" text-anchor="middle" font-size="10" fill="#445">Sem conversão</text>
+                            <text x="210" y="68" text-anchor="middle" font-size="11" font-family="'Courier New',monospace" fill="#2e7d32">"5" === 5 -> false</text>
+                            <text x="210" y="86" text-anchor="middle" font-size="11" font-family="'Courier New',monospace" fill="#2e7d32">0 === false -> false</text>
+                            <text x="210" y="104" text-anchor="middle" font-size="11" font-family="'Courier New',monospace" fill="#2e7d32">"" === 0 -> false</text>
+
+                            <rect x="30" y="130" width="220" height="50" rx="10" fill="#eef4fc" stroke="#2980b9" stroke-width="2"/>
+                            <text x="140" y="153" text-anchor="middle" font-size="12" font-weight="800" fill="#2980b9">Regra prática</text>
+                            <text x="140" y="172" text-anchor="middle" font-size="11" fill="#445">Sempre use === e !== no código.</text>
+
+                            <text x="140" y="210" text-anchor="middle" font-size="10" fill="#777">Valores falsy: 0, "", null, undefined, NaN, false</text>
+                            <text x="140" y="228" text-anchor="middle" font-size="10" fill="#777">Todos os demais são truthy.</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 13: VARIAVEIS let, const, var + ESCOPO                  -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Declaração de variáveis: let, const, var</h2>
+            <div class="var-cmp">
+                <div class="vc-h"></div>
+                <div class="vc-h"><code>let</code></div>
+                <div class="vc-h"><code>const</code></div>
+                <div class="vc-h"><code>var</code></div>
+
+                <div class="vc-r">Escopo</div>
+                <div class="vc-c">Bloco <code>{}</code></div>
+                <div class="vc-c">Bloco <code>{}</code></div>
+                <div class="vc-c vc-warn">Função</div>
+
+                <div class="vc-r">Reatribuição</div>
+                <div class="vc-c vc-yes">Sim</div>
+                <div class="vc-c vc-no">Nao</div>
+                <div class="vc-c vc-yes">Sim</div>
+
+                <div class="vc-r">Hoisting</div>
+                <div class="vc-c">TDZ (erro)</div>
+                <div class="vc-c">TDZ (erro)</div>
+                <div class="vc-c vc-warn">undefined</div>
+
+                <div class="vc-r">Recomendação</div>
+                <div class="vc-c vc-yes">Preferir</div>
+                <div class="vc-c vc-yes">Padrão</div>
+                <div class="vc-c vc-no">Evitar</div>
+            </div>
+
+            <div class="two-col" style="margin-top:10px;">
+                <div class="col-text">
+                    <pre><code class="language-javascript">const PI = 3.14159;  // não pode reatribuir
+let contador = 0;    // pode reatribuir
+contador = 1;        // OK
+// PI = 3;           // TypeError!
+
+// Escopo de bloco vs função
+if (true) {
+    let x = 10;
+    var y = 20;
+}
+// console.log(x);  // ReferenceError
+console.log(y);     // 20 (var "vaza"!)</code></pre>
+                </div>
+                <div class="col-img">
+                    <div class="scope-diagram" style="flex-direction: column; gap: 0;">
+                        <div class="scope-box scope-global">
+                            <div class="scope-label" style="color:var(--accent-red);">Escopo Global</div>
+                            <code style="font-size:0.85em;">var y = 20</code> <span style="font-size:0.7em; color:var(--accent-red);">(acessível aqui!)</span>
+                            <div class="scope-fn">
+                                <div class="scope-label" style="color:var(--accent-blue);">Escopo de Função</div>
+                                <code style="font-size:0.85em;">var</code> <span style="font-size:0.7em; color:#666;">limita-se aqui</span>
+                                <div class="scope-block">
+                                    <div class="scope-label" style="color:var(--ifsc-green);">Bloco if { }</div>
+                                    <code style="font-size:0.85em;">let x = 10</code> <span style="font-size:0.7em; color:var(--ifsc-green);">confinado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 14: DIVISOR - ESTRUTURAS DE DADOS                       -->
+        <!-- ============================================================ -->
+        <section data-background-color="#2980b9" class="divider">
+            <div class="part-no">PARTE 4</div>
+            <h1>Arrays e Objetos</h1>
+            <p>Estruturas de dados fundamentais em JavaScript</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 15: ARRAYS - VISUAL + OPERACOES                         -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Arrays &mdash; coleções indexadas</h2>
+            <p style="font-size:0.8em;">Um array é uma lista ordenada de valores, indexada a partir de <strong>0</strong>. Aceita tipos heterogeneos.</p>
+
+            <div style="text-align:center; margin:10px 0 6px;">
+                <svg viewBox="0 0 600 80" width="580">
+                    <text x="10" y="18" font-size="11" font-weight="700" fill="#555">const frutas =</text>
+                    <text x="160" y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#2980b9">[0]</text>
+                    <text x="260" y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#2980b9">[1]</text>
+                    <text x="360" y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#2980b9">[2]</text>
+                    <text x="460" y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#2980b9">[3]</text>
+                    <rect x="110" y="24" width="100" height="40" fill="#f0faf1" stroke="#2e7d32" stroke-width="2"/>
+                    <rect x="210" y="24" width="100" height="40" fill="#f0faf1" stroke="#2e7d32" stroke-width="2"/>
+                    <rect x="310" y="24" width="100" height="40" fill="#f0faf1" stroke="#2e7d32" stroke-width="2"/>
+                    <rect x="410" y="24" width="100" height="40" fill="#f0faf1" stroke="#2e7d32" stroke-width="2"/>
+                    <text x="160" y="50" text-anchor="middle" font-size="13" font-family="'Courier New',monospace" font-weight="700" fill="#323330">"maca"</text>
+                    <text x="260" y="50" text-anchor="middle" font-size="13" font-family="'Courier New',monospace" font-weight="700" fill="#323330">"uva"</text>
+                    <text x="360" y="50" text-anchor="middle" font-size="13" font-family="'Courier New',monospace" font-weight="700" fill="#323330">"pera"</text>
+                    <text x="460" y="50" text-anchor="middle" font-size="13" font-family="'Courier New',monospace" font-weight="700" fill="#323330">"kiwi"</text>
+                    <text x="540" y="50" font-size="10" fill="#777">.length = 4</text>
+                </svg>
+            </div>
+
+            <div class="two-col" style="gap:16px;">
+                <div class="col-text" style="flex:1;">
+                    <pre><code class="language-javascript">const frutas = ["maca", "uva", "pera"];
+
+// Acesso e modificação
+frutas[0]          // "maca"
+frutas[2] = "kiwi" // substitui "pera"
+
+// Métodos essenciais
+frutas.push("manga")  // adiciona ao final
+frutas.pop()           // remove do final
+frutas.length          // tamanho atual
+
+// Verificação
+Array.isArray(frutas)  // true
+typeof frutas          // "object" (!)</code></pre>
+                </div>
+                <div class="col-img" style="flex:1;">
+                    <pre><code class="language-javascript">// Iteração
+for (let i = 0; i < frutas.length; i++) {
+    console.log(frutas[i]);
+}
+
+// for...of (ES6, mais legível)
+for (const fruta of frutas) {
+    console.log(fruta);
+}
+
+// Desestruturação
+const [a, b] = frutas;
+// a = "maca", b = "uva"</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 16: OBJETOS - VISUAL + OPERACOES                        -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Objetos &mdash; pares chave-valor</h2>
+            <p style="font-size:0.8em;">Objetos armazenam propriedades como pares <code>chave: valor</code>. As chaves são strings (ou Symbols); os valores podem ser de qualquer tipo.</p>
+
+            <div class="two-col" style="margin-top:6px;">
+                <div class="col-text" style="flex:1.1;">
+                    <div style="text-align:center; margin-bottom:8px;">
+                        <svg viewBox="0 0 300 160" width="290">
+                            <rect x="5" y="5" width="290" height="150" rx="12" fill="#f5f8fc" stroke="#2980b9" stroke-width="2"/>
+                            <text x="150" y="28" text-anchor="middle" font-size="12" font-weight="800" fill="#2980b9">Objeto "aluno"</text>
+                            <rect x="20" y="38" width="100" height="24" rx="5" fill="#2e7d32"/>
+                            <text x="70" y="55" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">nome</text>
+                            <rect x="130" y="38" width="150" height="24" rx="5" fill="#e4f6ec" stroke="#2e7d32" stroke-width="1"/>
+                            <text x="205" y="55" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="#323330">"Ana Silva"</text>
+
+                            <rect x="20" y="68" width="100" height="24" rx="5" fill="#2e7d32"/>
+                            <text x="70" y="85" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">idade</text>
+                            <rect x="130" y="68" width="150" height="24" rx="5" fill="#e4f6ec" stroke="#2e7d32" stroke-width="1"/>
+                            <text x="205" y="85" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="#323330">22</text>
+
+                            <rect x="20" y="98" width="100" height="24" rx="5" fill="#2e7d32"/>
+                            <text x="70" y="115" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">ativo</text>
+                            <rect x="130" y="98" width="150" height="24" rx="5" fill="#e4f6ec" stroke="#2e7d32" stroke-width="1"/>
+                            <text x="205" y="115" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="#323330">true</text>
+
+                            <rect x="20" y="128" width="100" height="24" rx="5" fill="#2980b9"/>
+                            <text x="70" y="145" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">notas</text>
+                            <rect x="130" y="128" width="150" height="24" rx="5" fill="#f0f6fc" stroke="#2980b9" stroke-width="1"/>
+                            <text x="205" y="145" text-anchor="middle" font-size="10" font-family="'Courier New',monospace" fill="#323330">[8.5, 9.0, 7.0]</text>
+                        </svg>
+                    </div>
+                </div>
+                <div class="col-img" style="flex:1;">
+                    <pre><code class="language-javascript">const aluno = {
+    nome: "Ana Silva",
+    idade: 22,
+    ativo: true,
+    notas: [8.5, 9.0, 7.0]
+};
+
+// Acesso
+aluno.nome       // "Ana Silva"
+aluno["idade"]   // 22
+
+// Modificar / adicionar
+aluno.email = "ana@email.com";
+
+// Desestruturação
+const { nome, idade } = aluno;</code></pre>
+                </div>
+            </div>
+            <div class="tip-box" style="font-size:0.72em; margin-top:4px;">
+                <strong>Referência:</strong> atribuir um objeto a outra variável <em>não</em> copia os dados &mdash; ambas apontam para o mesmo objeto na memória. <code>const b = aluno; b.nome = "Bia";</code> &rarr; <code>aluno.nome</code> também será <code>"Bia"</code>.
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 17: DIVISOR - CONTROLE DE FLUXO                         -->
+        <!-- ============================================================ -->
+        <section data-background-color="#6c3fa8" class="divider">
+            <div class="part-no">PARTE 5</div>
+            <h1>Controle de Fluxo</h1>
+            <p>Estruturas de seleção e repetição</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 18: SELECAO - if/else, switch, ternario                 -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Estruturas de seleção</h2>
+
+            <div style="display:flex; gap:10px; margin-top:6px;">
+                <div style="flex:1;">
+                    <h3 style="font-size:0.82em; margin:0 0 4px;">if / else if / else</h3>
+                    <pre><code class="language-javascript">const nota = 7.5;
+
+if (nota >= 9) {
+    console.log("A");
+} else if (nota >= 7) {
+    console.log("B");  // executa
+} else if (nota >= 5) {
+    console.log("C");
+} else {
+    console.log("D");
+}</code></pre>
+                </div>
+                <div style="flex:1;">
+                    <h3 style="font-size:0.82em; margin:0 0 4px;">switch</h3>
+                    <pre><code class="language-javascript">const dia = "seg";
+
+switch (dia) {
+    case "seg":
+    case "ter":
+    case "qua":
+    case "qui":
+    case "sex":
+        console.log("Dia útil");
+        break;
+    case "sab":
+    case "dom":
+        console.log("Fim de semana");
+        break;
+    default:
+        console.log("Inválido");
+}</code></pre>
+                </div>
+                <div style="flex:0.7;">
+                    <h3 style="font-size:0.82em; margin:0 0 4px;">Ternário</h3>
+                    <pre><code class="language-javascript">const status = nota >= 7
+    ? "Aprovado"
+    : "Reprovado";
+
+// Equivale a:
+// if (nota >= 7) {
+//   status = "Aprovado";
+// } else {
+//   status = "Reprovado";
+// }</code></pre>
+                    <div style="margin-top:6px;">
+                        <svg viewBox="0 0 190 100" width="180">
+                            <rect x="30" y="5" width="130" height="28" rx="14" fill="#eef4fc" stroke="#2980b9" stroke-width="1.5"/>
+                            <text x="95" y="24" text-anchor="middle" font-size="10" font-weight="700" fill="#2980b9">condição ?</text>
+                            <line x1="55" y1="33" x2="40" y2="55" stroke="#2e7d32" stroke-width="1.5"/>
+                            <line x1="135" y1="33" x2="150" y2="55" stroke="#c0392b" stroke-width="1.5"/>
+                            <text x="30" y="48" font-size="9" font-weight="700" fill="#2e7d32">true</text>
+                            <text x="148" y="48" font-size="9" font-weight="700" fill="#c0392b">false</text>
+                            <rect x="5" y="58" width="80" height="24" rx="6" fill="#e4f6ec" stroke="#2e7d32" stroke-width="1"/>
+                            <text x="45" y="75" text-anchor="middle" font-size="9" font-family="'Courier New',monospace" fill="#2e7d32">valor A</text>
+                            <rect x="110" y="58" width="80" height="24" rx="6" fill="#fdf3f2" stroke="#c0392b" stroke-width="1"/>
+                            <text x="150" y="75" text-anchor="middle" font-size="9" font-family="'Courier New',monospace" fill="#c0392b">valor B</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 19: REPETICAO - for, while, for...of                    -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Estruturas de repetição</h2>
+            <div style="display:flex; gap:10px; margin-top:6px;">
+                <div style="flex:1;">
+                    <h3 style="font-size:0.82em; margin:0 0 4px;">for classico</h3>
+                    <pre><code class="language-javascript">for (let i = 0; i < 5; i++) {
+    console.log(i); // 0,1,2,3,4
+}</code></pre>
+                    <div style="text-align:center; margin-top:4px;">
+                        <svg viewBox="0 0 240 75" width="230">
+                            <defs>
+                                <marker id="arrowSmG" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#2e7d32"/></marker>
+                            </defs>
+                            <rect x="5" y="5" width="65" height="30" rx="6" fill="#eef4fc" stroke="#2980b9" stroke-width="1.5"/>
+                            <text x="37" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#2980b9">init</text>
+                            <text x="37" y="48" text-anchor="middle" font-size="8" fill="#666">i = 0</text>
+
+                            <rect x="85" y="5" width="65" height="30" rx="6" fill="#fdf8ee" stroke="#f39c12" stroke-width="1.5"/>
+                            <text x="117" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#c97c00">test</text>
+                            <text x="117" y="48" text-anchor="middle" font-size="8" fill="#666">i &lt; 5 ?</text>
+
+                            <rect x="165" y="5" width="65" height="30" rx="6" fill="#e4f6ec" stroke="#2e7d32" stroke-width="1.5"/>
+                            <text x="197" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#2e7d32">update</text>
+                            <text x="197" y="48" text-anchor="middle" font-size="8" fill="#666">i++</text>
+
+                            <path d="M70,20 L83,20" stroke="#555" stroke-width="1" marker-end="url(#arrowSmG)"/>
+                            <path d="M150,20 L163,20" stroke="#555" stroke-width="1" marker-end="url(#arrowSmG)"/>
+                            <path d="M197,37 Q197,65 117,65 Q37,65 117,37" stroke="#999" stroke-width="1" fill="none" stroke-dasharray="3 2" marker-end="url(#arrowSmG)"/>
+                            <text x="120" y="63" text-anchor="middle" font-size="7" fill="#999">corpo -> volta ao test</text>
+                        </svg>
+                    </div>
+                </div>
+                <div style="flex:1;">
+                    <h3 style="font-size:0.82em; margin:0 0 4px;">while / do...while</h3>
+                    <pre><code class="language-javascript">let n = 1;
+while (n <= 100) {
+    n *= 2; // dobra até passar de 100
+}
+console.log(n); // 128
+
+// do...while: executa ao menos 1 vez
+let entrada;
+do {
+    entrada = prompt("Senha:");
+} while (entrada !== "1234");</code></pre>
+                </div>
+                <div style="flex:1;">
+                    <h3 style="font-size:0.82em; margin:0 0 4px;">for...of (iteráveis)</h3>
+                    <pre><code class="language-javascript">const cores = ["red", "green", "blue"];
+
+for (const cor of cores) {
+    console.log(cor);
+}
+// "red", "green", "blue"
+
+// Também funciona com strings:
+for (const ch of "IFSC") {
+    console.log(ch);
+}
+// "I", "F", "S", "C"</code></pre>
+                </div>
+            </div>
+            <div class="warn-box" style="font-size:0.72em; margin-top:6px;">
+                <strong>break</strong> interrompe o laço. <strong>continue</strong> pula para a próxima iteração. Use com parcimônia para manter a legibilidade.
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 20: INTEGRACAO - EXEMPLO COMPLETO                       -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Integração: exemplo completo</h2>
+            <p style="font-size:0.8em;">Combinando arrays, objetos, <code>for...of</code> e <code>if/else</code> em um cenário realista:</p>
+            <pre><code class="language-javascript">const alunos = [
+    { nome: "Ana",   notas: [8.5, 9.0, 7.0] },
+    { nome: "Bruno", notas: [5.0, 6.5, 4.0] },
+    { nome: "Carla", notas: [10,  9.5, 9.0] }
+];
+
+for (const aluno of alunos) {
+    // Calcula média aritmética
+    let soma = 0;
+    for (const nota of aluno.notas) {
+        soma += nota;
+    }
+    const media = soma / aluno.notas.length;
+
+    // Classifica resultado
+    let resultado;
+    if (media >= 7) {
+        resultado = "Aprovado";
+    } else if (media >= 5) {
+        resultado = "Recuperação";
+    } else {
+        resultado = "Reprovado";
+    }
+
+    console.log(`${aluno.nome}: média ${media.toFixed(1)} - ${resultado}`);
+}
+// Ana: média 8.2 - Aprovado
+// Bruno: média 5.2 - Recuperação
+// Carla: média 9.5 - Aprovado</code></pre>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 21: QUIZ                                                -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Quiz</h2>
+            <div class="quiz" data-quiz-id="aula9-quiz">
+                <div class="quiz-question" data-question-id="q1">
+                    <div class="quiz-number">Questão 1</div>
+                    <div class="quiz-prompt">Qual a saída de:<br><code>console.log(typeof null)</code>?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="a" data-feedback="null não é undefined. São tipos distintos.">undefined</button>
+                        <button class="quiz-option" data-option-id="b" data-correct="true">"object"</button>
+                        <button class="quiz-option" data-option-id="c" data-feedback="null não é do tipo 'null' no typeof — é um bug histórico da linguagem.">"null"</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+
+                <div class="quiz-question" data-question-id="q2">
+                    <div class="quiz-number">Questão 2</div>
+                    <div class="quiz-prompt">Qual a saída?<br><code>"5" + 3</code></div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="a" data-feedback="O operador + com string faz concatenação, não soma.">8</button>
+                        <button class="quiz-option" data-option-id="b" data-correct="true">"53"</button>
+                        <button class="quiz-option" data-option-id="c" data-feedback="A operação é válida; o 3 é convertido para string.">NaN</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+
+                <div class="quiz-question" data-question-id="q3">
+                    <div class="quiz-number">Questão 3</div>
+                    <div class="quiz-prompt">Qual será a ordem impressa?<br><code>console.log("A");<br>setTimeout(()=>console.log("B"),0);<br>console.log("C");</code></div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="a" data-feedback="setTimeout é assíncrono — mesmo com 0ms, o callback vai para a fila.">A, B, C</button>
+                        <button class="quiz-option" data-option-id="b" data-correct="true">A, C, B</button>
+                        <button class="quiz-option" data-option-id="c" data-feedback="O código síncrono executa primeiro (A e C), depois o callback (B).">C, A, B</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+
+                <div class="quiz-question" data-question-id="q4">
+                    <div class="quiz-number">Questão 4</div>
+                    <div class="quiz-prompt">O que acontece?<br><code>const x = 10;<br>x = 20;</code></div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="a" data-feedback="const impede reatribuição. Use let se precisar reatribuir.">x vale 20</button>
+                        <button class="quiz-option" data-option-id="b" data-correct="true">TypeError</button>
+                        <button class="quiz-option" data-option-id="c" data-feedback="const impede a reatribuição em tempo de execução, gerando TypeError.">undefined</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+
+                <div class="quiz-question" data-question-id="q5">
+                    <div class="quiz-number">Questão 5</div>
+                    <div class="quiz-prompt"><code>"5" === 5</code> retorna:</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="a" data-feedback="=== (estrita) não converte tipos. String e number são tipos diferentes.">true</button>
+                        <button class="quiz-option" data-option-id="b" data-correct="true">false</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+
+                <div class="quiz-question" data-question-id="q6">
+                    <div class="quiz-number">Questão 6</div>
+                    <div class="quiz-prompt">Qual método adiciona um elemento ao final de um array?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-option-id="a" data-feedback="pop() remove o último elemento, não adiciona.">pop()</button>
+                        <button class="quiz-option" data-option-id="b" data-correct="true">push()</button>
+                        <button class="quiz-option" data-option-id="c" data-feedback="shift() remove o primeiro elemento do array.">shift()</button>
+                    </div>
+                    <div class="quiz-result"></div>
+                </div>
+            </div>
+            <div class="quiz-progress"></div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 22: RECAPITULACAO + REFERENCIAS                         -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Recapitulação</h2>
+            <div class="cards" style="margin-top:8px;">
+                <div class="card js-card">
+                    <h3>História</h3>
+                    <p>Criado em 1995, padronizado pela ECMA, evoluiu até ES2026+. Única linguagem nativa dos navegadores.</p>
+                </div>
+                <div class="card js-card">
+                    <h3>Event Loop</h3>
+                    <p>Single-thread + Web APIs + Callback Queue. Operações assíncronas não bloqueiam a thread principal.</p>
+                </div>
+                <div class="card js-card">
+                    <h3>Tipos</h3>
+                    <p>7 primitivos (number, string, boolean, undefined, null, bigint, symbol) + referência (Object, Array, Function).</p>
+                </div>
+                <div class="card js-card">
+                    <h3>Variáveis</h3>
+                    <p><code>const</code> (padrão), <code>let</code> (reatribuição), ambos com escopo de bloco. Evitar <code>var</code>.</p>
+                </div>
+            </div>
+
+            <h3 style="font-size:0.82em; margin-top:14px;">Referências</h3>
+            <ul style="font-size:0.72em; line-height:1.5em;">
+                <li>MDN Web Docs. <em>JavaScript Guide</em>. developer.mozilla.org/pt-BR/docs/Web/JavaScript/Guide.</li>
+                <li>MDN Web Docs. <em>JavaScript Reference</em>. developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference.</li>
+                <li>ECMA International. <em>ECMAScript Language Specification</em>. ecma-international.org/publications-and-standards/standards/ecma-262/.</li>
+                <li>FLANAGAN, David. <em>JavaScript: The Definitive Guide</em>. 7th ed. O'Reilly, 2020.</li>
+                <li>SIMPSON, Kyle. <em>You Don't Know JS Yet</em>. 2nd ed. github.com/getify/You-Dont-Know-JS.</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 23: PROXIMA AULA                                        -->
+        <!-- ============================================================ -->
+        <section style="text-align:center;">
+            <h2 style="border:none;">Próxima aula</h2>
+            <p style="font-size:1.1em; margin-top:20px;"><strong>Encontro 10 &mdash; 19/11/2026</strong></p>
+            <p style="font-size:1em;">Funções, escopo, closures, arrow functions, Strings e métodos de Array</p>
+            <p class="small-text" style="margin-top:30px;">Traga o console do navegador (<kbd>F12</kbd>) aberto.</p>
+        </section>
+
+    </div>
+</div>
+
+<div class="quiz-modal" id="quizFeedbackModal" role="dialog" aria-modal="true" aria-labelledby="quizModalTitle" aria-describedby="quizModalText">
+    <div class="quiz-modal-card">
+        <h3 id="quizModalTitle">Ainda não</h3>
+        <p id="quizModalText"></p>
+        <button class="quiz-modal-close" type="button">Entendi, tentar novamente</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        transition: 'fade',
+        slideNumber: 'c/t',
+        width: 1100,
+        height: 800,
+        margin: 0.02,
+        minScale: 0.2,
+        maxScale: 1.5,
+        plugins: [ RevealHighlight ]
+    });
+
+    (function () {
+        const SLIDE_H = 800;
+        function fit(slide) {
+            if (!slide) return;
+            slide.style.fontSize = '';
+            let scale = 1;
+            for (let i = 0; i < 12 && slide.scrollHeight > SLIDE_H; i++) {
+                scale -= 0.04;
+                slide.style.fontSize = (scale * (slide.classList.contains('compact') ? 0.80 : 1)) + 'em';
+            }
+        }
+        Reveal.on('ready', e => fit(e.currentSlide));
+        Reveal.on('slidechanged', e => fit(e.currentSlide));
+        window.addEventListener('resize', () => fit(Reveal.getCurrentSlide()));
+    })();
+
+    document.getElementById('btnPdf').addEventListener('click', function () {
+        if (window.location.search.indexOf('print-pdf') === -1) {
+            const sep = window.location.search ? '&' : '?';
+            window.location.href = window.location.pathname + window.location.search + sep + 'print-pdf';
+        } else {
+            window.print();
+        }
+    });
+    if (window.location.search.indexOf('print-pdf') !== -1) {
+        window.addEventListener('load', () => setTimeout(() => window.print(), 800));
+    }
+
+    // ===================== Event Loop Step-by-Step Simulation =====================
+    (function () {
+        const grid    = document.getElementById('elSteps');
+        const capEl   = document.getElementById('elCaption');
+        const posEl   = document.getElementById('elPos');
+        const btnPrev = document.getElementById('elPrev');
+        const btnNext = document.getElementById('elNext');
+        const btnAll  = document.getElementById('elAll');
+        const btnReset = document.getElementById('elReset');
+        const timeline = document.getElementById('elTimeline');
+        const tlItems  = document.getElementById('elTimelineItems');
+        const elResult = document.getElementById('elResult');
+
+        if (!grid) return;
+
+        var CS = '#2980b9', MQ = '#7b2cbf', TQ = '#e67e00', CON = '#323330';
+
+        var STEPS = [
+            {
+                num: 1, title: 'Início da execução',
+                desc: 'O código começa a ser executado de forma síncrona, linha a linha.',
+                stack: ['(global)'], micro: [], task: [], console: [],
+                cap: 'Linha 1: <code>setTimeout</code> é encontrado.'
+            },
+            {
+                num: 2, title: 'setTimeout (linha 1)',
+                desc: 'O temporizador agenda o callback na <b>Task Queue</b> (mesmo com 0 ms) e o código continua.',
+                stack: ['(global)'], micro: [], task: ['A'], console: [],
+                cap: 'O callback de <code>setTimeout</code> vai para a <b>Task Queue</b>, não executa agora.'
+            },
+            {
+                num: 3, title: 'console.log("B") (linha 2)',
+                desc: 'Executa imediatamente e imprime <b>B</b>.',
+                stack: ['(global)'], micro: [], task: ['A'], console: ['B'],
+                cap: 'Código síncrono executa direto na Call Stack.'
+            },
+            {
+                num: 4, title: 'Promise.then (linha 3)',
+                desc: 'O callback da Promise é agendado na <b>Microtask Queue</b>.',
+                stack: ['(global)'], micro: ['C'], task: ['A'], console: ['B'],
+                cap: '<code>Promise.resolve().then()</code> é uma <b>microtask</b> — tem prioridade sobre tasks.'
+            },
+            {
+                num: 5, title: 'console.log("D") (linha 4)',
+                desc: 'Executa imediatamente e imprime <b>D</b>. O código síncrono termina e a Call Stack fica vazia.',
+                stack: ['(vazia)'], micro: ['C'], task: ['A'], console: ['B', 'D'],
+                cap: 'Todo o código síncrono executou. Agora o Event Loop entra em ação.'
+            },
+            {
+                num: 6, title: 'Event Loop executa as filas',
+                desc: 'Com a Call Stack vazia, o Event Loop:<br>1. Executa a Microtask Queue (imprime <b>C</b>).<br>2. Em seguida, executa a Task Queue (imprime <b>A</b>).',
+                stack: ['(vazia)'], micro: ['(vazia)'], task: ['(vazia)'], console: ['B', 'D', 'C', 'A'],
+                cap: 'Microtasks <b>sempre</b> antes de Tasks. Resultado: <b>B, D, C, A</b>.'
+            }
+        ];
+
+        var TIMELINE = [
+            { letter: 'B', type: 'síncrono', color: CS },
+            { letter: 'D', type: 'síncrono', color: CS },
+            { letter: 'C', type: 'microtask', color: MQ },
+            { letter: 'A', type: 'task', color: TQ }
+        ];
+
+        function makeCell(label, color, items) {
+            var h = '<div style="background:' + color + '; color:#fff; font-size:0.56em; font-weight:800; padding:3px 6px; border-radius:4px 4px 0 0; text-align:center;">' + label + '</div>';
+            h += '<div style="background:#f8f9fc; border:1.5px solid ' + color + '; border-top:none; border-radius:0 0 4px 4px; min-height:28px; padding:3px 4px; text-align:center;">';
+            items.forEach(function(item) {
+                var bg = label === 'Console' ? '#323330' : (color + '22');
+                var fg = label === 'Console' ? '#fff' : color;
+                h += '<div style="background:' + bg + '; color:' + fg + '; font-size:0.55em; font-weight:700; padding:2px 5px; border-radius:3px; margin:2px 0; font-family:\'Courier New\',monospace;">' + item + '</div>';
+            });
+            if (items.length === 0) h += '<div style="font-size:0.48em; color:#bbb; padding:4px;">(vazia)</div>';
+            h += '</div>';
+            return h;
+        }
+
+        function makeStepCard(step) {
+            var card = '<div style="background:#fff; border:2px solid #d6e3f0; border-radius:8px; padding:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">';
+            card += '<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
+            card += '<div style="background:#2980b9; color:#fff; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.65em; font-weight:900; flex-shrink:0;">' + step.num + '</div>';
+            card += '<div style="font-size:0.68em; font-weight:800; color:#1a2b45; line-height:1.2;">' + step.title + '</div>';
+            card += '</div>';
+            card += '<div style="font-size:0.55em; color:#556; line-height:1.35; margin-bottom:6px;">' + step.desc + '</div>';
+            card += '<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:3px;">';
+            card += makeCell('Call Stack', CS, step.stack);
+            card += makeCell('Microtask', MQ, step.micro);
+            card += makeCell('Task Queue', TQ, step.task);
+            card += makeCell('Console', CON, step.console);
+            card += '</div></div>';
+            return card;
+        }
+
+        var idx = -1;
+        var autoTimer = null;
+
+        function stopAuto() { if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; } }
+
+        function render() {
+            grid.innerHTML = '';
+            for (var i = 0; i < STEPS.length; i++) {
+                var wrapper = document.createElement('div');
+                wrapper.style.transition = 'opacity 0.3s, transform 0.3s';
+                if (i <= idx) {
+                    wrapper.style.opacity = '1';
+                    wrapper.style.transform = 'translateY(0)';
+                } else {
+                    wrapper.style.opacity = '0.15';
+                    wrapper.style.transform = 'translateY(4px)';
+                }
+                if (i === idx) {
+                    wrapper.style.outline = '3px solid #2980b9';
+                    wrapper.style.borderRadius = '10px';
+                    wrapper.style.outlineOffset = '1px';
+                }
+                wrapper.innerHTML = makeStepCard(STEPS[i]);
+                grid.appendChild(wrapper);
+            }
+
+            var st = idx >= 0 ? STEPS[idx] : STEPS[0];
+            capEl.innerHTML = idx >= 0 ? st.cap : 'Clique em "Próximo" para iniciar a execução passo a passo.';
+            posEl.textContent = (idx + 1) + ' / ' + STEPS.length;
+            btnPrev.disabled = idx <= 0;
+            btnNext.disabled = idx >= STEPS.length - 1;
+            btnAll.disabled = idx >= STEPS.length - 1;
+
+            // Timeline
+            tlItems.innerHTML = '';
+            if (idx >= 2) {
+                timeline.style.display = 'flex';
+                var shown = idx >= 5 ? 4 : (idx >= 4 ? 2 : (idx >= 3 ? 1 : 1));
+                if (idx === 2) shown = 1;
+                for (var t = 0; t < shown && t < TIMELINE.length; t++) {
+                    if (t > 0) {
+                        var arrow = document.createElement('div');
+                        arrow.style.cssText = 'font-size:1em; color:#888;';
+                        arrow.textContent = '➔';
+                        tlItems.appendChild(arrow);
+                    }
+                    var box = document.createElement('div');
+                    box.style.cssText = 'background:' + TIMELINE[t].color + '; color:#fff; border-radius:6px; padding:4px 10px; text-align:center; min-width:50px;';
+                    box.innerHTML = '<div style="font-size:1.1em; font-weight:900;">' + TIMELINE[t].letter + '</div><div style="font-size:0.55em; opacity:0.9;">(' + TIMELINE[t].type + ')</div>';
+                    tlItems.appendChild(box);
+                }
+            } else {
+                timeline.style.display = 'none';
+            }
+
+            elResult.style.display = idx >= 5 ? 'block' : 'none';
+        }
+
+        function go(to) { idx = Math.max(0, Math.min(STEPS.length - 1, to)); render(); }
+        function next() { stopAuto(); go(idx + 1); }
+        function prev() { stopAuto(); go(idx - 1); }
+        function resetSim() { stopAuto(); idx = -1; render(); }
+        function runAll() {
+            stopAuto();
+            (function tick() {
+                if (idx >= STEPS.length - 1) return;
+                go(idx + 1);
+                autoTimer = setTimeout(tick, 1800);
+            })();
+        }
+
+        btnNext.addEventListener('click', next);
+        btnPrev.addEventListener('click', prev);
+        btnAll.addEventListener('click', runAll);
+        btnReset.addEventListener('click', resetSim);
+        Reveal.on('slidechanged', stopAuto);
+        render();
+    })();
+
+    // ===================== setInterval Demo =====================
+    (function () {
+        const counterEl = document.getElementById('siCounter');
+        const btnStart  = document.getElementById('siStart');
+        const btnStop   = document.getElementById('siStop');
+        const btnReset  = document.getElementById('siReset');
+
+        if (!counterEl) return;
+
+        let count = 0;
+        let intervalId = null;
+
+        function updateDisplay() { counterEl.textContent = count; }
+        function updateButtons() {
+            const running = intervalId !== null;
+            btnStart.disabled = running;
+            btnStop.disabled = !running;
+            btnReset.disabled = !running && count === 0;
+            counterEl.classList.toggle('running', running);
+        }
+        function stop() {
+            if (intervalId !== null) { clearInterval(intervalId); intervalId = null; }
+            updateButtons();
+        }
+
+        btnStart.addEventListener('click', function () {
+            if (intervalId !== null) return;
+            intervalId = setInterval(function () { count++; updateDisplay(); }, 1000);
+            updateButtons();
+        });
+        btnStop.addEventListener('click', stop);
+        btnReset.addEventListener('click', function () { stop(); count = 0; updateDisplay(); updateButtons(); });
+        Reveal.on('slidechanged', stop);
+        updateButtons();
+    })();
+
+    // ===================== Quiz Engine =====================
+    (function () {
+        const STORAGE_PREFIX = 'ppi1-aula9.quiz.v1.';
+        const modal = document.getElementById('quizFeedbackModal');
+        const modalText = document.getElementById('quizModalText');
+        const modalClose = modal.querySelector('.quiz-modal-close');
+        let returnFocus = null;
+
+        function readState(quizId) {
+            try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX + quizId)) || {}; }
+            catch (_) { return {}; }
+        }
+        function writeState(quizId, state) {
+            try { localStorage.setItem(STORAGE_PREFIX + quizId, JSON.stringify(state)); }
+            catch (_) {}
+        }
+        function openFeedback(message, trigger) {
+            returnFocus = trigger;
+            modalText.textContent = message;
+            modal.classList.add('open');
+            modalClose.focus();
+        }
+        function closeFeedback() {
+            modal.classList.remove('open');
+            if (returnFocus) returnFocus.focus();
+        }
+        modalClose.addEventListener('click', closeFeedback);
+        modal.addEventListener('click', event => { if (event.target === modal) closeFeedback(); });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && modal.classList.contains('open')) {
+                event.stopPropagation();
+                closeFeedback();
+            }
+        }, true);
+
+        document.querySelectorAll('[data-quiz-id]').forEach(quiz => {
+            const quizId = quiz.dataset.quizId;
+            const state = readState(quizId);
+            const questions = Array.from(quiz.querySelectorAll('[data-question-id]'));
+            const progress = quiz.closest('section').querySelector('.quiz-progress');
+
+            function updateProgress() {
+                const hits = questions.filter(question => question.classList.contains('correct')).length;
+                progress.textContent = hits === questions.length
+                    ? 'Concluído: todas as respostas estão corretas.'
+                    : `${hits} de ${questions.length} questões concluídas`;
+            }
+
+            questions.forEach(question => {
+                const questionId = question.dataset.questionId;
+                const saved = state[questionId] || { wrong: [], correct: false };
+                const result = question.querySelector('.quiz-result');
+                const options = Array.from(question.querySelectorAll('.quiz-option'));
+                const reset = document.createElement('button');
+                reset.type = 'button';
+                reset.className = 'quiz-reset';
+                reset.textContent = 'Desfazer';
+                reset.setAttribute('aria-label', 'Desfazer respostas desta questão');
+                question.appendChild(reset);
+
+                reset.addEventListener('click', event => {
+                    event.stopPropagation();
+                    delete state[questionId];
+                    writeState(quizId, state);
+                    question.classList.remove('correct');
+                    options.forEach(option => { option.classList.remove('wrong', 'right'); option.disabled = false; });
+                    result.textContent = '';
+                    updateProgress();
+                });
+
+                saved.wrong.forEach(optionId => {
+                    const option = options.find(item => item.dataset.optionId === optionId);
+                    if (option) option.classList.add('wrong');
+                });
+                if (saved.correct) {
+                    const right = options.find(item => item.dataset.correct === 'true');
+                    question.classList.add('correct');
+                    if (right) right.classList.add('right');
+                    options.forEach(item => item.disabled = !item.classList.contains('wrong'));
+                    result.textContent = 'Correto!';
+                }
+
+                options.forEach(option => option.addEventListener('click', event => {
+                    event.stopPropagation();
+                    if (option.classList.contains('wrong')) { openFeedback(option.dataset.feedback, option); return; }
+                    if (question.classList.contains('correct')) return;
+                    const current = state[questionId] || { wrong: [], correct: false };
+
+                    if (option.dataset.correct === 'true') {
+                        current.correct = true;
+                        question.classList.add('correct');
+                        option.classList.add('right');
+                        options.forEach(item => item.disabled = !item.classList.contains('wrong'));
+                        result.textContent = 'Correto!';
+                    } else {
+                        if (!current.wrong.includes(option.dataset.optionId)) current.wrong.push(option.dataset.optionId);
+                        option.classList.add('wrong');
+                        result.textContent = 'Tentativa marcada. Escolha outra alternativa.';
+                        openFeedback(option.dataset.feedback, option);
+                    }
+                    state[questionId] = current;
+                    writeState(quizId, state);
+                    updateProgress();
+                }));
+            });
+            updateProgress();
+        });
+    })();
+</script>
+</body>
+</html>
