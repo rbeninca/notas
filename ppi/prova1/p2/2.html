@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questão 2 — Cascata e especificidade CSS</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #f3f6fb;
+    }
+
+    body {
+      box-sizing: border-box;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    main {
+      padding: clamp(20px, 5vw, 40px);
+      border: 1px solid #dce3ee;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 12px 32px #1c315012;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 18px;
+      border-radius: 10px;
+      background: #172033;
+      color: #f1f5fb;
+      line-height: 1.6;
+    }
+
+    .alternativas {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .alternativa {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .alternativa:not(.correta):hover label,
+    .alternativa:not(.correta):focus-within label {
+      border-color: #c62828;
+    }
+
+    .alternativa label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid #dce3ee;
+      border-radius: 10px;
+      background: #fff;
+      cursor: default;
+      line-height: 1.5;
+    }
+
+    .feedback {
+      display: none;
+      margin: 8px 4px 0;
+      color: #b42318;
+      line-height: 1.5;
+    }
+
+    .alternativa:not(.correta):hover .feedback,
+    .alternativa:not(.correta):focus-within .feedback {
+      display: block;
+    }
+
+    .alternativa input {
+      flex: 0 0 auto;
+      margin: 4px 0 0;
+      accent-color: #16834a;
+    }
+
+    .alternativa.correta label {
+      border-color: #16834a;
+      background: #effaf3;
+    }
+
+    .status {
+      display: block;
+      margin-top: 4px;
+      color: #187044;
+      font-weight: 700;
+    }
+
+    .explicacao {
+      margin-top: 24px;
+      padding: 16px 18px;
+      border-left: 4px solid #16834a;
+      border-radius: 6px;
+      background: #effaf3;
+      line-height: 1.6;
+    }
+
+    code {
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Questão 2 — Cascata e especificidade CSS (2,0 pontos)</h1>
+    <p>
+      Considere o HTML e o CSS abaixo. Qual será a cor da palavra “Aviso!”
+      e qual justificativa está correta?
+    </p>
+
+    <pre><code>&lt;style&gt;
+  #conteudo p { color: blue; }
+  p.alerta { color: green; }
+  p#mensagem { color: purple; }
+  .alerta { color: red; }
+&lt;/style&gt;
+&lt;section id="conteudo"&gt;
+  &lt;p id="mensagem" class="alerta"&gt;Aviso!&lt;/p&gt;
+&lt;/section&gt;</code></pre>
+
+    <h2>Alternativas</h2>
+    <section class="alternativas" aria-label="Alternativas da questão 2">
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-2" disabled>
+          <span>A) Azul: a primeira regra com seletor de ID tem prioridade.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> A regra azul e <code>p#mensagem</code> têm a mesma especificidade. Nesse empate, vence a regra declarada mais tarde, que define roxo.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-2" disabled>
+          <span>B) Verde: um seletor com tag e classe vence qualquer seletor com ID.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> Seletor com ID tem maior especificidade que seletor com classe. <code>p.alerta</code> perde para <code>p#mensagem</code>.</p>
+      </form>
+
+      <form class="alternativa correta">
+        <label>
+          <input type="radio" name="resposta-2" checked disabled>
+          <span>
+            C) Roxo: <code>p#mensagem</code> empata com <code>#conteudo p</code> e aparece depois.
+            <span class="status">✓ Alternativa correta</span>
+          </span>
+        </label>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-2" disabled>
+          <span>D) Vermelho: a última declaração sempre vence as anteriores.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> A ordem só desempata regras com a mesma especificidade. <code>.alerta</code> é menos específica que os seletores que contêm um ID.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-2" disabled>
+          <span>E) Azul: <code>#conteudo p</code> é mais específico que <code>p#mensagem</code>.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> Os dois seletores têm um ID e uma tag, portanto possuem a mesma especificidade. Como <code>p#mensagem</code> vem depois, a cor final é roxa.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-2" disabled>
+          <span>F) Roxo: a regra <code>.alerta</code> é a mais específica por aparecer no final.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> Embora a cor roxa esteja correta, <code>.alerta</code> não é a regra vencedora: ela tem menor especificidade. A vencedora é <code>p#mensagem</code>, que empata com <code>#conteudo p</code> e aparece depois.</p>
+      </form>
+    </section>
+
+    <aside class="explicacao">
+      <strong>Por que a alternativa C?</strong>
+      <code>#conteudo p</code> e <code>p#mensagem</code> têm a mesma especificidade:
+      um ID e um seletor de elemento cada. Como <code>p#mensagem</code> aparece
+      depois no CSS, sua declaração <code>color: purple</code> prevalece.
+    </aside>
+  </main>
+</body>
+</html>

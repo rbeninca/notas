@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questão 3 — Flexbox e distribuição de espaço</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #f3f6fb;
+    }
+
+    body {
+      box-sizing: border-box;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    main {
+      padding: clamp(20px, 5vw, 40px);
+      border: 1px solid #dce3ee;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 12px 32px #1c315012;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 18px;
+      border-radius: 10px;
+      background: #172033;
+      color: #f1f5fb;
+      line-height: 1.6;
+    }
+
+    .alternativas {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .alternativa {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .alternativa:not(.correta):hover label,
+    .alternativa:not(.correta):focus-within label {
+      border-color: #c62828;
+    }
+
+    .alternativa label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid #dce3ee;
+      border-radius: 10px;
+      background: #fff;
+      cursor: default;
+      line-height: 1.5;
+    }
+
+    .feedback {
+      display: none;
+      margin: 8px 4px 0;
+      color: #b42318;
+      line-height: 1.5;
+    }
+
+    .alternativa:not(.correta):hover .feedback,
+    .alternativa:not(.correta):focus-within .feedback {
+      display: block;
+    }
+
+    .alternativa input {
+      flex: 0 0 auto;
+      margin: 4px 0 0;
+      accent-color: #16834a;
+    }
+
+    .alternativa.correta label {
+      border-color: #16834a;
+      background: #effaf3;
+    }
+
+    .status {
+      display: block;
+      margin-top: 4px;
+      color: #187044;
+      font-weight: 700;
+    }
+
+    .detalhe-correta {
+      display: block;
+      margin-top: 8px;
+      color: #24543a;
+    }
+
+    .explicacao {
+      margin-top: 24px;
+      padding: 16px 18px;
+      border-left: 4px solid #16834a;
+      border-radius: 6px;
+      background: #effaf3;
+      line-height: 1.6;
+    }
+
+    code {
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Questão 3 — Flexbox e distribuição de espaço (2,0 pontos)</h1>
+    <p>
+      O contêiner tem 480 px de largura. Ignore bordas, margens e padding.
+      Após a aplicação das regras, quais serão as larguras de A, B e C,
+      respectivamente?
+    </p>
+
+    <pre><code>&lt;style&gt;
+  .linha { display: flex; width: 480px; gap: 15px; }
+  .bloco { flex: 0 0 100px; }
+  .cresce { flex-grow: 1; }
+&lt;/style&gt;
+&lt;div class="linha"&gt;
+  &lt;div class="bloco"&gt;A&lt;/div&gt;
+  &lt;div class="bloco cresce"&gt;B&lt;/div&gt;
+  &lt;div class="bloco"&gt;C&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+    <h2>Alternativas</h2>
+    <section class="alternativas" aria-label="Alternativas da questão 3">
+      <form class="alternativa correta">
+        <label>
+          <input type="radio" name="resposta-3" checked disabled>
+          <span>
+            A) 100 px, 250 px, 100 px.
+            <span class="status">✓ Alternativa correta</span>
+            <span class="detalhe-correta">
+              <strong>Conta:</strong> as larguras-base somam
+              <code>100 + 100 + 100 = 300 px</code>. Os dois gaps somam
+              <code>2 × 15 = 30 px</code>. Sobram
+              <code>480 − 300 − 30 = 150 px</code>, que vão todos para B,
+              o único item com <code>flex-grow: 1</code>.
+              Assim, A = <code>100 px</code>, B = <code>100 + 150 = 250 px</code>
+              e C = <code>100 px</code>.
+            </span>
+          </span>
+        </label>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-3" disabled>
+          <span>B) 100 px, 280 px, 100 px.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> Esse resultado trata todo o espaço após as larguras-base como espaço livre: <code>480 − 300 = 180 px</code>, sem descontar os dois gaps. Os gaps ocupam <code>2 × 15 = 30 px</code>, então sobram 150 px para B, que fica com <code>100 + 150 = 250 px</code>.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-3" disabled>
+          <span>C) 150 px, 150 px, 150 px.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> Essa distribuição divide igualmente a largura entre os três itens e ignora os tamanhos-base de 100 px e os gaps. Apenas B tem <code>flex-grow: 1</code>; A e C permanecem com 100 px cada.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-3" disabled>
+          <span>D) 100 px, 150 px, 100 px.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> A largura total proposta é <code>100 + 150 + 100 + 15 + 15 = 380 px</code>, deixando 100 px do contêiner sem distribuir. O espaço livre após os tamanhos-base e os gaps é <code>480 − 300 − 30 = 150 px</code>, e todo ele vai para B.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-3" disabled>
+          <span>E) 100 px, 235 px, 100 px.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> B receberia apenas 135 px extras, mas o espaço livre é <code>480 − (3 × 100) − (2 × 15) = 150 px</code>. Como B é o único item com crescimento, sua largura final é <code>100 + 150 = 250 px</code>.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-3" disabled>
+          <span>F) 150 px, 200 px, 100 px.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> A e C têm <code>flex-grow: 0</code>, herdado da regra <code>flex: 0 0 100px</code>, então não crescem. Apenas B recebe os 150 px livres e chega a 250 px.</p>
+      </form>
+    </section>
+
+    <aside class="explicacao">
+      <strong>Como fazer a conta?</strong>
+      <ol>
+        <li>As larguras-base somam <code>100 + 100 + 100 = 300 px</code>.</li>
+        <li>Há dois espaços entre os três itens: <code>2 × 15 = 30 px</code>.</li>
+        <li>O espaço livre é <code>480 − 300 − 30 = 150 px</code>.</li>
+        <li>Só B tem <code>flex-grow: 1</code>, então recebe todos os 150 px: <code>100 + 150 = 250 px</code>.</li>
+      </ol>
+      Portanto, A, B e C medem, respectivamente, <strong>100 px, 250 px e 100 px</strong>.
+    </aside>
+  </main>
+</body>
+</html>

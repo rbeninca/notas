@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questão 5 — Posicionamento com position</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #f3f6fb;
+    }
+
+    body {
+      box-sizing: border-box;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    main {
+      padding: clamp(20px, 5vw, 40px);
+      border: 1px solid #dce3ee;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 12px 32px #1c315012;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 18px;
+      border-radius: 10px;
+      background: #172033;
+      color: #f1f5fb;
+      line-height: 1.6;
+    }
+
+    .alternativas {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .alternativa {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .alternativa:not(.correta):hover label,
+    .alternativa:not(.correta):focus-within label {
+      border-color: #c62828;
+    }
+
+    .alternativa label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid #dce3ee;
+      border-radius: 10px;
+      background: #fff;
+      cursor: default;
+      line-height: 1.5;
+    }
+
+    .feedback {
+      display: none;
+      margin: 8px 4px 0;
+      color: #b42318;
+      line-height: 1.5;
+    }
+
+    .alternativa:not(.correta):hover .feedback,
+    .alternativa:not(.correta):focus-within .feedback {
+      display: block;
+    }
+
+    .alternativa input {
+      flex: 0 0 auto;
+      margin: 4px 0 0;
+      accent-color: #16834a;
+    }
+
+    .alternativa.correta label {
+      border-color: #16834a;
+      background: #effaf3;
+    }
+
+    .status {
+      display: block;
+      margin-top: 4px;
+      color: #187044;
+      font-weight: 700;
+    }
+
+    .detalhe-correta {
+      display: block;
+      margin-top: 8px;
+      color: #24543a;
+    }
+
+    .explicacao {
+      margin-top: 24px;
+      padding: 16px 18px;
+      border-left: 4px solid #16834a;
+      border-radius: 6px;
+      background: #effaf3;
+      line-height: 1.6;
+    }
+
+    code {
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Questão 5 — Posicionamento com position (2,0 pontos)</h1>
+    <p>
+      Considere as medidas em pixels, relativas à borda interna de
+      <code>.painel</code>, e ignore bordas, margens e padding. Qual alternativa
+      descreve corretamente a posição de X e seu efeito no fluxo normal?
+    </p>
+
+    <pre><code>&lt;style&gt;
+  .painel { position: relative; width: 320px; height: 150px; }
+  .titulo { position: relative; top: 10px; }
+  .aviso  { position: absolute; top: 20px; right: 30px; width: 60px; }
+&lt;/style&gt;
+&lt;div class="painel"&gt;
+  &lt;div class="titulo"&gt;Título&lt;/div&gt;
+  &lt;div class="aviso"&gt;X&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+    <h2>Alternativas</h2>
+    <section class="alternativas" aria-label="Alternativas da questão 5">
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-5" disabled>
+          <span>A) X começa a 30 px da esquerda e 20 px do topo; não ocupa espaço no fluxo.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> <code>right: 30px</code> mede a distância da borda direita do painel, não da esquerda. A posição à esquerda é <code>320 − 30 − 60 = 230px</code>.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-5" disabled>
+          <span>B) X começa a 230 px da esquerda e 30 px do topo; não ocupa espaço no fluxo.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> A distância de 30 px é da borda direita. O deslocamento vertical é dado por <code>top: 20px</code>, então X começa a 20 px do topo.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-5" disabled>
+          <span>C) X começa a 230 px da esquerda e 20 px do topo; empurra o título para baixo.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> As coordenadas estão corretas, mas <code>position: absolute</code> remove X do fluxo normal. Portanto, X não empurra nem desloca o título.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-5" disabled>
+          <span>D) X começa a 260 px da esquerda e 20 px do topo; não ocupa espaço no fluxo.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> A coordenada esquerda precisa descontar tanto a distância da direita quanto a largura de X: <code>320 − 30 − 60 = 230px</code>, não 260px.</p>
+      </form>
+
+      <form class="alternativa correta">
+        <label>
+          <input type="radio" name="resposta-5" checked disabled>
+          <span>
+            E) X começa a 230 px da esquerda e 20 px do topo; não ocupa espaço no fluxo.
+            <span class="status">✓ Alternativa correta</span>
+            <span class="detalhe-correta">
+              <strong>Conta e efeito:</strong> o painel de 320 px é o bloco de referência,
+              pois tem <code>position: relative</code>. A posição horizontal é
+              <code>320 − 30 − 60 = 230 px</code> (largura do painel menos
+              <code>right</code> e a largura de X); a posição vertical é
+              <code>top: 20 px</code>. Como X usa <code>position: absolute</code>,
+              sai do fluxo normal e não reserva espaço nem empurra o título.
+            </span>
+          </span>
+        </label>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-5" disabled>
+          <span>F) X começa a 230 px da esquerda e 10 px do topo; não ocupa espaço no fluxo.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> O valor <code>top: 10px</code> pertence a <code>.titulo</code>, não a X. Para X, a regra define <code>top: 20px</code>.</p>
+      </form>
+    </section>
+
+    <aside class="explicacao">
+      <strong>Resumo:</strong> X é posicionado em relação ao painel, o ancestral
+      posicionado mais próximo. Sua coordenada horizontal é
+      <code>320 − 30 − 60 = 230 px</code>, e a vertical é <code>20 px</code>.
+      Por ser absoluto, X não participa do fluxo normal; o deslocamento relativo
+      de 10 px do título não muda essas coordenadas.
+    </aside>
+  </main>
+</body>
+</html>

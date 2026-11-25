@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questão 4 — Grid responsivo e animação CSS</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #f3f6fb;
+    }
+
+    body {
+      box-sizing: border-box;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    main {
+      padding: clamp(20px, 5vw, 40px);
+      border: 1px solid #dce3ee;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 12px 32px #1c315012;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 18px;
+      border-radius: 10px;
+      background: #172033;
+      color: #f1f5fb;
+      line-height: 1.6;
+    }
+
+    .alternativas {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .alternativa {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .alternativa:not(.correta):hover label,
+    .alternativa:not(.correta):focus-within label {
+      border-color: #c62828;
+    }
+
+    .alternativa label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid #dce3ee;
+      border-radius: 10px;
+      background: #fff;
+      cursor: default;
+      line-height: 1.5;
+    }
+
+    .feedback {
+      display: none;
+      margin: 8px 4px 0;
+      color: #b42318;
+      line-height: 1.5;
+    }
+
+    .alternativa:not(.correta):hover .feedback,
+    .alternativa:not(.correta):focus-within .feedback {
+      display: block;
+    }
+
+    .alternativa input {
+      flex: 0 0 auto;
+      margin: 4px 0 0;
+      accent-color: #16834a;
+    }
+
+    .alternativa.correta label {
+      border-color: #16834a;
+      background: #effaf3;
+    }
+
+    .status {
+      display: block;
+      margin-top: 4px;
+      color: #187044;
+      font-weight: 700;
+    }
+
+    .detalhe-correta {
+      display: block;
+      margin-top: 8px;
+      color: #24543a;
+    }
+
+    .explicacao {
+      margin-top: 24px;
+      padding: 16px 18px;
+      border-left: 4px solid #16834a;
+      border-radius: 6px;
+      background: #effaf3;
+      line-height: 1.6;
+    }
+
+    code {
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Questão 4 — Grid responsivo e animação CSS (2,0 pontos)</h1>
+    <p>
+      Em uma janela de 500 px de largura, qual alternativa descreve corretamente
+      o layout e a animação de A?
+    </p>
+
+    <pre><code>&lt;style&gt;
+  .grade { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .destaque { grid-column: 1 / 3; animation: pulsar 2s infinite alternate; }
+  @keyframes pulsar {
+    from { opacity: 1; }
+    to   { opacity: 0.5; }
+  }
+  @media (max-width: 600px) {
+    .grade { grid-template-columns: 1fr; }
+  }
+&lt;/style&gt;
+&lt;div class="grade"&gt;
+  &lt;article class="destaque"&gt;A&lt;/article&gt;
+  &lt;article&gt;B&lt;/article&gt;
+  &lt;article&gt;C&lt;/article&gt;
+&lt;/div&gt;</code></pre>
+
+    <h2>Alternativas</h2>
+    <section class="alternativas" aria-label="Alternativas da questão 4">
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-4" disabled>
+          <span>A) A passa a ocupar uma coluna porque a media query altera também grid-column.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> A media query altera somente <code>grid-template-columns</code>; ela não redefine <code>grid-column</code>. A regra <code>grid-column: 1 / 3</code> continua valendo.</p>
+      </form>
+
+      <form class="alternativa correta">
+        <label>
+          <input type="radio" name="resposta-4" checked disabled>
+          <span>
+            B) A ainda abrange duas colunas, podendo criar uma implícita; sua opacidade oscila.
+            <span class="status">✓ Alternativa correta</span>
+            <span class="detalhe-correta">
+              <strong>Explicação:</strong> com 500 px, a media query define uma coluna explícita.
+              Porém, <code>grid-column: 1 / 3</code> continua posicionando A entre as linhas
+              1 e 3, fazendo-o ocupar duas colunas; a segunda pode ser criada como coluna
+              implícita. A animação dura 2 segundos e alterna continuamente a opacidade
+              entre <code>1</code> e <code>0.5</code>.
+            </span>
+          </span>
+        </label>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-4" disabled>
+          <span>C) A mantém duas colunas, mas não anima porque está dentro de um Grid.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> Grid não impede animações CSS. A propriedade <code>animation</code> aplicada diretamente a A executa normalmente, alternando sua opacidade entre 1 e 0.5.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-4" disabled>
+          <span>D) A ocupa uma coluna e fica com opacidade 0,5 por causa de alternate.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> <code>alternate</code> faz a animação inverter a direção a cada ciclo; não define uma opacidade fixa. A regra de coluna <code>1 / 3</code> também continua ativa, então A abrange duas colunas.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-4" disabled>
+          <span>E) A desaparece, pois grid-column: 1 / 3 é inválido quando há uma coluna.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> A posição não é inválida: se a grade não tem uma segunda coluna explícita, o Grid pode criar uma coluna implícita para atender ao posicionamento. O item não desaparece.</p>
+      </form>
+
+      <form class="alternativa" tabindex="0">
+        <label>
+          <input type="radio" name="resposta-4" disabled>
+          <span>F) A ocupa duas linhas, pois o Grid converte automaticamente colunas em linhas.</span>
+        </label>
+        <p class="feedback" role="status"><strong>Errado.</strong> O Grid não converte automaticamente colunas em linhas. <code>grid-column: 1 / 3</code> especifica linhas de coluna e faz A abranger duas colunas, inclusive quando uma delas é implícita.</p>
+      </form>
+    </section>
+
+    <aside class="explicacao">
+      <strong>Resumo:</strong> a media query troca a grade para uma coluna explícita,
+      mas não sobrescreve <code>grid-column: 1 / 3</code>; essa posição pode gerar
+      uma segunda coluna implícita. Já <code>alternate</code> inverte a direção
+      da animação em cada ciclo de 2 segundos, fazendo a opacidade variar entre
+      <code>1</code> e <code>0.5</code>.
+    </aside>
+  </main>
+</body>
+</html>

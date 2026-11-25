@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questão 4 — Grid, responsividade e animação</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main>
+    <h1>Questão 4 — Grid, responsividade e animação</h1>
+    <p class="intro">
+      O código deveria distribuir os artigos em três colunas nas telas largas
+      e duas nas estreitas. Analise a distribuição antes do deslocamento visual
+      da animação.
+    </p>
+
+    <pre><code>&lt;main class="grade"&gt;
+  &lt;article class="destaque"&gt;A&lt;/article&gt;
+  &lt;article&gt;B&lt;/article&gt;
+  &lt;article&gt;C&lt;/article&gt;
+  &lt;article&gt;D&lt;/article&gt;
+&lt;/main&gt;
+
+&lt;style&gt;
+  .grade { display: grid;
+           grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .destaque { grid-column: 1 / 4;
+              animation: mover 2s linear infinite alternate; }
+  @media (max-width: 600px) {
+    .grade { grid-template-columns: repeat(2, 1fr); }
+  }
+  @keyframes mover {
+    from { transform: translateX(0); }
+    to   { transform: translateX(20px); }
+  }
+&lt;/style&gt;</code></pre>
+
+    <section class="item">
+      <h2>Item a [0,6] — distribuição em janela de 800 px</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> há três colunas explícitas. A ocupa a primeira
+        linha inteira; B, C e D ficam, respectivamente, nas colunas 1, 2 e 3 da
+        segunda linha.
+      </p>
+      <p>
+        A largura de 800 px não satisfaz <code>max-width: 600px</code>, portanto
+        a regra de três colunas permanece ativa. O posicionamento
+        <code>grid-column: 1 / 4</code> faz A começar na linha de coluna 1 e
+        terminar na linha 4, abrangendo as três colunas.
+      </p>
+      <div class="diagrama">
+        <table class="tabela-grade">
+          <thead>
+            <tr><th></th><th>Coluna 1</th><th>Coluna 2</th><th>Coluna 3</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Linha 1</th><td class="destaque" colspan="3">A — ocupa 3 colunas</td></tr>
+            <tr><th>Linha 2</th><td>B</td><td>C</td><td>D</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="item">
+      <h2>Item b [0,8] — terceira coluna implícita e correção</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> em 500 px a media query define duas colunas
+        explícitas, mas <code>grid-column: 1 / 4</code> ainda exige que A vá da
+        linha 1 à linha 4, um intervalo de três colunas. O Grid pode criar a
+        terceira coluna como trilha implícita. Troque somente para
+        <code>grid-column: 1 / -1</code>.
+      </p>
+      <pre><code>.destaque { grid-column: 1 / -1; }</code></pre>
+      <p>
+        O valor <code>-1</code> aponta para a última linha da grade explícita.
+        Assim, A abrange toda a grade explícita disponível: três colunas na tela
+        larga e duas na estreita, sem exigir uma trilha implícita extra.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item c [0,6] — distribuição corrigida em janela de 500 px</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> A ocupa a primeira linha nas duas colunas;
+        B e C ocupam, respectivamente, a primeira e a segunda coluna da segunda
+        linha; D começa na primeira coluna da terceira linha.
+      </p>
+      <div class="diagrama">
+        <table class="tabela-grade">
+          <thead>
+            <tr><th></th><th>Coluna 1</th><th>Coluna 2</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Linha 1</th><td class="destaque" colspan="2">A — ocupa 2 colunas</td></tr>
+            <tr><th>Linha 2</th><td>B</td><td>C</td></tr>
+            <tr><th>Linha 3</th><td>D</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Depois que A ocupa as duas células da primeira linha, o posicionamento
+        automático segue preenchendo as próximas células livres na ordem:
+        B, C e D.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item d [0,5] — deslocamento após 1 segundo</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> após 1 segundo, A deslocou-se 10 px para a
+        direita. O movimento não altera a posição reservada para os outros
+        artigos.
+      </p>
+      <p>
+        A animação é linear e leva 2 segundos para ir de
+        <code>translateX(0)</code> a <code>translateX(20px)</code>. Um segundo é
+        metade da duração, portanto o deslocamento é
+        <code>20 × (1 ÷ 2) = 10 px</code>. A propriedade <code>transform</code>
+        altera a apresentação visual, não o espaço que o Grid reservou no
+        layout; B, C e D mantêm suas posições calculadas.
+      </p>
+
+      <div class="demo" aria-label="Demonstração animada do Grid após a correção">
+        <h3>Prévia responsiva animada</h3>
+        <div class="demo-grade">
+          <div class="demo-destaque">A · animação de 0 a 20 px</div>
+          <div>B</div>
+          <div>C</div>
+          <div>D</div>
+        </div>
+        <p class="nota">
+          A prévia usa a correção <code>grid-column: 1 / -1</code>. Em telas
+          estreitas, passa a duas colunas. A animação se repete e alterna a
+          direção; a preferência do sistema por movimento reduzido é respeitada.
+        </p>
+      </div>
+    </section>
+
+    <nav class="navegacao" aria-label="Navegação entre questões">
+      <a href="3.html">← Anterior: Questão 3</a>
+      <a href="index.html">Índice das questões</a>
+    </nav>
+  </main>
+</body>
+</html>

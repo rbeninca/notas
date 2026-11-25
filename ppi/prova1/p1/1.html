@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questão 1 — Formulários HTML e envio de dados</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main>
+    <h1>Questão 1 — Formulários HTML e envio de dados</h1>
+    <p class="intro">
+      Um estudante criou o formulário abaixo. Considere que o usuário mantém
+      os valores exibidos e clica em Enviar. O navegador está com a validação
+      HTML padrão ativada.
+    </p>
+
+    <pre><code>&lt;form action="/contato" method="get"&gt;
+  &lt;label for="email"&gt;E-mail&lt;/label&gt;
+  &lt;input id="email" name="email" type="email"
+         value="ana@exemplo.com" required&gt;
+
+  &lt;label for="curso"&gt;Curso&lt;/label&gt;
+  &lt;select id="curso"&gt;
+    &lt;option value="ads" selected&gt;ADS&lt;/option&gt;
+    &lt;option value="redes"&gt;Redes&lt;/option&gt;
+  &lt;/select&gt;
+
+  &lt;label&gt;&lt;input type="checkbox" name="avisos"
+                value="sim" checked&gt; Receber avisos&lt;/label&gt;
+  &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+    <section class="item">
+      <h2>Item a [0,8] — método e dados enviados</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> o método HTTP é <code>GET</code>.
+        Os pares enviados são <code>email=ana@exemplo.com</code> e
+        <code>avisos=sim</code>.
+      </p>
+      <p>
+        <strong>Como determinar:</strong> o atributo <code>method="get"</code>
+        define o método. Para enviar um controle, o navegador precisa de um
+        <code>name</code> e de um valor válido. O campo de e-mail tem
+        <code>name="email"</code>; a caixa marcada tem
+        <code>name="avisos"</code> e <code>value="sim"</code>. Por isso, os dados
+        aparecem na query string como
+        <code>/contato?email=ana@exemplo.com&amp;avisos=sim</code>.
+      </p>
+      <p>
+        O <code>select</code> não tem atributo <code>name</code>, então sua
+        seleção não é enviada. O botão também não tem <code>name</code> e não
+        acrescenta um par nome=valor.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item b [0,7] — enviar a seleção do curso</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> adicione <code>name="curso"</code> à tag
+        <code>&lt;select&gt;</code>. O par enviado será
+        <code>curso=ads</code>.
+      </p>
+      <p>
+        Um controle pode mostrar uma opção selecionada sem enviá-la: o navegador
+        serializa o valor do controle associado a um nome. A tag corrigida fica
+        assim:
+      </p>
+      <pre><code>&lt;select id="curso" name="curso"&gt;</code></pre>
+      <p>
+        Como a opção selecionada tem <code>value="ads"</code>, o par é
+        <code>curso=ads</code>. Se esse nome fosse acrescentado, a query string
+        também incluiria esse par.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item c [0,5] — não colocar os dados na URL</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> altere <code>method="get"</code> para
+        <code>method="post"</code>. Em um envio POST, os campos costumam ser
+        transmitidos no corpo (body) da requisição, em vez de compor a query
+        string da URL.
+      </p>
+      <p>
+        Essa mudança evita que os valores sejam colocados na URL como parâmetros
+        GET; ela não criptografa os dados. Para proteger os dados durante o
+        transporte, o site também deve usar HTTPS.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item d [0,5] — validação do e-mail</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> não. Com o valor <code>ana@</code>, a validação
+        nativa bloqueia o envio.
+      </p>
+      <p>
+        O atributo <code>required</code> verifica se o campo está preenchido;
+        <code>ana@</code> não está vazio, então satisfaz essa exigência. Porém,
+        <code>type="email"</code> também verifica se o valor tem formato de
+        endereço de e-mail válido. <code>ana@</code> não tem um domínio após o
+        <code>@</code>, por isso falha nessa validação e o formulário não é
+        enviado até que o valor seja corrigido.
+      </p>
+    </section>
+
+    <nav class="navegacao" aria-label="Navegação entre questões">
+      <span></span>
+      <a href="2.html">Próxima: Questão 2 →</a>
+    </nav>
+  </main>
+</body>
+</html>

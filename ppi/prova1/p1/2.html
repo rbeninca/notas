@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questão 2 — CSS, cascata e especificidade</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main>
+    <h1>Questão 2 — CSS, cascata e especificidade</h1>
+    <p class="intro">
+      Analise os elementos e as regras CSS. Não há outras folhas de estilo.
+      Considere a cor do texto, não a cor do fundo.
+    </p>
+
+    <pre><code>&lt;div id="painel"&gt;
+  &lt;p class="aviso"&gt;A &lt;span&gt;B&lt;/span&gt;&lt;/p&gt;
+  &lt;p&gt;C&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+  p                    { color: black; }
+  .aviso               { color: green; }
+  #painel p            { color: blue; }
+  #painel .aviso       { color: red; }
+  span                 { color: orange; }
+&lt;/style&gt;</code></pre>
+
+    <section class="item">
+      <h2>Item a [0,9] — cores finais</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> A fica <code>red</code>, B fica
+        <code>orange</code> e C fica <code>blue</code>.
+      </p>
+      <p>
+        Para A, que está no parágrafo <code>class="aviso"</code>, a regra
+        vencedora é <code>#painel .aviso</code>, que define <code>red</code>.
+        Para C, a regra mais específica que o atinge é <code>#painel p</code>,
+        que define <code>blue</code>. O texto B está em um <code>span</code> e
+        recebe a cor explícita <code>orange</code> da regra <code>span</code>.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item b [0,8] — especificidade e herança</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> A e C têm cores diferentes porque A também
+        corresponde às regras de classe <code>.aviso</code> e
+        <code>#painel .aviso</code>; C não corresponde a elas. B não herda o
+        vermelho de A porque tem uma declaração própria de cor.
+      </p>
+      <p>
+        A regra <code>#painel .aviso</code> tem especificidade maior que
+        <code>#painel p</code> e vence para A. O parágrafo C não tem a classe
+        <code>aviso</code>, então nele vence <code>#painel p</code> (azul).
+        Comparando as partes dos seletores: <code>#painel .aviso</code> tem
+        1 ID e 1 classe; <code>#painel p</code> tem 1 ID e 1 elemento.
+        O ID empata, e a classe tem prioridade sobre o elemento, por isso a
+        regra de A vence. A regra simples <code>p</code> é menos específica
+        que ambas.
+        Embora um <code>span</code> normalmente herde a cor do texto de seu pai,
+        uma declaração aplicada diretamente a ele — neste caso
+        <code>span { color: orange; }</code> — prevalece sobre a cor herdada.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item c [0,8] — deixar somente C roxo</h2>
+      <p class="resposta">
+        <strong>Uma regra possível:</strong>
+        <code>#painel p:not(.aviso) { color: purple; }</code>
+      </p>
+      <pre><code>#painel p:not(.aviso) { color: purple; }</code></pre>
+      <p>
+        O seletor encontra parágrafos dentro de <code>#painel</code> que não
+        têm a classe <code>aviso</code>: nessa marcação, somente C. A regra é
+        específica o bastante para vencer <code>#painel p</code>. Como ela não
+        seleciona A, não altera sua cor; também não seleciona o
+        <code>span</code> B, que permanece laranja.
+      </p>
+      <p class="nota">
+        <code>:not(.aviso)</code> exclui A e contribui com a especificidade da
+        classe <code>.aviso</code>; a regra completa também contém o ID
+        <code>#painel</code> e o elemento <code>p</code>.
+      </p>
+    </section>
+
+    <nav class="navegacao" aria-label="Navegação entre questões">
+      <a href="1.html">← Anterior: Questão 1</a>
+      <a href="3.html">Próxima: Questão 3 →</a>
+    </nav>
+  </main>
+</body>
+</html>

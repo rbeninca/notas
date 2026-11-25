@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questão 3 — Flexbox e posicionamento</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main>
+    <h1>Questão 3 — Flexbox e posicionamento</h1>
+    <p class="intro">
+      Uma linha flexível tem 440 px de largura, sem padding ou bordas. Os
+      conteúdos são curtos e não impedem a redução dos cartões. Considere a
+      borda esquerda da linha como <code>x = 0</code>.
+    </p>
+
+    <pre><code>&lt;div class="linha"&gt;
+  &lt;div class="card"&gt;A&lt;/div&gt;
+  &lt;div class="card importante"&gt;
+    B &lt;span class="selo"&gt;Novo&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="card"&gt;C&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+  .linha { display: flex; width: 440px; gap: 20px; }
+  .card { flex: 1 1 100px; min-width: 0; }
+  .importante { flex-grow: 2; position: relative; }
+  .selo { position: absolute; top: 0; right: 0; }
+&lt;/style&gt;</code></pre>
+
+    <section class="item">
+      <h2>Item a [1,0] — largura final dos cartões</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> A = 125 px, B = 150 px e C = 125 px.
+      </p>
+      <ol>
+        <li>
+          Os três cartões começam com base de 100 px:
+          <code>3 × 100 = 300 px</code>.
+        </li>
+        <li>
+          Os dois gaps ocupam <code>2 × 20 = 40 px</code>. Restam para os cartões
+          <code>440 − 300 − 40 = 100 px</code> de espaço livre.
+        </li>
+        <li>
+          Os fatores de crescimento são 1 para A, 2 para B e 1 para C; a soma é
+          <code>1 + 2 + 1 = 4</code>. Cada unidade recebe
+          <code>100 ÷ 4 = 25 px</code>.
+        </li>
+        <li>
+          A recebe 25 px e termina com <code>100 + 25 = 125 px</code>. B recebe
+          <code>2 × 25 = 50 px</code> e termina com <code>150 px</code>. C recebe
+          25 px e termina com <code>125 px</code>.
+        </li>
+      </ol>
+      <p class="nota">
+        Verificação: <code>125 + 150 + 125 + 20 + 20 = 440 px</code>.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item b [0,6] — posição horizontal de B e C</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> B começa em <code>x = 145 px</code> e C começa
+        em <code>x = 315 px</code>.
+      </p>
+      <p>
+        A começa em <code>x = 0</code> e tem 125 px de largura. Depois do gap de
+        20 px, B começa em <code>0 + 125 + 20 = 145 px</code>. B tem 150 px;
+        somando o segundo gap, C começa em
+        <code>145 + 150 + 20 = 315 px</code>.
+      </p>
+    </section>
+
+    <section class="item">
+      <h2>Item c [0,9] — posição e fluxo do selo</h2>
+      <p class="resposta">
+        <strong>Resposta:</strong> o selo aparece no canto superior direito do
+        cartão B. O cartão <code>.importante</code> é a referência de posição;
+        o selo não aumenta a largura de B.
+      </p>
+      <p>
+        <code>position: relative</code> em <code>.importante</code> estabelece
+        o bloco de referência para o descendente absoluto. No selo,
+        <code>top: 0</code> e <code>right: 0</code> alinham sua caixa ao canto
+        superior direito desse cartão. Como <code>position: absolute</code>
+        remove o selo do fluxo normal, ele não participa do cálculo de largura
+        dos itens Flexbox nem reserva espaço dentro de B.
+      </p>
+
+      <div class="demo" aria-label="Demonstração visual das larguras calculadas">
+        <h3>Diagrama proporcional dos cartões</h3>
+        <div class="demo-flex-scroll">
+          <div class="demo-flex" aria-label="Cartões A, B e C em uma linha flexível de 440 pixels">
+            <div>A · 125 px</div>
+            <div class="demo-importante">
+              B · 150 px
+              <span class="demo-selo">Novo</span>
+            </div>
+            <div>C · 125 px</div>
+          </div>
+        </div>
+        <p class="nota">
+          O desenho usa os tamanhos calculados, os dois gaps de 20 px e o selo
+          posicionado no canto de B.
+        </p>
+      </div>
+    </section>
+
+    <nav class="navegacao" aria-label="Navegação entre questões">
+      <a href="2.html">← Anterior: Questão 2</a>
+      <a href="4.html">Próxima: Questão 4 →</a>
+    </nav>
+  </main>
+</body>
+</html>
