@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPI1 — Aula 10: Funções, DOM e Programação Funcional</title>
+
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/css/print/pdf.css" media="print">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+
+    <style>
+        :root {
+            --ifsc-green: #2e7d32;
+            --ifsc-dark:  #1b5e20;
+            --accent-red: #c0392b;
+            --accent-gold: #f39c12;
+            --accent-blue: #2980b9;
+            --web-purple: #6c3fa8;
+            --grid-color: #f0f0f0;
+            --js-yellow: #f0db4f;
+            --js-dark: #323330;
+        }
+        .reveal h1, .reveal h2 { color: var(--ifsc-green); font-weight: 800; text-transform: uppercase; }
+        .reveal h2 { border-bottom: 3px solid var(--ifsc-green); display: inline-block; padding-bottom: 2px; margin: 0 0 2px; line-height: 1.1em; }
+        .reveal h3 { color: var(--ifsc-dark); }
+        .reveal section { text-align: left; padding: 0 18px 8px; }
+        .reveal section > *:first-child { margin-top: 0; }
+        .reveal .slides { padding: 0; }
+        .reveal .slides > section, .reveal .slides > section > section { padding-top: 0; top: 0 !important; }
+        .reveal section p { margin: 8px 0; }
+        .reveal section ul, .reveal section ol { margin: 8px 0; }
+
+        .reveal section.compact { font-size: 0.80em; }
+        .reveal section.compact li { margin: 5px 0; }
+
+        .reveal pre { width: 100%; box-shadow: 0 3px 12px rgba(0,0,0,0.18); font-size: 0.60em; margin: 8px 0; }
+        .reveal pre code { padding: 12px 16px; max-height: 420px; border-radius: 6px; }
+
+        .formula-box {
+            background: #eef4fc; padding: 12px 16px; border-left: 6px solid var(--ifsc-green);
+            border-radius: 4px; margin: 10px 0; font-size: 0.88em; box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+        }
+        .warn-box { background: #fdf3f2; border-left: 6px solid var(--accent-red); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+        .tip-box  { background: #fff8e8; border-left: 6px solid var(--accent-gold); padding: 12px 16px; border-radius: 4px; margin: 10px 0; font-size: 0.85em; }
+
+        .highlight { color: var(--ifsc-green); font-weight: bold; }
+        .small-text { font-size: 0.72em; color: #666; }
+        code, .mono { font-family: 'Courier New', monospace; }
+
+        .two-col { display: flex; align-items: flex-start; gap: 24px; }
+        .two-col .col-text { flex: 1.2; }
+        .two-col .col-img { flex: 1; text-align: center; }
+
+        .icon-list { list-style: none; margin-left: 0; }
+        .icon-list li { margin: 10px 0; padding-left: 4px; }
+        .icon-list .ic { color: var(--ifsc-green); margin-right: 8px; font-weight: 700; }
+
+        .pill { display:inline-block; background:#e7f0fb; color: var(--ifsc-dark); border-radius: 12px; padding: 2px 10px; font-size: 0.7em; font-weight:700; margin: 2px; }
+        .pill.js  { background: var(--js-yellow); color: var(--js-dark); }
+
+        .divider { text-align:center; }
+        .divider .part-no { font-size: 0.9em; letter-spacing: 3px; color: rgba(255,255,255,0.85); font-weight:700; }
+        .divider h1 { color:#fff !important; font-size: 2.2em; border:none; margin-top:6px; }
+        .divider p { color: rgba(255,255,255,0.9); font-size: 1.05em; }
+
+        .topbar { position: fixed; top: 16px; right: 16px; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        @media print { .topbar { display: none !important; } }
+
+        #btnPdf { background: var(--ifsc-green);
+            color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: background 0.2s, transform 0.1s; }
+        #btnPdf:hover { background: var(--ifsc-dark); }
+        #btnPdf:active { transform: scale(0.96); }
+
+        .reveal .slide-number { background: var(--ifsc-green); color: #fff; font-size: 16px; padding: 4px 10px; border-radius: 4px; }
+
+        /* ===================== Simulation shared ===================== */
+        .sim-line { white-space:nowrap; padding:0 10px; border-left:4px solid transparent; color:#9a9a8e; }
+        .sim-line.done { color:#e5e5e5; }
+        .sim-line.active { color:#e5e5e5; background:#45523a; border-color:#e9c34c; }
+        .sim-num { color:#8c978c; display:inline-block; width:22px; text-align:right; margin-right:6px; user-select:none; }
+
+        @keyframes simAppear { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+        .sim-appear { animation: simAppear .3s ease both; }
+
+        .sim-phase { display:inline-block; padding:3px 10px; border-radius:4px; background:#e8ede9; color:#555; transition:.2s; font-size:1em; flex:1; text-align:center; }
+        .sim-phase.sim-phase-on { background:var(--ifsc-green); color:#fff; }
+
+        .sim-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+        .sim-toolbar button { border: 1px solid #cfe3cf; background: #f6faf6; color: var(--ifsc-dark); border-radius: 7px;
+            padding: 6px 12px; font-size: 0.62em; font-weight: 700; cursor: pointer; transition: .15s; }
+        .sim-toolbar button:hover:not(:disabled) { background: var(--ifsc-green); color: #fff; border-color: var(--ifsc-green); }
+        .sim-toolbar button:disabled { opacity: 0.4; cursor: default; }
+        .sim-toolbar .sim-reset { border-color: #f3c9c4; background: #fdf3f2; color: var(--accent-red); margin-left: auto; }
+        .sim-toolbar .sim-reset:hover { background: var(--accent-red); color: #fff; }
+        .sim-toolbar .sim-pos { font-size: 0.58em; color: #778; font-weight: 700; margin-left: 4px; }
+        .sim-toolbar .sim-primary { background:var(--ifsc-green); color:#fff; border-color:var(--ifsc-green); }
+        .sim-toolbar .sim-primary:hover:not(:disabled) { background:var(--ifsc-dark); }
+
+        /* ===================== Functions Sim (fn) ===================== */
+        .fn-grid { display:grid; grid-template-columns:46% 54%; gap:10px; font-size:0.78em; }
+        .fn-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.85em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .fn-scope { border-radius:10px; padding:8px 10px; min-height:38px; transition:all .35s; position:relative; overflow:hidden; }
+        .fn-scope-global { background:#fdf3f220; border:2px dashed #c0392b40; }
+        .fn-scope-global.fn-on { background:#fdf3f2; border:2px solid var(--accent-red); }
+        .fn-scope-fn { background:#eef4fc20; border:2px dashed #2980b940; margin:6px 0 4px; border-radius:8px; padding:8px 10px; }
+        .fn-scope-fn.fn-on { background:#eef4fc; border:2px solid var(--accent-blue); }
+        .fn-label { font-weight:800; font-size:0.82em; margin-bottom:3px; opacity:0.4; transition:opacity .3s; }
+        .fn-label.fn-on { opacity:1; }
+        .fn-chip { display:inline-flex; align-items:center; gap:4px; border-radius:6px; padding:3px 10px; font-family:'Courier New',monospace; font-size:0.85em; font-weight:700; margin:2px 4px; opacity:0; transform:translateY(8px); transition:all .35s ease; }
+        .fn-chip.fn-show { opacity:1; transform:translateY(0); }
+        .fn-chip-fn { background:#eef4fc; border:2px solid var(--accent-blue); color:var(--accent-blue); }
+        .fn-chip-var { background:#e4f6ec; border:2px solid var(--ifsc-green); color:var(--ifsc-green); }
+        .fn-chip-val { font-size:0.85em; color:#555; font-weight:400; }
+        .fn-stack { background:#fafafa; border:2px solid #555; border-radius:8px; padding:6px 8px; min-height:50px; }
+        .fn-stack-title { font-weight:700; font-size:0.78em; color:#555; margin-bottom:4px; }
+        .fn-stack-item { background:var(--ifsc-green); color:#fff; padding:3px 8px; border-radius:4px; font-family:monospace; font-size:0.82em; margin:2px 0; animation: simAppear .3s ease both; }
+        .fn-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.78em; min-height:28px; margin-top:6px; }
+        .fn-console-line { margin:1px 0; }
+        .fn-console-line::before { content:"> "; color:#75715e; }
+        .fn-console-out { color:#a6e3a1; }
+        @keyframes fnFlash { 0%{ background:#fff3cd; } 50%{ background:#ffeaa7; } 100%{ background:transparent; } }
+        .fn-flash { animation: fnFlash .5s ease; }
+        .fn-hoist-arrow { color:var(--accent-gold); font-weight:800; font-size:0.85em; display:none; }
+        .fn-hoist-arrow.fn-show { display:inline; animation: simAppear .3s ease both; }
+
+        /* ===================== Closures Sim (cl) ===================== */
+        .cl-grid { display:grid; grid-template-columns:46% 54%; gap:10px; font-size:0.78em; }
+        .cl-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.85em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .cl-scope { border-radius:8px; padding:8px 10px; min-height:30px; transition:all .35s; position:relative; }
+        .cl-scope-outer { background:#fdf3f220; border:2px dashed #c0392b40; }
+        .cl-scope-outer.cl-on { background:#fdf3f2; border:2px solid var(--accent-red); }
+        .cl-scope-inner { background:#eef4fc20; border:2px dashed #2980b940; margin:6px 0 4px; border-radius:8px; padding:8px 10px; }
+        .cl-scope-inner.cl-on { background:#eef4fc; border:2px solid var(--accent-blue); }
+        .cl-scope-closure { background:#f1e9f920; border:2px dashed #6c3fa840; margin:6px 0 4px; border-radius:8px; padding:8px 10px; }
+        .cl-scope-closure.cl-on { background:#f1e9f9; border:2px solid var(--web-purple); }
+        .cl-label { font-weight:800; font-size:0.82em; margin-bottom:3px; opacity:0.4; transition:opacity .3s; }
+        .cl-label.cl-on { opacity:1; }
+        .cl-chip { display:inline-flex; align-items:center; gap:4px; border-radius:6px; padding:3px 10px; font-family:'Courier New',monospace; font-size:0.85em; font-weight:700; margin:2px 4px; opacity:0; transform:translateY(8px); transition:all .35s ease; }
+        .cl-chip.cl-show { opacity:1; transform:translateY(0); }
+        .cl-chip-var { background:#e4f6ec; border:2px solid var(--ifsc-green); color:var(--ifsc-green); }
+        .cl-chip-fn { background:#eef4fc; border:2px solid var(--accent-blue); color:var(--accent-blue); }
+        .cl-chip-closure { background:#f1e9f9; border:2px solid var(--web-purple); color:var(--web-purple); }
+        .cl-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.78em; min-height:28px; margin-top:6px; }
+        .cl-console-line { margin:1px 0; }
+        .cl-console-line::before { content:"> "; color:#75715e; }
+        .cl-console-out { color:#a6e3a1; }
+        .cl-link { stroke:var(--web-purple); stroke-width:2; stroke-dasharray:4 3; opacity:0; transition:opacity .3s; }
+        .cl-link.cl-show { opacity:1; }
+
+        /* ===================== Strings Sim (st) ===================== */
+        .st-grid { display:grid; grid-template-columns:46% 54%; gap:10px; font-size:0.78em; }
+        .st-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.85em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .st-chars { display:flex; gap:0; justify-content:center; margin:8px 0; flex-wrap:wrap; }
+        .st-char { width:30px; height:34px; border:2px solid #2980b9; background:#f0f6fc; display:flex; align-items:center; justify-content:center;
+            font-family:'Courier New',monospace; font-size:0.95em; font-weight:700; color:#323330; transition:all .3s; }
+        .st-char:first-child { border-radius:6px 0 0 6px; }
+        .st-char:last-child { border-radius:0 6px 6px 0; }
+        .st-char.st-highlight { background:#e4f6ec; border-color:#2e7d32; box-shadow:0 0 0 2px rgba(46,125,50,0.3); transform:scale(1.08); }
+        .st-char.st-removed { background:#fde6e3; border-color:var(--accent-red); opacity:0.5; text-decoration:line-through; }
+        .st-char.st-new { background:#fff3cd; border-color:var(--accent-gold); animation: simAppear .3s ease both; }
+        .st-idx { font-size:0.6em; color:#2980b9; text-align:center; width:30px; font-weight:700; }
+        .st-indices { display:flex; gap:0; justify-content:center; margin-bottom:4px; }
+        .st-result { background:#e4f6ec; border:2px solid #2e7d32; border-radius:8px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.88em; min-height:28px; margin-top:6px; }
+        .st-result-label { font-weight:700; color:#2e7d32; font-size:0.82em; }
+        .st-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.78em; min-height:28px; margin-top:6px; }
+        .st-console-line { margin:1px 0; }
+        .st-console-line::before { content:"> "; color:#75715e; }
+        .st-console-out { color:#a6e3a1; }
+
+        /* ===================== Array Methods Sim (am) ===================== */
+        .am-grid { display:grid; grid-template-columns:46% 54%; gap:10px; font-size:0.78em; }
+        .am-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.85em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .am-cells { display:flex; gap:0; align-items:flex-end; justify-content:center; min-height:60px; flex-wrap:wrap; }
+        .am-cell { display:flex; flex-direction:column; align-items:center; transition:all .3s ease; }
+        .am-cell.am-highlight .am-val { box-shadow:0 0 0 4px rgba(46,125,50,0.5); transform:scale(1.08); }
+        .am-cell.am-removed .am-val { background:#fde6e3; border-color:var(--accent-red); opacity:0.5; }
+        .am-cell.am-new .am-val { background:#fff3cd; border-color:var(--accent-gold); animation: simAppear .3s ease both; }
+        .am-idx { font-size:0.72em; font-weight:800; color:#2980b9; margin-bottom:3px; font-family:monospace; }
+        .am-val { background:#f0faf1; border:2px solid #2e7d32; border-radius:6px; padding:4px 10px; font-family:'Courier New',monospace; font-size:0.85em; font-weight:700; color:#323330; min-width:45px; text-align:center; transition:all .25s; }
+        .am-arr-label { font-weight:800; font-size:0.82em; color:#445; margin-bottom:4px; }
+        .am-compare { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .am-compare-box { border:2px solid #d6e3f0; border-radius:8px; padding:6px 8px; }
+        .am-compare-box h4 { margin:0 0 4px; font-size:0.85em; }
+        .am-mutate { background:#fdf3f2; border-color:var(--accent-red); }
+        .am-mutate h4 { color:var(--accent-red); }
+        .am-immut { background:#e4f6ec; border-color:var(--ifsc-green); }
+        .am-immut h4 { color:var(--ifsc-green); }
+        .am-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.78em; min-height:28px; margin-top:6px; }
+        .am-console-line { margin:1px 0; }
+        .am-console-line::before { content:"> "; color:#75715e; }
+        .am-console-out { color:#a6e3a1; }
+
+        /* ===================== Map/Filter/Reduce Sim (mf) ===================== */
+        .mf-tab-bar { display:flex; gap:0; margin-bottom:6px; }
+        .mf-tab { flex:1; text-align:center; padding:5px 4px; background:#e8edf3; color:#778; font-size:0.72em; font-weight:700; cursor:pointer; border:1px solid #d6e3f0; border-bottom:2px solid #d6e3f0; transition:all .2s; }
+        .mf-tab:first-child { border-radius:6px 0 0 0; }
+        .mf-tab:last-child { border-radius:0 6px 0 0; }
+        .mf-tab.mf-tab-on { background:#fff; color:var(--ifsc-green); border-bottom-color:var(--ifsc-green); }
+        .mf-tab-panel { display:none; }
+        .mf-tab-panel.mf-tab-visible { display:block; }
+        .mf-grid { display:grid; grid-template-columns:40% 60%; gap:10px; font-size:0.88em; }
+        .mf-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.92em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .mf-line { white-space:pre; padding:0 10px; border-left:4px solid transparent; color:#9a9a8e; }
+        .mf-line.mf-done { color:#e5e5e5; }
+        .mf-line.mf-active { color:#e5e5e5; background:#45523a; border-color:#e9c34c; }
+        .mf-num { color:#8c978c; display:inline-block; width:20px; text-align:right; margin-right:5px; user-select:none; }
+        .mf-right { display:flex; flex-direction:column; gap:8px; }
+        .mf-arr { display:flex; gap:4px; align-items:center; justify-content:center; flex-wrap:wrap; }
+        .mf-arr-cell { display:inline-block; border:2px solid #2980b9; border-radius:5px; padding:3px 10px; font-family:'Courier New',monospace; font-size:0.88em; font-weight:700; color:#323330; background:#f0f6fc; transition:all .25s; margin:2px; }
+        .mf-arr-cell.mf-active { box-shadow:0 0 0 3px rgba(41,128,185,0.5); background:#dbeafe; transform:scale(1.08); }
+        .mf-arr-cell.mf-done { opacity:0.5; }
+        .mf-arr-cell.mf-pass { border-color:#2e7d32; background:#e4f6ec; }
+        .mf-arr-cell.mf-fail { border-color:var(--accent-red); background:#fde6e3; opacity:0.5; }
+        .mf-result-arr { display:flex; gap:4px; align-items:center; justify-content:center; flex-wrap:wrap; min-height:34px; }
+        .mf-result-cell { display:inline-block; border:2px solid #2e7d32; border-radius:5px; padding:3px 10px; font-family:'Courier New',monospace; font-size:0.88em; font-weight:700; color:#323330; background:#e4f6ec; animation: simAppear .3s ease both; margin:2px; }
+        .mf-acc { background:#eef4fc; border:2px solid var(--accent-blue); border-radius:8px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.88em; min-height:28px; }
+        .mf-acc-label { font-weight:700; color:var(--accent-blue); font-size:0.82em; }
+        .mf-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:5px 10px; font-family:'Courier New',monospace; font-size:0.82em; min-height:26px; }
+        .mf-console-line { margin:1px 0; }
+        .mf-console-line::before { content:"> "; color:#75715e; }
+        .mf-console-out { color:#a6e3a1; }
+        .mf-stepper { display:flex; border-radius:6px; overflow:hidden; border:1px solid #d6e3f0; margin-bottom:6px; }
+        .mf-step { flex:1; text-align:center; padding:4px 2px; background:#e8edf3; color:#778; font-size:0.62em; font-weight:700; border-right:1px solid #fff; transition:all .25s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .mf-step:last-child { border-right:none; }
+        .mf-step.mf-step-on { background:var(--ifsc-green); color:#fff; }
+        .mf-step.mf-step-done { background:#c8e6c9; color:var(--ifsc-dark); }
+        .mf-controls { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+        .mf-btn { font-size:0.72em; border:1px solid #cfe3cf; background:#f6faf6; color:var(--ifsc-dark); border-radius:6px; padding:5px 12px; font-weight:700; cursor:pointer; transition:.15s; }
+        .mf-btn:hover:not(:disabled) { background:var(--ifsc-green); color:#fff; border-color:var(--ifsc-green); }
+        .mf-btn:disabled { opacity:.4; cursor:default; }
+        .mf-btn-primary { background:var(--ifsc-green); color:#fff; border-color:var(--ifsc-green); }
+        .mf-btn-primary:hover:not(:disabled) { background:var(--ifsc-dark); }
+        .mf-progress { margin-left:auto; font-size:0.72em; color:#778; font-weight:700; }
+
+        /* ===================== Chaining / Destructuring Sim (ch) ===================== */
+        .ch-grid { display:grid; grid-template-columns:46% 54%; gap:10px; font-size:0.78em; }
+        .ch-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.85em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .ch-pipe { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:6px 0; }
+        .ch-pipe-stage { border:2px solid #d6e3f0; border-radius:8px; padding:6px 10px; font-family:monospace; font-size:0.82em; transition:all .3s; opacity:0.3; }
+        .ch-pipe-stage.ch-active { opacity:1; border-color:var(--ifsc-green); background:#e4f6ec; box-shadow:0 0 0 2px rgba(46,125,50,0.3); }
+        .ch-pipe-stage.ch-done { opacity:0.7; border-color:#a0c8a4; }
+        .ch-pipe-arrow { color:#888; font-size:1.2em; }
+        .ch-data-box { background:#f5f8fc; border:2px solid #c8d8e8; border-radius:8px; padding:6px 10px; min-height:40px; }
+        .ch-data-label { font-weight:700; color:#445; font-size:0.82em; margin-bottom:4px; }
+        .ch-obj { font-family:monospace; font-size:0.85em; }
+        .ch-prop { display:inline-flex; align-items:center; gap:4px; background:#eef4fc; border:1px solid #b8cce0; border-radius:5px; padding:2px 8px; margin:2px; transition:all .25s; }
+        .ch-prop.ch-extracted { background:#e4f6ec; border-color:#2e7d32; box-shadow:0 0 0 2px rgba(46,125,50,0.3); }
+        .ch-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.78em; min-height:28px; margin-top:6px; }
+        .ch-console-line { margin:1px 0; }
+        .ch-console-line::before { content:"> "; color:#75715e; }
+        .ch-console-out { color:#a6e3a1; }
+
+        /* ===================== JSON/Map/Set Sim (jm) ===================== */
+        .jm-grid { display:grid; grid-template-columns:46% 54%; gap:10px; font-size:0.78em; }
+        .jm-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.85em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .jm-box { border:2px solid #d6e3f0; border-radius:8px; padding:8px 10px; min-height:50px; transition:all .3s; }
+        .jm-box.jm-active { border-color:var(--ifsc-green); box-shadow:0 0 0 3px rgba(46,125,50,0.25); }
+        .jm-box-title { font-weight:700; font-size:0.85em; margin-bottom:4px; }
+        .jm-entry { display:flex; align-items:center; gap:6px; padding:2px 0; font-family:'Courier New',monospace; font-size:0.88em; opacity:0; transition:all .3s; }
+        .jm-entry.jm-show { opacity:1; animation: simAppear .3s ease both; }
+        .jm-key { background:#2e7d32; color:#fff; border-radius:4px; padding:1px 7px; font-weight:700; font-size:0.88em; }
+        .jm-val-text { color:#323330; }
+        .jm-json-str { background:#282a26; color:#c0e65b; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.82em; white-space:pre-wrap; word-break:break-all; min-height:28px; }
+        .jm-set-items { display:flex; gap:4px; flex-wrap:wrap; }
+        .jm-set-item { border:2px solid var(--accent-blue); border-radius:20px; padding:3px 12px; font-family:monospace; font-size:0.85em; font-weight:700; background:#f0f6fc; transition:all .3s; }
+        .jm-set-item.jm-dup { border-color:var(--accent-red); background:#fde6e3; text-decoration:line-through; opacity:0.5; }
+        .jm-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.78em; min-height:28px; margin-top:6px; }
+        .jm-console-line { margin:1px 0; }
+        .jm-console-line::before { content:"> "; color:#75715e; }
+        .jm-console-out { color:#a6e3a1; }
+
+        /* ===================== DOM Sim (dm) ===================== */
+        .dm-grid { display:grid; grid-template-columns:46% 54%; gap:10px; font-size:0.78em; }
+        .dm-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.85em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .dm-browser { border:2px solid #2e7d32; border-radius:10px; overflow:hidden; }
+        .dm-browser-bar { background:#2e7d32; color:#fff; padding:5px 10px; font-weight:700; font-size:0.78em; }
+        .dm-browser-body { background:#fff; padding:12px 16px; min-height:120px; }
+        .dm-browser-body h1 { font-size:1.2em; color:#323330; text-transform:none; border:none; margin:0 0 8px; }
+        .dm-browser-body p { font-size:0.95em; color:#555; margin:4px 0; }
+        .dm-browser-body button { padding:6px 14px; font:inherit; cursor:pointer; border:1px solid #ccc; border-radius:4px; }
+        .dm-browser-body .dm-active-el { outline:3px solid var(--ifsc-green); outline-offset:2px; }
+        .dm-refs { background:#f0faf1; border:2px solid #2e7d32; border-radius:8px; padding:6px 8px; min-height:36px; }
+        .dm-ref-title { font-weight:700; font-size:0.78em; color:#2e7d32; margin-bottom:4px; }
+        .dm-ref { display:inline-flex; align-items:center; gap:4px; background:#e4f6ec; border:1px solid #2e7d32; border-radius:4px; padding:2px 8px; font-family:monospace; font-size:0.85em; margin:2px; opacity:0; transition:opacity .3s; }
+        .dm-ref.dm-show { opacity:1; }
+        .dm-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.78em; min-height:28px; margin-top:6px; }
+        .dm-console-line { margin:1px 0; }
+        .dm-console-line::before { content:"> "; color:#75715e; }
+        .dm-console-out { color:#a6e3a1; }
+
+        /* ===================== Integração Sim (ig) ===================== */
+        .ig-grid { display:grid; grid-template-columns:46% 54%; gap:10px; font-size:0.78em; }
+        .ig-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:6px 0; font-size:0.85em; line-height:1.55; font-family:'Courier New',monospace; overflow-x:auto; white-space:nowrap; }
+        .ig-card { border:2px solid #d6e3d9; border-radius:8px; padding:6px 10px; background:#fff; transition:all .35s; }
+        .ig-card.ig-active { border-color:var(--ifsc-green); box-shadow:0 0 0 3px rgba(46,125,50,0.25); }
+        .ig-card.ig-done { border-color:#a0c8a4; opacity:0.7; }
+        .ig-card-name { font-weight:800; font-size:1em; color:var(--ifsc-dark); margin-bottom:4px; }
+        .ig-data-row { display:flex; gap:6px; align-items:center; margin:3px 0; font-family:'Courier New',monospace; font-size:0.85em; }
+        .ig-data-label { font-weight:700; color:#555; min-width:60px; }
+        .ig-data-val { background:#eef4fc; border:1px solid #2980b9; border-radius:4px; padding:2px 10px; font-weight:700; color:var(--accent-blue); transition:all .3s; }
+        .ig-console { background:#272822; color:#f8f8f2; border-radius:6px; padding:6px 10px; font-family:'Courier New',monospace; font-size:0.72em; min-height:28px; margin-top:4px; max-height:160px; overflow-y:auto; }
+        .ig-console-line { margin:2px 0; animation: simAppear .3s ease both; }
+        .ig-console-line::before { content:"> "; color:#75715e; }
+        .ig-console-line .ig-ok { color:#a6e3a1; }
+        .ig-console-line .ig-warn { color:#ffd866; }
+
+        .reveal .slides section .fragment { transition-property: opacity, visibility, transform, color, background-color; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <button id="btnPdf" title="Exportar para PDF">PDF</button>
+</div>
+
+<div class="reveal">
+    <div class="slides">
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 1: CAPA                                                 -->
+        <!-- ============================================================ -->
+        <section style="text-align:center;">
+            <p class="small-text" style="margin-top:20px;">IFSC &mdash; Tecnologia em An&aacute;lise e Desenvolvimento de Sistemas</p>
+            <h1 style="font-size:2em; margin:16px 0 6px; border:none;">Programa&ccedil;&atilde;o para Internet I</h1>
+            <h2 style="font-size:1.35em; border:none;">Encontros 11-12 &mdash; Fun&ccedil;&otilde;es, DOM e Programa&ccedil;&atilde;o Funcional</h2>
+            <div style="margin:20px 0;">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <rect x="0" y="0" width="80" height="80" rx="12" fill="#f0db4f"/>
+                    <text x="40" y="58" text-anchor="middle" font-family="'Courier New', monospace" font-size="38" font-weight="900" fill="#323330">JS</text>
+                </svg>
+            </div>
+            <p style="font-size:0.9em; color:#555;">Prof. Romulo de Aguiar Beninca &mdash; 25-26 nov. 2026</p>
+            <div style="margin-top:12px;">
+                <span class="pill js">Fun&ccedil;&otilde;es</span>
+                <span class="pill js">Closures</span>
+                <span class="pill js">Arrow Functions</span>
+                <span class="pill js">Strings</span>
+                <span class="pill js">M&eacute;todos de Array</span>
+                <span class="pill js">map / filter / reduce</span>
+                <span class="pill js">JSON</span>
+                <span class="pill js">DOM</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 2: ROTEIRO                                              -->
+        <!-- ============================================================ -->
+        <section class="compact">
+            <h2>Roteiro dos encontros</h2>
+            <div class="two-col" style="margin-top:8px;">
+                <div class="col-text">
+                    <ul class="icon-list">
+                        <li><span class="ic">1</span> Fun&ccedil;&otilde;es: declara&ccedil;&atilde;o, express&atilde;o e arrow functions</li>
+                        <li><span class="ic">2</span> Escopo, hoisting e closures</li>
+                        <li><span class="ic">3</span> Strings e template literals</li>
+                        <li><span class="ic">4</span> M&eacute;todos de array: slice, splice, sort, forEach</li>
+                        <li><span class="ic">5</span> map, filter e reduce</li>
+                        <li><span class="ic">6</span> Desestrutura&ccedil;&atilde;o, spread e rest</li>
+                        <li><span class="ic">7</span> JSON, Map e Set</li>
+                        <li><span class="ic">8</span> Sele&ccedil;&atilde;o e manipula&ccedil;&atilde;o do DOM</li>
+                        <li><span class="ic">9</span> Aplica&ccedil;&atilde;o integradora</li>
+                    </ul>
+                </div>
+                <div class="col-img">
+                    <div class="tip-box" style="font-size:0.78em;">
+                        <strong>Pr&oacute;xima aula (Encontro 13)</strong><br>
+                        Async/Await, Fetch API, consumo de APIs e projeto final.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 3: DIVISOR - FUNCOES                                    -->
+        <!-- ============================================================ -->
+        <section data-background-color="#323330" class="divider">
+            <div class="part-no">PARTE 1</div>
+            <h1 style="color:var(--js-yellow) !important;">Fun&ccedil;&otilde;es</h1>
+            <p>Declara&ccedil;&atilde;o, express&atilde;o, arrow functions, escopo e closures</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 4: FUNCOES — simulação passo a passo                    -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-funcoes">
+            <h2>Fun&ccedil;&otilde;es em JavaScript</h2>
+            <div style="display:flex; gap:0; margin:4px 0 6px; font-size:0.68em; font-weight:700;">
+                <div id="fnPhase0" class="sim-phase sim-phase-on">&#9312; Declara&ccedil;&atilde;o</div>
+                <div id="fnPhase1" class="sim-phase">&#9313; Express&atilde;o</div>
+                <div id="fnPhase2" class="sim-phase">&#9314; Arrow</div>
+                <div id="fnPhase3" class="sim-phase">&#9315; Hoisting</div>
+            </div>
+            <div class="fn-grid">
+                <div>
+                    <div class="fn-code" id="fnCode"></div>
+                    <div class="formula-box" style="font-size:0.78em; margin-top:6px; min-height:44px;">
+                        <strong id="fnTitle">Estado inicial</strong><br>
+                        <span id="fnDesc">Vamos explorar as tr&ecirc;s formas de criar fun&ccedil;&otilde;es.</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div class="fn-scope fn-scope-global" id="fnScopeGlobal">
+                        <div class="fn-label" id="fnLabelGlobal" style="color:var(--accent-red);">Escopo Global</div>
+                        <div id="fnChipsGlobal"></div>
+                        <div class="fn-scope fn-scope-fn" id="fnScopeFn" style="display:none;">
+                            <div class="fn-label" id="fnLabelFn" style="color:var(--accent-blue);">Escopo da fun&ccedil;&atilde;o</div>
+                            <div id="fnChipsFn"></div>
+                        </div>
+                    </div>
+                    <div class="fn-stack" id="fnStackBox">
+                        <div class="fn-stack-title">Call Stack</div>
+                        <div id="fnStack" style="color:#888;">Vazia</div>
+                    </div>
+                    <div class="fn-console" id="fnConsole"></div>
+                </div>
+            </div>
+            <div class="sim-toolbar">
+                <button onclick="fnGo(0)" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="fnPrev" onclick="fnGo(window.fnStep-1)">&#8592; Anterior</button>
+                <button id="fnNext" onclick="fnGo(window.fnStep+1)" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="fnPlay" onclick="fnToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="fnPos">Etapa 1 / 12</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 5: CLOSURES — simulação passo a passo                   -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-closures">
+            <h2>Escopo e Closures</h2>
+            <div style="display:flex; gap:0; margin:4px 0 6px; font-size:0.68em; font-weight:700;">
+                <div id="clPhase0" class="sim-phase sim-phase-on">&#9312; Escopo</div>
+                <div id="clPhase1" class="sim-phase">&#9313; Closure</div>
+                <div id="clPhase2" class="sim-phase">&#9314; Uso pr&aacute;tico</div>
+            </div>
+            <div class="cl-grid">
+                <div>
+                    <div class="cl-code" id="clCode"></div>
+                    <div class="formula-box" style="font-size:0.78em; margin-top:6px; min-height:44px;">
+                        <strong id="clTitle">Estado inicial</strong><br>
+                        <span id="clDesc">Uma closure &eacute; uma fun&ccedil;&atilde;o que lembra do escopo onde foi criada.</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div class="cl-scope cl-scope-outer" id="clScopeOuter">
+                        <div class="cl-label" id="clLabelOuter" style="color:var(--accent-red);">Escopo Global</div>
+                        <div id="clChipsOuter"></div>
+                        <div class="cl-scope cl-scope-inner" id="clScopeInner" style="display:none;">
+                            <div class="cl-label" id="clLabelInner" style="color:var(--accent-blue);">Escopo de makeCounter()</div>
+                            <div id="clChipsInner"></div>
+                            <div class="cl-scope cl-scope-closure" id="clScopeClosure" style="display:none;">
+                                <div class="cl-label" id="clLabelClosure" style="color:var(--web-purple);">Closure (fun&ccedil;&atilde;o retornada)</div>
+                                <div id="clChipsClosure"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cl-console" id="clConsole"></div>
+                </div>
+            </div>
+            <div class="sim-toolbar">
+                <button onclick="clGo(0)" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="clPrev" onclick="clGo(window.clStep-1)">&#8592; Anterior</button>
+                <button id="clNext" onclick="clGo(window.clStep+1)" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="clPlay" onclick="clToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="clPos">Etapa 1 / 10</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 6: DIVISOR - STRINGS E ARRAYS                           -->
+        <!-- ============================================================ -->
+        <section data-background-color="#1b5e20" class="divider">
+            <div class="part-no">PARTE 2</div>
+            <h1>Strings e M&eacute;todos de Array</h1>
+            <p>Template literals, m&eacute;todos de string e manipula&ccedil;&atilde;o de arrays</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 7: STRINGS — simulação passo a passo                    -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-strings">
+            <h2>Strings em JavaScript</h2>
+            <div style="display:flex; gap:0; margin:4px 0 6px; font-size:0.68em; font-weight:700;">
+                <div id="stPhase0" class="sim-phase sim-phase-on">&#9312; Template Literals</div>
+                <div id="stPhase1" class="sim-phase">&#9313; M&eacute;todos</div>
+                <div id="stPhase2" class="sim-phase">&#9314; Encadeamento</div>
+            </div>
+            <div class="st-grid">
+                <div>
+                    <div class="st-code" id="stCode"></div>
+                    <div class="formula-box" style="font-size:0.78em; margin-top:6px; min-height:44px;">
+                        <strong id="stTitle">Estado inicial</strong><br>
+                        <span id="stDesc">Strings s&atilde;o imut&aacute;veis: cada m&eacute;todo retorna uma nova string.</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div id="stCharBox" style="background:#f5f8fc; border:2px solid #c8d8e8; border-radius:8px; padding:8px 10px; min-height:70px;">
+                        <div style="font-weight:700; font-size:0.82em; color:#445; margin-bottom:4px;">Visualiza&ccedil;&atilde;o</div>
+                        <div id="stIndices" class="st-indices"></div>
+                        <div id="stChars" class="st-chars"></div>
+                    </div>
+                    <div id="stResultBox" class="st-result" style="display:none;">
+                        <span class="st-result-label">Resultado:</span>
+                        <span id="stResultVal"></span>
+                    </div>
+                    <div class="st-console" id="stConsole"></div>
+                </div>
+            </div>
+            <div class="sim-toolbar">
+                <button onclick="stGo(0)" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="stPrev" onclick="stGo(window.stStep-1)">&#8592; Anterior</button>
+                <button id="stNext" onclick="stGo(window.stStep+1)" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="stPlay" onclick="stToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="stPos">Etapa 1 / 10</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 8: ARRAY METHODS — simulação passo a passo              -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-arraymethods">
+            <h2>M&eacute;todos de Array</h2>
+            <div style="display:flex; gap:0; margin:4px 0 6px; font-size:0.68em; font-weight:700;">
+                <div id="amPhase0" class="sim-phase sim-phase-on">&#9312; slice vs splice</div>
+                <div id="amPhase1" class="sim-phase">&#9313; sort</div>
+                <div id="amPhase2" class="sim-phase">&#9314; forEach</div>
+            </div>
+            <div class="am-grid">
+                <div>
+                    <div class="am-code" id="amCode"></div>
+                    <div class="formula-box" style="font-size:0.78em; margin-top:6px; min-height:44px;">
+                        <strong id="amTitle">Estado inicial</strong><br>
+                        <span id="amDesc">Alguns m&eacute;todos modificam o array original (mutam), outros retornam um novo.</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div style="background:#f5f8fc; border:2px solid #c8d8e8; border-radius:8px; padding:8px 10px;">
+                        <div class="am-arr-label" id="amArrLabel">Array original</div>
+                        <div id="amCells" class="am-cells"></div>
+                    </div>
+                    <div id="amResultBox" style="display:none; background:#e4f6ec; border:2px solid #2e7d32; border-radius:8px; padding:6px 10px;">
+                        <div class="am-arr-label" style="color:#2e7d32;" id="amResultLabel">Resultado</div>
+                        <div id="amResultCells" class="am-cells"></div>
+                    </div>
+                    <div class="am-console" id="amConsole"></div>
+                </div>
+            </div>
+            <div class="sim-toolbar">
+                <button onclick="amGo(0)" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="amPrev" onclick="amGo(window.amStep-1)">&#8592; Anterior</button>
+                <button id="amNext" onclick="amGo(window.amStep+1)" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="amPlay" onclick="amToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="amPos">Etapa 1 / 12</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 9: DIVISOR - PROGRAMAÇÃO FUNCIONAL                      -->
+        <!-- ============================================================ -->
+        <section data-background-color="#323330" class="divider">
+            <div class="part-no">PARTE 3</div>
+            <h1 style="color:var(--js-yellow) !important;">Programa&ccedil;&atilde;o Funcional</h1>
+            <p>map, filter, reduce &mdash; transformar dados com fun&ccedil;&otilde;es</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 10: MAP/FILTER/REDUCE — simulação com abas              -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-mapfilterreduce">
+            <h2>map, filter e reduce</h2>
+            <div class="mf-tab-bar">
+                <div class="mf-tab mf-tab-on" onclick="mfSwitchTab(0)">map</div>
+                <div class="mf-tab" onclick="mfSwitchTab(1)">filter</div>
+                <div class="mf-tab" onclick="mfSwitchTab(2)">reduce</div>
+            </div>
+
+            <!-- TAB 0: map -->
+            <div id="mfPanel0" class="mf-tab-panel mf-tab-visible">
+                <div class="mf-grid">
+                    <div>
+                        <div class="mf-code" id="mfCode0"></div>
+                    </div>
+                    <div class="mf-right">
+                        <div style="font-weight:700; font-size:0.82em; color:#445;">Array de entrada</div>
+                        <div id="mfInput0" class="mf-arr"></div>
+                        <div style="font-weight:700; font-size:0.82em; color:#2e7d32; margin-top:4px;">Array de sa&iacute;da (map)</div>
+                        <div id="mfOutput0" class="mf-result-arr"></div>
+                        <div class="mf-console" id="mfConsole0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1: filter -->
+            <div id="mfPanel1" class="mf-tab-panel">
+                <div class="mf-grid">
+                    <div>
+                        <div class="mf-code" id="mfCode1"></div>
+                    </div>
+                    <div class="mf-right">
+                        <div style="font-weight:700; font-size:0.82em; color:#445;">Array de entrada</div>
+                        <div id="mfInput1" class="mf-arr"></div>
+                        <div style="font-weight:700; font-size:0.82em; color:#2e7d32; margin-top:4px;">Array filtrado</div>
+                        <div id="mfOutput1" class="mf-result-arr"></div>
+                        <div class="mf-console" id="mfConsole1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: reduce -->
+            <div id="mfPanel2" class="mf-tab-panel">
+                <div class="mf-grid">
+                    <div>
+                        <div class="mf-code" id="mfCode2"></div>
+                    </div>
+                    <div class="mf-right">
+                        <div style="font-weight:700; font-size:0.82em; color:#445;">Array de entrada</div>
+                        <div id="mfInput2" class="mf-arr"></div>
+                        <div class="mf-acc" id="mfAcc2" style="margin-top:6px;">
+                            <span class="mf-acc-label">Acumulador:</span>
+                            <span id="mfAccVal2" style="font-weight:700;">0</span>
+                        </div>
+                        <div class="mf-console" id="mfConsole2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shared controls -->
+            <div class="sim-toolbar" style="margin-top:6px;">
+                <button onclick="mfReset()" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="mfPrev" onclick="mfPrev()">&#8592; Anterior</button>
+                <button id="mfNext" onclick="mfNext()" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="mfPlayBtn" onclick="mfToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="mfPos">Etapa 1 / 6</span>
+            </div>
+            <div class="formula-box" style="font-size:0.78em; margin-top:4px; min-height:36px;">
+                <strong id="mfTitle">Selecione uma aba</strong><br>
+                <span id="mfDescText">Cada m&eacute;todo recebe uma fun&ccedil;&atilde;o callback e itera sobre o array.</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 11: DIVISOR - CHAINING E DESESTRUTURAÇÃO                -->
+        <!-- ============================================================ -->
+        <section data-background-color="#1b5e20" class="divider">
+            <div class="part-no">PARTE 4</div>
+            <h1>Encadeamento e Desestrutura&ccedil;&atilde;o</h1>
+            <p>Pipelines de dados, spread, rest e desestrutura&ccedil;&atilde;o</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 12: CHAINING + DESTRUCTURING — simulação                -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-chaining">
+            <h2>Encadeamento e Desestrutura&ccedil;&atilde;o</h2>
+            <div style="display:flex; gap:0; margin:4px 0 6px; font-size:0.68em; font-weight:700;">
+                <div id="chPhase0" class="sim-phase sim-phase-on">&#9312; Pipeline</div>
+                <div id="chPhase1" class="sim-phase">&#9313; Desestrutura&ccedil;&atilde;o</div>
+                <div id="chPhase2" class="sim-phase">&#9314; Spread / Rest</div>
+            </div>
+            <div class="ch-grid">
+                <div>
+                    <div class="ch-code" id="chCode"></div>
+                    <div class="formula-box" style="font-size:0.78em; margin-top:6px; min-height:44px;">
+                        <strong id="chTitle">Estado inicial</strong><br>
+                        <span id="chDesc">Encadeamento permite combinar filter + map + reduce em uma &uacute;nica express&atilde;o.</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div id="chPipeBox" style="background:#f5f8fc; border:2px solid #c8d8e8; border-radius:8px; padding:8px 10px;">
+                        <div style="font-weight:700; font-size:0.82em; color:#445; margin-bottom:4px;">Fluxo de dados</div>
+                        <div id="chPipe" class="ch-pipe"></div>
+                        <div id="chDataView" class="ch-data-box" style="margin-top:6px; display:none;"></div>
+                    </div>
+                    <div class="ch-console" id="chConsole"></div>
+                </div>
+            </div>
+            <div class="sim-toolbar">
+                <button onclick="chGo(0)" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="chPrev" onclick="chGo(window.chStep-1)">&#8592; Anterior</button>
+                <button id="chNext" onclick="chGo(window.chStep+1)" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="chPlay" onclick="chToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="chPos">Etapa 1 / 10</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 13: DIVISOR - JSON, MAP E SET                           -->
+        <!-- ============================================================ -->
+        <section data-background-color="#323330" class="divider">
+            <div class="part-no">PARTE 5</div>
+            <h1 style="color:var(--js-yellow) !important;">JSON, Map e Set</h1>
+            <p>Serializa&ccedil;&atilde;o de dados e estruturas especializadas</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 14: JSON / MAP / SET — simulação                        -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-jsonmapset">
+            <h2>JSON, Map e Set</h2>
+            <div style="display:flex; gap:0; margin:4px 0 6px; font-size:0.68em; font-weight:700;">
+                <div id="jmPhase0" class="sim-phase sim-phase-on">&#9312; JSON</div>
+                <div id="jmPhase1" class="sim-phase">&#9313; Map</div>
+                <div id="jmPhase2" class="sim-phase">&#9314; Set</div>
+            </div>
+            <div class="jm-grid">
+                <div>
+                    <div class="jm-code" id="jmCode"></div>
+                    <div class="formula-box" style="font-size:0.78em; margin-top:6px; min-height:44px;">
+                        <strong id="jmTitle">Estado inicial</strong><br>
+                        <span id="jmDesc">JSON &eacute; o formato padr&atilde;o para trocar dados entre sistemas.</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div id="jmVisual" style="min-height:100px;"></div>
+                    <div class="jm-console" id="jmConsole"></div>
+                </div>
+            </div>
+            <div class="sim-toolbar">
+                <button onclick="jmGo(0)" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="jmPrev" onclick="jmGo(window.jmStep-1)">&#8592; Anterior</button>
+                <button id="jmNext" onclick="jmGo(window.jmStep+1)" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="jmPlay" onclick="jmToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="jmPos">Etapa 1 / 10</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 15: DIVISOR - DOM E EVENTOS                             -->
+        <!-- ============================================================ -->
+        <section data-background-color="#1b5e20" class="divider">
+            <div class="part-no">PARTE 6</div>
+            <h1>DOM e Eventos</h1>
+            <p>Sele&ccedil;&atilde;o, manipula&ccedil;&atilde;o e programa&ccedil;&atilde;o orientada a eventos</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 16: DOM — simulação passo a passo                       -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-dom">
+            <h2>Sele&ccedil;&atilde;o e Manipula&ccedil;&atilde;o do DOM</h2>
+            <div style="display:flex; gap:0; margin:4px 0 6px; font-size:0.68em; font-weight:700;">
+                <div id="dmPhase0" class="sim-phase sim-phase-on">&#9312; Sele&ccedil;&atilde;o</div>
+                <div id="dmPhase1" class="sim-phase">&#9313; Conte&uacute;do</div>
+                <div id="dmPhase2" class="sim-phase">&#9314; Classes e Estilo</div>
+                <div id="dmPhase3" class="sim-phase">&#9315; Criar Elementos</div>
+            </div>
+            <div class="dm-grid">
+                <div>
+                    <div class="dm-code" id="dmCode"></div>
+                    <div class="formula-box" style="font-size:0.78em; margin-top:6px; min-height:44px;">
+                        <strong id="dmTitle">Estado inicial</strong><br>
+                        <span id="dmDesc">O DOM &eacute; a interface que permite ao JavaScript acessar e modificar a p&aacute;gina.</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div class="dm-browser" id="dmBrowser">
+                        <div class="dm-browser-bar">&#9679; &#9679; &#9679; &nbsp; Navegador</div>
+                        <div class="dm-browser-body" id="dmPage">
+                            <h1 id="dmH1">Minha P&aacute;gina</h1>
+                            <p id="dmP1">Par&aacute;grafo de exemplo</p>
+                            <button id="dmBtn">Clique aqui</button>
+                            <ul id="dmList"><li>Item 1</li><li>Item 2</li></ul>
+                        </div>
+                    </div>
+                    <div class="dm-refs" id="dmRefsBox">
+                        <div class="dm-ref-title">Refer&ecirc;ncias JS</div>
+                        <div id="dmRefs"></div>
+                    </div>
+                    <div class="dm-console" id="dmConsole"></div>
+                </div>
+            </div>
+            <div class="sim-toolbar">
+                <button onclick="dmGo(0)" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="dmPrev" onclick="dmGo(window.dmStep-1)">&#8592; Anterior</button>
+                <button id="dmNext" onclick="dmGo(window.dmStep+1)" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="dmPlay" onclick="dmToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="dmPos">Etapa 1 / 12</span>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SLIDE 17: APLICAÇÃO INTEGRADORA                               -->
+        <!-- ============================================================ -->
+        <section class="compact" id="slide-integradora">
+            <h2>Aplica&ccedil;&atilde;o Integradora</h2>
+            <div style="display:flex; gap:0; margin:4px 0 6px; font-size:0.68em; font-weight:700;">
+                <div id="igPhase0" class="sim-phase sim-phase-on">&#9312; Dados</div>
+                <div id="igPhase1" class="sim-phase">&#9313; Processar</div>
+                <div id="igPhase2" class="sim-phase">&#9314; DOM</div>
+                <div id="igPhase3" class="sim-phase">&#9315; Evento</div>
+            </div>
+            <div class="ig-grid">
+                <div>
+                    <div class="ig-code" id="igCode"></div>
+                    <div class="formula-box" style="font-size:0.78em; margin-top:6px; min-height:44px;">
+                        <strong id="igTitle">Estado inicial</strong><br>
+                        <span id="igDesc">Vamos combinar tudo: dados, fun&ccedil;&otilde;es, DOM e eventos.</span>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div id="igDataView" style="background:#f5f8fc; border:2px solid #c8d8e8; border-radius:8px; padding:8px 10px; min-height:80px;">
+                        <div style="font-weight:700; font-size:0.82em; color:#445; margin-bottom:4px;">Dados e resultado</div>
+                        <div id="igCards"></div>
+                    </div>
+                    <div class="dm-browser" id="igBrowser">
+                        <div class="dm-browser-bar">&#9679; &#9679; &#9679; &nbsp; Navegador</div>
+                        <div class="dm-browser-body" id="igPage" style="min-height:60px;">
+                            <h1 style="font-size:1em; margin:0 0 6px;">Notas dos Alunos</h1>
+                            <button id="igBtn" style="display:none;">Filtrar aprovados</button>
+                            <div id="igOutput"></div>
+                        </div>
+                    </div>
+                    <div class="ig-console" id="igConsole"></div>
+                </div>
+            </div>
+            <div class="sim-toolbar">
+                <button onclick="igGo(0)" class="sim-reset">&#8634; Reiniciar</button>
+                <button id="igPrev" onclick="igGo(window.igStep-1)">&#8592; Anterior</button>
+                <button id="igNext" onclick="igGo(window.igStep+1)" class="sim-primary">Pr&oacute;ximo &#8594;</button>
+                <button id="igPlay" onclick="igToggleAuto()">&#9654; Auto</button>
+                <span class="sim-pos" id="igPos">Etapa 1 / 12</span>
+            </div>
+        </section>
+
+    </div><!-- .slides -->
+</div><!-- .reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script>
+    document.getElementById('btnPdf').addEventListener('click', function(){
+        window.open(location.href.replace(/#.*$/,'') + '?print-pdf', '_blank');
+    });
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: FUNÇÕES (fn)                                            -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+    var FN_LINES=[
+        [' 1','<span style="color:#6c7086">// Declaração de função</span>'],
+        [' 2','<span style="color:#ff8ab4">function</span> <span style="color:#89b4fa">somar</span>(a, b) {'],
+        [' 3','    <span style="color:#ff8ab4">return</span> a + b;'],
+        [' 4','}'],
+        [' 5','<span style="color:#6c7086">// Expressão de função</span>'],
+        [' 6','<span style="color:#ff8ab4">const</span> subtrair = <span style="color:#ff8ab4">function</span>(a, b) {'],
+        [' 7','    <span style="color:#ff8ab4">return</span> a - b;'],
+        [' 8','};'],
+        [' 9','<span style="color:#6c7086">// Arrow function</span>'],
+        ['10','<span style="color:#ff8ab4">const</span> multiplicar = (a, b) => a * b;'],
+        ['11','console.<span style="color:#89b4fa">log</span>(<span style="color:#89b4fa">somar</span>(<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>));'],
+        ['12','console.<span style="color:#89b4fa">log</span>(subtrair(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">3</span>));'],
+        ['13','console.<span style="color:#89b4fa">log</span>(multiplicar(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>));']
+    ];
+    $('fnCode').innerHTML=FN_LINES.map(function(l,i){return '<div class="sim-line" id="fnL'+i+'"><span class="sim-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+
+    var FN_STEPS=[
+        {line:-1,phase:0,title:'Estado inicial',desc:'Vamos explorar as três formas de criar funções em JavaScript.',scope:'',chips:[],stack:[],console:[]},
+        {line:1,phase:0,title:'Declaração de função',desc:'function somar(a, b) — declaração com nome. É "içada" (hoisted): pode ser chamada antes de ser definida.',scope:'global',chips:[{where:'global',text:'somar',type:'fn',val:'ƒ(a,b)'}],stack:['script global'],console:[]},
+        {line:5,phase:1,title:'Expressão de função',desc:'const subtrair = function(a, b) — atribuída a uma constante. NÃO é içada.',scope:'global',chips:[{where:'global',text:'somar',type:'fn',val:'ƒ(a,b)'},{where:'global',text:'subtrair',type:'fn',val:'ƒ(a,b)'}],stack:['script global'],console:[]},
+        {line:9,phase:2,title:'Arrow function',desc:'const multiplicar = (a, b) => a * b — sintaxe curta. Se tem uma expressão, o return é implícito.',scope:'global',chips:[{where:'global',text:'somar',type:'fn',val:'ƒ(a,b)'},{where:'global',text:'subtrair',type:'fn',val:'ƒ(a,b)'},{where:'global',text:'multiplicar',type:'fn',val:'(a,b)=>…'}],stack:['script global'],console:[]},
+        {line:10,phase:2,title:'Chamando somar(3, 4)',desc:'O motor JS empilha somar na Call Stack, cria um escopo de função com a=3 e b=4.',scope:'fn',chips:[{where:'fn',text:'a',type:'var',val:'3'},{where:'fn',text:'b',type:'var',val:'4'}],stack:['somar(3,4)','script global'],console:[],fnLabel:'Escopo de somar()'},
+        {line:2,phase:2,title:'return a + b',desc:'3 + 4 = 7. A função retorna 7, desempilha da Call Stack.',scope:'global',chips:[],stack:['script global'],console:['<span class="fn-console-out">7</span>']},
+        {line:11,phase:2,title:'Chamando subtrair(10, 3)',desc:'subtrair entra na Call Stack. Escopo de função com a=10, b=3.',scope:'fn',chips:[{where:'fn',text:'a',type:'var',val:'10'},{where:'fn',text:'b',type:'var',val:'3'}],stack:['subtrair(10,3)','script global'],console:['<span class="fn-console-out">7</span>'],fnLabel:'Escopo de subtrair()'},
+        {line:6,phase:2,title:'return a - b',desc:'10 - 3 = 7. Retorna 7.',scope:'global',chips:[],stack:['script global'],console:['<span class="fn-console-out">7</span>','<span class="fn-console-out">7</span>']},
+        {line:12,phase:2,title:'Chamando multiplicar(5, 2)',desc:'Arrow function entra na Call Stack. Escopo com a=5, b=2.',scope:'fn',chips:[{where:'fn',text:'a',type:'var',val:'5'},{where:'fn',text:'b',type:'var',val:'2'}],stack:['multiplicar(5,2)','script global'],console:['<span class="fn-console-out">7</span>','<span class="fn-console-out">7</span>'],fnLabel:'Escopo de multiplicar()'},
+        {line:9,phase:2,title:'a * b (return implícito)',desc:'5 * 2 = 10. Arrow function com corpo de expressão retorna automaticamente.',scope:'global',chips:[],stack:['script global'],console:['<span class="fn-console-out">7</span>','<span class="fn-console-out">7</span>','<span class="fn-console-out">10</span>']},
+        {line:-1,phase:3,title:'Hoisting: declaração vs expressão',desc:'Declarações de função são içadas: somar() pode ser chamada antes da linha 2. Expressões (const subtrair) NÃO são içadas: chamar antes da linha 7 causa ReferenceError.',scope:'global',chips:[{where:'global',text:'somar',type:'fn',val:'ƒ(a,b) ⬆ hoisted'},{where:'global',text:'subtrair',type:'fn',val:'❌ não içada'},{where:'global',text:'multiplicar',type:'fn',val:'❌ não içada'}],stack:[],console:['<span class="fn-console-out">7</span>','<span class="fn-console-out">7</span>','<span class="fn-console-out">10</span>']},
+        {line:-1,phase:3,title:'Resumo',desc:'Declaração: function nome() {} — hoisted. Expressão: const nome = function() {} — não hoisted. Arrow: const nome = () => {} — sintaxe curta, não hoisted, sem this próprio.',scope:'global',chips:[],stack:[],console:['<span class="fn-console-out">7</span>','<span class="fn-console-out">7</span>','<span class="fn-console-out">10</span>']}
+    ];
+    var FN_TOTAL=FN_STEPS.length;
+    window.fnStep=0;
+    var fnTimer=null;
+
+    function fnRender(s){
+        var st=FN_STEPS[s];
+        FN_LINES.forEach(function(_,i){
+            var el=$('fnL'+i);
+            el.className='sim-line'+(i===st.line?' active':(st.line>=0&&i<st.line?' done':''));
+        });
+        for(var p=0;p<4;p++){$('fnPhase'+p).className='sim-phase'+(p===st.phase?' sim-phase-on':'');}
+        $('fnTitle').textContent=st.title;
+        $('fnDesc').textContent=st.desc;
+
+        var scopeG=$('fnScopeGlobal'),scopeF=$('fnScopeFn'),labelG=$('fnLabelGlobal'),labelF=$('fnLabelFn');
+        scopeG.className='fn-scope fn-scope-global'+(st.scope?'  fn-on':'');
+        labelG.className='fn-label'+(st.scope?' fn-on':'');
+        if(st.scope==='fn'){scopeF.style.display=''; scopeF.className='fn-scope fn-scope-fn fn-on'; labelF.className='fn-label fn-on'; if(st.fnLabel)labelF.textContent=st.fnLabel;}
+        else{scopeF.style.display='none';}
+
+        var gChips='',fChips='';
+        st.chips.forEach(function(c){
+            var cls='fn-chip fn-show fn-chip-'+(c.type==='fn'?'fn':'var');
+            var html='<span class="'+cls+'">'+c.text+' <span class="fn-chip-val">= '+c.val+'</span></span>';
+            if(c.where==='fn') fChips+=html; else gChips+=html;
+        });
+        $('fnChipsGlobal').innerHTML=gChips;
+        $('fnChipsFn').innerHTML=fChips;
+
+        $('fnStack').innerHTML=st.stack.length?st.stack.map(function(s){return '<div class="fn-stack-item">'+s+'</div>';}).join(''):'<span style="color:#888;">Vazia</span>';
+        $('fnConsole').innerHTML=st.console.map(function(c){return '<div class="fn-console-line">'+c+'</div>';}).join('');
+        $('fnPrev').disabled=s===0;
+        $('fnNext').disabled=s===FN_TOTAL-1;
+        $('fnPos').textContent='Etapa '+(s+1)+' / '+FN_TOTAL;
+    }
+
+    window.fnGo=function(n){
+        window.fnStep=Math.max(0,Math.min(FN_TOTAL-1,n));
+        fnRender(window.fnStep);
+        if(window.fnStep===FN_TOTAL-1&&fnTimer){clearInterval(fnTimer);fnTimer=null;$('fnPlay').textContent='▶ Auto';}
+    };
+    window.fnToggleAuto=function(){
+        if(fnTimer){clearInterval(fnTimer);fnTimer=null;$('fnPlay').textContent='▶ Auto';return;}
+        if(window.fnStep>=FN_TOTAL-1) window.fnGo(0);
+        $('fnPlay').textContent='⏸ Pausar';
+        fnTimer=setInterval(function(){window.fnGo(window.fnStep+1);},2200);
+    };
+    fnRender(0);
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: CLOSURES (cl)                                           -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+    var CL_LINES=[
+        [' 1','<span style="color:#ff8ab4">function</span> <span style="color:#89b4fa">makeCounter</span>() {'],
+        [' 2','    <span style="color:#ff8ab4">let</span> count = <span style="color:#ae81ff">0</span>;'],
+        [' 3','    <span style="color:#ff8ab4">return</span> <span style="color:#ff8ab4">function</span>() {'],
+        [' 4','        count++;'],
+        [' 5','        <span style="color:#ff8ab4">return</span> count;'],
+        [' 6','    };'],
+        [' 7','}'],
+        [' 8','<span style="color:#ff8ab4">const</span> contador = <span style="color:#89b4fa">makeCounter</span>();'],
+        [' 9','console.<span style="color:#89b4fa">log</span>(contador());'],
+        ['10','console.<span style="color:#89b4fa">log</span>(contador());'],
+        ['11','console.<span style="color:#89b4fa">log</span>(contador());']
+    ];
+    $('clCode').innerHTML=CL_LINES.map(function(l,i){return '<div class="sim-line" id="clL'+i+'"><span class="sim-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+
+    var CL_STEPS=[
+        {line:-1,phase:0,title:'Estado inicial',desc:'Uma closure é uma função que "lembra" das variáveis do escopo onde foi criada, mesmo após esse escopo encerrar.',outer:[],inner:[],closure:[],showInner:false,showClosure:false,console:[]},
+        {line:0,phase:0,title:'Declaração de makeCounter',desc:'A função makeCounter é declarada no escopo global. Ela retornará uma função interna.',outer:[{text:'makeCounter',type:'fn',val:'ƒ()'}],inner:[],closure:[],showInner:false,showClosure:false,console:[]},
+        {line:7,phase:0,title:'Chamando makeCounter()',desc:'makeCounter() é chamada. Um novo escopo de função é criado.',outer:[{text:'makeCounter',type:'fn',val:'ƒ()'},{text:'contador',type:'fn',val:'…'}],inner:[],closure:[],showInner:true,showClosure:false,console:[]},
+        {line:1,phase:1,title:'let count = 0',desc:'A variável count é criada dentro do escopo de makeCounter. Valor inicial: 0.',outer:[{text:'makeCounter',type:'fn',val:'ƒ()'},{text:'contador',type:'fn',val:'…'}],inner:[{text:'count',type:'var',val:'0'}],closure:[],showInner:true,showClosure:false,console:[]},
+        {line:2,phase:1,title:'return function()',desc:'makeCounter retorna a função anônima. Essa função "captura" a variável count — forma uma CLOSURE.',outer:[{text:'makeCounter',type:'fn',val:'ƒ()'},{text:'contador',type:'fn',val:'ƒ() [closure]'}],inner:[{text:'count',type:'var',val:'0'}],closure:[{text:'acesso a count',type:'closure',val:'↑ escopo pai'}],showInner:true,showClosure:true,console:[]},
+        {line:8,phase:2,title:'contador() — 1ª chamada',desc:'A função retornada é executada. Ela AINDA acessa count do escopo de makeCounter, mesmo que makeCounter já tenha terminado.',outer:[{text:'makeCounter',type:'fn',val:'ƒ()'},{text:'contador',type:'fn',val:'ƒ() [closure]'}],inner:[{text:'count',type:'var',val:'1'}],closure:[{text:'count++',type:'closure',val:'0 → 1'}],showInner:true,showClosure:true,console:['<span class="cl-console-out">1</span>']},
+        {line:9,phase:2,title:'contador() — 2ª chamada',desc:'Cada chamada incrementa o MESMO count. A closure mantém a referência viva.',outer:[{text:'makeCounter',type:'fn',val:'ƒ()'},{text:'contador',type:'fn',val:'ƒ() [closure]'}],inner:[{text:'count',type:'var',val:'2'}],closure:[{text:'count++',type:'closure',val:'1 → 2'}],showInner:true,showClosure:true,console:['<span class="cl-console-out">1</span>','<span class="cl-console-out">2</span>']},
+        {line:10,phase:2,title:'contador() — 3ª chamada',desc:'count continua sendo incrementado: 2 → 3. A variável count é privada — só a closure acessa.',outer:[{text:'makeCounter',type:'fn',val:'ƒ()'},{text:'contador',type:'fn',val:'ƒ() [closure]'}],inner:[{text:'count',type:'var',val:'3'}],closure:[{text:'count++',type:'closure',val:'2 → 3'}],showInner:true,showClosure:true,console:['<span class="cl-console-out">1</span>','<span class="cl-console-out">2</span>','<span class="cl-console-out">3</span>']},
+        {line:-1,phase:2,title:'O que é uma closure?',desc:'É uma função + o escopo onde ela foi criada. A função "fecha" (closes over) sobre as variáveis do escopo pai. Isso permite criar variáveis privadas e manter estado entre chamadas.',outer:[],inner:[{text:'count',type:'var',val:'3 (privada)'}],closure:[{text:'função retornada',type:'closure',val:'acessa count'}],showInner:true,showClosure:true,console:['<span class="cl-console-out">1</span>','<span class="cl-console-out">2</span>','<span class="cl-console-out">3</span>']},
+        {line:-1,phase:2,title:'Uso prático',desc:'Closures são usadas em: event listeners (callbacks que lembram do estado), módulos (encapsulamento), funções fábrica (como makeCounter). São uma das bases da programação funcional em JS.',outer:[],inner:[],closure:[],showInner:false,showClosure:false,console:['<span class="cl-console-out">1</span>','<span class="cl-console-out">2</span>','<span class="cl-console-out">3</span>']}
+    ];
+    var CL_TOTAL=CL_STEPS.length;
+    window.clStep=0;
+    var clTimer=null;
+
+    function clRender(s){
+        var st=CL_STEPS[s];
+        CL_LINES.forEach(function(_,i){var el=$('clL'+i);el.className='sim-line'+(i===st.line?' active':(st.line>=0&&i<st.line?' done':''));});
+        for(var p=0;p<3;p++){$('clPhase'+p).className='sim-phase'+(p===st.phase?' sim-phase-on':'');}
+        $('clTitle').textContent=st.title;
+        $('clDesc').textContent=st.desc;
+
+        $('clScopeOuter').className='cl-scope cl-scope-outer'+(st.outer.length||st.showInner?' cl-on':'');
+        $('clLabelOuter').className='cl-label'+(st.outer.length||st.showInner?' cl-on':'');
+        $('clScopeInner').style.display=st.showInner?'':'none';
+        if(st.showInner){$('clScopeInner').className='cl-scope cl-scope-inner cl-on';$('clLabelInner').className='cl-label cl-on';}
+        $('clScopeClosure').style.display=st.showClosure?'':'none';
+        if(st.showClosure){$('clScopeClosure').className='cl-scope cl-scope-closure cl-on';$('clLabelClosure').className='cl-label cl-on';}
+
+        function renderChips(arr){return arr.map(function(c){return '<span class="cl-chip cl-show cl-chip-'+c.type+'">'+c.text+' <span style="font-weight:400;font-size:0.85em;color:#555;">= '+c.val+'</span></span>';}).join('');}
+        $('clChipsOuter').innerHTML=renderChips(st.outer);
+        $('clChipsInner').innerHTML=renderChips(st.inner);
+        $('clChipsClosure').innerHTML=renderChips(st.closure);
+        $('clConsole').innerHTML=st.console.map(function(c){return '<div class="cl-console-line">'+c+'</div>';}).join('');
+        $('clPrev').disabled=s===0;
+        $('clNext').disabled=s===CL_TOTAL-1;
+        $('clPos').textContent='Etapa '+(s+1)+' / '+CL_TOTAL;
+    }
+
+    window.clGo=function(n){window.clStep=Math.max(0,Math.min(CL_TOTAL-1,n));clRender(window.clStep);if(window.clStep===CL_TOTAL-1&&clTimer){clearInterval(clTimer);clTimer=null;$('clPlay').textContent='▶ Auto';}};
+    window.clToggleAuto=function(){if(clTimer){clearInterval(clTimer);clTimer=null;$('clPlay').textContent='▶ Auto';return;}if(window.clStep>=CL_TOTAL-1)window.clGo(0);$('clPlay').textContent='⏸ Pausar';clTimer=setInterval(function(){window.clGo(window.clStep+1);},2500);};
+    clRender(0);
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: STRINGS (st)                                            -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+    var ST_LINES=[
+        [' 1','<span style="color:#ff8ab4">const</span> nome = <span style="color:#c0e65b">"Ana"</span>;'],
+        [' 2','<span style="color:#ff8ab4">const</span> msg = <span style="color:#c0e65b">`Olá, ${nome}!`</span>;'],
+        [' 3','<span style="color:#ff8ab4">const</span> texto = <span style="color:#c0e65b">"  JavaScript  "</span>;'],
+        [' 4','texto.<span style="color:#89b4fa">trim</span>();'],
+        [' 5','texto.<span style="color:#89b4fa">toUpperCase</span>();'],
+        [' 6','texto.<span style="color:#89b4fa">slice</span>(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">12</span>);'],
+        [' 7','texto.<span style="color:#89b4fa">split</span>(<span style="color:#c0e65b">"a"</span>);'],
+        [' 8','texto.<span style="color:#89b4fa">includes</span>(<span style="color:#c0e65b">"Script"</span>);'],
+        [' 9','texto.<span style="color:#89b4fa">replace</span>(<span style="color:#c0e65b">"Java"</span>,<span style="color:#c0e65b">"Type"</span>);'],
+        ['10','<span style="color:#6c7086">// Encadeamento</span>'],
+        ['11','texto.<span style="color:#89b4fa">trim</span>().<span style="color:#89b4fa">toLowerCase</span>().<span style="color:#89b4fa">split</span>(<span style="color:#c0e65b">" "</span>);']
+    ];
+    $('stCode').innerHTML=ST_LINES.map(function(l,i){return '<div class="sim-line" id="stL'+i+'"><span class="sim-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+
+    var ST_STEPS=[
+        {line:-1,phase:0,title:'Estado inicial',desc:'Strings são imutáveis: cada método retorna uma nova string, sem alterar a original.',chars:[],result:'',console:[]},
+        {line:0,phase:0,title:'const nome = "Ana"',desc:'Criamos uma string simples com aspas duplas.',chars:'Ana'.split(''),result:'',console:[]},
+        {line:1,phase:0,title:'Template literal',desc:'Backticks (`) permitem interpolação com ${expressão}. O valor de nome é inserido automaticamente.',chars:'Olá, Ana!'.split(''),result:'"Olá, Ana!"',console:['<span class="st-console-out">"Olá, Ana!"</span>']},
+        {line:2,phase:1,title:'const texto = "  JavaScript  "',desc:'String com espaços nas bordas. Vamos aplicar vários métodos.',chars:'  JavaScript  '.split(''),result:'',console:['<span class="st-console-out">"Olá, Ana!"</span>']},
+        {line:3,phase:1,title:'.trim()',desc:'Remove espaços do início e do fim. Retorna nova string — a original não muda.',chars:'JavaScript'.split(''),result:'"JavaScript"',console:['<span class="st-console-out">"Olá, Ana!"</span>','<span class="st-console-out">"JavaScript"</span>']},
+        {line:4,phase:1,title:'.toUpperCase()',desc:'Converte todas as letras para maiúsculas.',chars:'  JAVASCRIPT  '.split(''),result:'"  JAVASCRIPT  "',console:['<span class="st-console-out">"Olá, Ana!"</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">"  JAVASCRIPT  "</span>']},
+        {line:5,phase:1,title:'.slice(2, 12)',desc:'Extrai do índice 2 ao 11 (12 não incluso). Funciona como substring.',chars:'JavaScript'.split(''),result:'"JavaScript"',console:['<span class="st-console-out">"Olá, Ana!"</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">"  JAVASCRIPT  "</span>','<span class="st-console-out">"JavaScript"</span>'],hlStart:2,hlEnd:12},
+        {line:6,phase:1,title:'.split("a")',desc:'Divide a string onde encontra "a". Retorna um array de partes.',chars:'  JavaScript  '.split(''),result:'["  J", "v", "Script  "]',console:['<span class="st-console-out">"Olá, Ana!"</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">"  JAVASCRIPT  "</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">["  J","v","Script  "]</span>']},
+        {line:7,phase:1,title:'.includes("Script")',desc:'Verifica se a string contém "Script". Retorna true ou false.',chars:'  JavaScript  '.split(''),result:'true',console:['<span class="st-console-out">"Olá, Ana!"</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">"  JAVASCRIPT  "</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">["  J","v","Script  "]</span>','<span class="st-console-out">true</span>']},
+        {line:8,phase:1,title:'.replace("Java","Type")',desc:'Substitui a primeira ocorrência de "Java" por "Type".',chars:'  TypeScript  '.split(''),result:'"  TypeScript  "',console:['<span class="st-console-out">"Olá, Ana!"</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">"  JAVASCRIPT  "</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">["  J","v","Script  "]</span>','<span class="st-console-out">true</span>','<span class="st-console-out">"  TypeScript  "</span>']},
+        {line:10,phase:2,title:'Encadeamento de métodos',desc:'.trim().toLowerCase().split(" ") — cada método retorna um valor que alimenta o próximo.',chars:'javascript'.split(''),result:'["javascript"]',console:['<span class="st-console-out">"Olá, Ana!"</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">"  JAVASCRIPT  "</span>','<span class="st-console-out">"JavaScript"</span>','<span class="st-console-out">["  J","v","Script  "]</span>','<span class="st-console-out">true</span>','<span class="st-console-out">"  TypeScript  "</span>','<span class="st-console-out">["javascript"]</span>']}
+    ];
+    var ST_TOTAL=ST_STEPS.length;
+    window.stStep=0;
+    var stTimer=null;
+
+    function stRender(s){
+        var st=ST_STEPS[s];
+        ST_LINES.forEach(function(_,i){var el=$('stL'+i);el.className='sim-line'+(i===st.line?' active':(st.line>=0&&i<st.line?' done':''));});
+        for(var p=0;p<3;p++){$('stPhase'+p).className='sim-phase'+(p===st.phase?' sim-phase-on':'');}
+        $('stTitle').textContent=st.title;
+        $('stDesc').textContent=st.desc;
+
+        var idxHtml='',charHtml='';
+        st.chars.forEach(function(c,i){
+            var cls='st-char';
+            if(st.hlStart!==undefined&&i>=st.hlStart&&i<st.hlEnd) cls+=' st-highlight';
+            idxHtml+='<span class="st-idx">'+i+'</span>';
+            charHtml+='<span class="'+cls+'">'+(c===' '?'&nbsp;':c)+'</span>';
+        });
+        $('stIndices').innerHTML=idxHtml;
+        $('stChars').innerHTML=charHtml;
+
+        if(st.result){$('stResultBox').style.display='';$('stResultVal').innerHTML=st.result;}else{$('stResultBox').style.display='none';}
+        $('stConsole').innerHTML=st.console.map(function(c){return '<div class="st-console-line">'+c+'</div>';}).join('');
+        $('stPrev').disabled=s===0;
+        $('stNext').disabled=s===ST_TOTAL-1;
+        $('stPos').textContent='Etapa '+(s+1)+' / '+ST_TOTAL;
+    }
+
+    window.stGo=function(n){window.stStep=Math.max(0,Math.min(ST_TOTAL-1,n));stRender(window.stStep);if(window.stStep===ST_TOTAL-1&&stTimer){clearInterval(stTimer);stTimer=null;$('stPlay').textContent='▶ Auto';}};
+    window.stToggleAuto=function(){if(stTimer){clearInterval(stTimer);stTimer=null;$('stPlay').textContent='▶ Auto';return;}if(window.stStep>=ST_TOTAL-1)window.stGo(0);$('stPlay').textContent='⏸ Pausar';stTimer=setInterval(function(){window.stGo(window.stStep+1);},2200);};
+    stRender(0);
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: ARRAY METHODS (am)                                      -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+    var AM_LINES=[
+        [' 1','<span style="color:#ff8ab4">const</span> nums = [<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">30</span>, <span style="color:#ae81ff">40</span>, <span style="color:#ae81ff">50</span>];'],
+        [' 2','<span style="color:#6c7086">// slice — NÃO muda o original</span>'],
+        [' 3','<span style="color:#ff8ab4">const</span> parte = nums.<span style="color:#89b4fa">slice</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>);'],
+        [' 4','<span style="color:#6c7086">// splice — MUDA o original</span>'],
+        [' 5','<span style="color:#ff8ab4">const</span> arr2 = [<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">5</span>];'],
+        [' 6','arr2.<span style="color:#89b4fa">splice</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>);'],
+        [' 7','<span style="color:#6c7086">// sort — MUDA o original</span>'],
+        [' 8','<span style="color:#ff8ab4">const</span> nomes = [<span style="color:#c0e65b">"Carlos"</span>,<span style="color:#c0e65b">"Ana"</span>,<span style="color:#c0e65b">"Bruno"</span>];'],
+        [' 9','nomes.<span style="color:#89b4fa">sort</span>();'],
+        ['10','<span style="color:#6c7086">// forEach — itera sem retornar</span>'],
+        ['11','nums.<span style="color:#89b4fa">forEach</span>(<span style="color:#ff8ab4">function</span>(n, i) {'],
+        ['12','    console.<span style="color:#89b4fa">log</span>(i, n);'],
+        ['13','});']
+    ];
+    $('amCode').innerHTML=AM_LINES.map(function(l,i){return '<div class="sim-line" id="amL'+i+'"><span class="sim-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+
+    var AM_STEPS=[
+        {line:-1,phase:0,title:'Estado inicial',desc:'Vamos comparar métodos que MUTAM (alteram) o array e métodos que NÃO mutam.',arr:[], resultArr:[], resultLabel:'',showResult:false,console:[]},
+        {line:0,phase:0,title:'const nums = [10,20,30,40,50]',desc:'Criamos um array de números.',arr:[10,20,30,40,50],hl:[],resultArr:[],resultLabel:'',showResult:false,console:[]},
+        {line:2,phase:0,title:'nums.slice(1, 3)',desc:'slice(1,3) extrai do índice 1 ao 2 (3 não incluso). Retorna [20,30]. O array original NÃO muda.',arr:[10,20,30,40,50],hl:[1,2],resultArr:[20,30],resultLabel:'parte (slice)',showResult:true,console:['<span class="am-console-out">[20, 30]</span>']},
+        {line:4,phase:0,title:'const arr2 = [1,2,3,4,5]',desc:'Novo array para demonstrar splice.',arr:[1,2,3,4,5],hl:[],resultArr:[],resultLabel:'',showResult:false,console:['<span class="am-console-out">[20, 30]</span>']},
+        {line:5,phase:0,title:'arr2.splice(1, 2)',desc:'splice(1,2) REMOVE 2 elementos a partir do índice 1. O array original MUDA para [1,4,5]. Retorna os removidos [2,3].',arr:[1,4,5],hl:[],resultArr:[2,3],resultLabel:'removidos (splice)',showResult:true,console:['<span class="am-console-out">[20, 30]</span>','<span class="am-console-out">removidos: [2, 3]</span>','<span class="am-console-out">arr2 agora: [1, 4, 5]</span>']},
+        {line:-1,phase:0,title:'slice vs splice',desc:'slice: NÃO muta, retorna cópia parcial. splice: MUTA, remove/insere no original. Dica: slice = "fatiar" (read-only), splice = "emendar" (mutante).',arr:[],hl:[],resultArr:[],resultLabel:'',showResult:false,console:['<span class="am-console-out">[20, 30]</span>','<span class="am-console-out">removidos: [2, 3]</span>','<span class="am-console-out">arr2 agora: [1, 4, 5]</span>']},
+        {line:7,phase:1,title:'const nomes = ["Carlos","Ana","Bruno"]',desc:'Array de strings para ordenar.',arr:['Carlos','Ana','Bruno'],hl:[],resultArr:[],resultLabel:'',showResult:false,console:['<span class="am-console-out">[20, 30]</span>','<span class="am-console-out">removidos: [2, 3]</span>','<span class="am-console-out">arr2 agora: [1, 4, 5]</span>']},
+        {line:8,phase:1,title:'nomes.sort()',desc:'sort() ordena o array IN-PLACE (muta!). Para strings, ordena alfabeticamente. Para números, precisa de comparador: .sort((a,b) => a-b).',arr:['Ana','Bruno','Carlos'],hl:[],resultArr:[],resultLabel:'',showResult:false,console:['<span class="am-console-out">[20, 30]</span>','<span class="am-console-out">removidos: [2, 3]</span>','<span class="am-console-out">arr2 agora: [1, 4, 5]</span>','<span class="am-console-out">["Ana","Bruno","Carlos"]</span>']},
+        {line:10,phase:2,title:'forEach — iteração',desc:'forEach executa uma função para cada elemento. NÃO retorna nada (undefined).',arr:[10,20,30,40,50],hl:[0],resultArr:[],resultLabel:'',showResult:false,console:['<span class="am-console-out">[20, 30]</span>','<span class="am-console-out">removidos: [2, 3]</span>','<span class="am-console-out">arr2 agora: [1, 4, 5]</span>','<span class="am-console-out">["Ana","Bruno","Carlos"]</span>','<span class="am-console-out">0 10</span>']},
+        {line:11,phase:2,title:'forEach — índice 1',desc:'Segundo elemento: i=1, n=20.',arr:[10,20,30,40,50],hl:[1],resultArr:[],resultLabel:'',showResult:false,console:['<span class="am-console-out">[20, 30]</span>','<span class="am-console-out">removidos: [2, 3]</span>','<span class="am-console-out">arr2 agora: [1, 4, 5]</span>','<span class="am-console-out">["Ana","Bruno","Carlos"]</span>','<span class="am-console-out">0 10</span>','<span class="am-console-out">1 20</span>']},
+        {line:11,phase:2,title:'forEach — continua...',desc:'forEach passa por todos os elementos: i=2 n=30, i=3 n=40, i=4 n=50.',arr:[10,20,30,40,50],hl:[2,3,4],resultArr:[],resultLabel:'',showResult:false,console:['<span class="am-console-out">[20, 30]</span>','<span class="am-console-out">removidos: [2, 3]</span>','<span class="am-console-out">arr2 agora: [1, 4, 5]</span>','<span class="am-console-out">["Ana","Bruno","Carlos"]</span>','<span class="am-console-out">0 10</span>','<span class="am-console-out">1 20</span>','<span class="am-console-out">2 30</span>','<span class="am-console-out">3 40</span>','<span class="am-console-out">4 50</span>']},
+        {line:-1,phase:2,title:'Resumo',desc:'slice/map/filter: NÃO mutam. splice/sort/push/pop: MUTAM. forEach: itera sem retornar. Prefira métodos imutáveis para código previsível.',arr:[],hl:[],resultArr:[],resultLabel:'',showResult:false,console:['<span class="am-console-out">[20, 30]</span>','<span class="am-console-out">removidos: [2, 3]</span>','<span class="am-console-out">arr2 agora: [1, 4, 5]</span>','<span class="am-console-out">["Ana","Bruno","Carlos"]</span>','<span class="am-console-out">0 10</span>','<span class="am-console-out">1 20</span>','<span class="am-console-out">2 30</span>','<span class="am-console-out">3 40</span>','<span class="am-console-out">4 50</span>']}
+    ];
+    var AM_TOTAL=AM_STEPS.length;
+    window.amStep=0;
+    var amTimer=null;
+
+    function amRender(s){
+        var st=AM_STEPS[s];
+        AM_LINES.forEach(function(_,i){var el=$('amL'+i);el.className='sim-line'+(i===st.line?' active':(st.line>=0&&i<st.line?' done':''));});
+        for(var p=0;p<3;p++){$('amPhase'+p).className='sim-phase'+(p===st.phase?' sim-phase-on':'');}
+        $('amTitle').textContent=st.title;
+        $('amDesc').textContent=st.desc;
+        $('amCells').innerHTML=st.arr.map(function(v,i){var cls='am-cell';if(st.hl&&st.hl.indexOf(i)>=0)cls+=' am-highlight';return '<div class="'+cls+'"><span class="am-idx">['+i+']</span><span class="am-val">'+v+'</span></div>';}).join('');
+        if(st.showResult){$('amResultBox').style.display='';$('amResultLabel').textContent=st.resultLabel;$('amResultCells').innerHTML=st.resultArr.map(function(v,i){return '<div class="am-cell"><span class="am-idx">['+i+']</span><span class="am-val" style="border-color:#2e7d32;background:#e4f6ec;">'+v+'</span></div>';}).join('');}else{$('amResultBox').style.display='none';}
+        $('amConsole').innerHTML=st.console.map(function(c){return '<div class="am-console-line">'+c+'</div>';}).join('');
+        $('amPrev').disabled=s===0;
+        $('amNext').disabled=s===AM_TOTAL-1;
+        $('amPos').textContent='Etapa '+(s+1)+' / '+AM_TOTAL;
+    }
+
+    window.amGo=function(n){window.amStep=Math.max(0,Math.min(AM_TOTAL-1,n));amRender(window.amStep);if(window.amStep===AM_TOTAL-1&&amTimer){clearInterval(amTimer);amTimer=null;$('amPlay').textContent='▶ Auto';}};
+    window.amToggleAuto=function(){if(amTimer){clearInterval(amTimer);amTimer=null;$('amPlay').textContent='▶ Auto';return;}if(window.amStep>=AM_TOTAL-1)window.amGo(0);$('amPlay').textContent='⏸ Pausar';amTimer=setInterval(function(){window.amGo(window.amStep+1);},2200);};
+    amRender(0);
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: MAP/FILTER/REDUCE (mf)                                  -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+
+    var TABS=[
+        {name:'map',input:[1,2,3,4],lines:[
+            [' 1','<span style="color:#ff8ab4">const</span> nums = [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>];'],
+            [' 2','<span style="color:#ff8ab4">const</span> dobro = nums.<span style="color:#89b4fa">map</span>(x =&gt; x * <span style="color:#ae81ff">2</span>);'],
+            [' 3','<span style="color:#6c7086">// dobro = [2, 4, 6, 8]</span>'],
+            [' 4','<span style="color:#6c7086">// nums continua [1, 2, 3, 4]</span>']
+        ],steps:[
+            {line:-1,title:'map — transformar cada elemento',desc:'map() cria um novo array aplicando uma função a cada elemento. O original não muda.',activeIdx:-1,output:[],console:[]},
+            {line:0,title:'Array de entrada',desc:'nums = [1, 2, 3, 4] — nosso array de números.',activeIdx:-1,output:[],console:[]},
+            {line:1,title:'x => x * 2 — elemento 1',desc:'map chama a função com x=1. Resultado: 1 * 2 = 2.',activeIdx:0,output:[2],console:['<span class="mf-console-out">x=1 → 2</span>']},
+            {line:1,title:'x => x * 2 — elemento 2',desc:'x=2. Resultado: 2 * 2 = 4.',activeIdx:1,output:[2,4],console:['<span class="mf-console-out">x=1 → 2</span>','<span class="mf-console-out">x=2 → 4</span>']},
+            {line:1,title:'x => x * 2 — elemento 3',desc:'x=3. Resultado: 3 * 2 = 6.',activeIdx:2,output:[2,4,6],console:['<span class="mf-console-out">x=1 → 2</span>','<span class="mf-console-out">x=2 → 4</span>','<span class="mf-console-out">x=3 → 6</span>']},
+            {line:1,title:'x => x * 2 — elemento 4',desc:'x=4. Resultado: 4 * 2 = 8. map termina.',activeIdx:3,output:[2,4,6,8],console:['<span class="mf-console-out">x=1 → 2</span>','<span class="mf-console-out">x=2 → 4</span>','<span class="mf-console-out">x=3 → 6</span>','<span class="mf-console-out">x=4 → 8</span>']},
+            {line:2,title:'Resultado final',desc:'dobro = [2, 4, 6, 8]. O array original nums permanece [1, 2, 3, 4] — map NÃO muta.',activeIdx:-1,output:[2,4,6,8],console:['<span class="mf-console-out">x=1 → 2</span>','<span class="mf-console-out">x=2 → 4</span>','<span class="mf-console-out">x=3 → 6</span>','<span class="mf-console-out">x=4 → 8</span>','<span class="mf-console-out">dobro = [2,4,6,8]</span>']}
+        ]},
+        {name:'filter',input:[1,2,3,4,5,6],lines:[
+            [' 1','<span style="color:#ff8ab4">const</span> nums = [<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">6</span>];'],
+            [' 2','<span style="color:#ff8ab4">const</span> pares = nums.<span style="color:#89b4fa">filter</span>('],
+            [' 3','    x =&gt; x % <span style="color:#ae81ff">2</span> === <span style="color:#ae81ff">0</span>'],
+            [' 4',');'],
+            [' 5','<span style="color:#6c7086">// pares = [2, 4, 6]</span>']
+        ],steps:[
+            {line:-1,title:'filter — selecionar elementos',desc:'filter() cria um novo array com os elementos que passam no teste (retornam true).',activeIdx:-1,output:[],pass:[],console:[]},
+            {line:0,title:'Array de entrada',desc:'nums = [1, 2, 3, 4, 5, 6].',activeIdx:-1,output:[],pass:[],console:[]},
+            {line:2,title:'x % 2 === 0 — testa 1',desc:'1 % 2 = 1 ≠ 0. Falso — 1 não é incluído.',activeIdx:0,output:[],pass:[false],console:['<span style="color:#ff6b6b">x=1 → false</span>']},
+            {line:2,title:'x % 2 === 0 — testa 2',desc:'2 % 2 = 0. Verdadeiro — 2 é incluído!',activeIdx:1,output:[2],pass:[false,true],console:['<span style="color:#ff6b6b">x=1 → false</span>','<span class="mf-console-out">x=2 → true ✓</span>']},
+            {line:2,title:'x % 2 === 0 — testa 3',desc:'3 % 2 = 1 ≠ 0. Falso.',activeIdx:2,output:[2],pass:[false,true,false],console:['<span style="color:#ff6b6b">x=1 → false</span>','<span class="mf-console-out">x=2 → true ✓</span>','<span style="color:#ff6b6b">x=3 → false</span>']},
+            {line:2,title:'x % 2 === 0 — testa 4',desc:'4 % 2 = 0. Verdadeiro — incluído!',activeIdx:3,output:[2,4],pass:[false,true,false,true],console:['<span style="color:#ff6b6b">x=1 → false</span>','<span class="mf-console-out">x=2 → true ✓</span>','<span style="color:#ff6b6b">x=3 → false</span>','<span class="mf-console-out">x=4 → true ✓</span>']},
+            {line:2,title:'Testa 5 e 6',desc:'5 → false. 6 → true (incluído).',activeIdx:5,output:[2,4,6],pass:[false,true,false,true,false,true],console:['<span style="color:#ff6b6b">x=1 → false</span>','<span class="mf-console-out">x=2 → true ✓</span>','<span style="color:#ff6b6b">x=3 → false</span>','<span class="mf-console-out">x=4 → true ✓</span>','<span style="color:#ff6b6b">x=5 → false</span>','<span class="mf-console-out">x=6 → true ✓</span>']},
+            {line:4,title:'Resultado final',desc:'pares = [2, 4, 6]. filter NÃO muta o original.',activeIdx:-1,output:[2,4,6],pass:[false,true,false,true,false,true],console:['<span class="mf-console-out">pares = [2, 4, 6]</span>']}
+        ]},
+        {name:'reduce',input:[1,2,3,4],lines:[
+            [' 1','<span style="color:#ff8ab4">const</span> nums = [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>];'],
+            [' 2','<span style="color:#ff8ab4">const</span> soma = nums.<span style="color:#89b4fa">reduce</span>('],
+            [' 3','    (acc, x) =&gt; acc + x,'],
+            [' 4','    <span style="color:#ae81ff">0</span>  <span style="color:#6c7086">// valor inicial</span>'],
+            [' 5',');'],
+            [' 6','<span style="color:#6c7086">// soma = 10</span>']
+        ],steps:[
+            {line:-1,title:'reduce — acumular um resultado',desc:'reduce() reduz o array a um único valor, acumulando a cada iteração.',activeIdx:-1,acc:0,console:[]},
+            {line:0,title:'Array de entrada',desc:'nums = [1, 2, 3, 4]. Valor inicial do acumulador: 0.',activeIdx:-1,acc:0,console:[]},
+            {line:2,title:'acc=0, x=1',desc:'0 + 1 = 1. Acumulador passa a valer 1.',activeIdx:0,acc:1,console:['<span class="mf-console-out">acc=0 + x=1 → 1</span>']},
+            {line:2,title:'acc=1, x=2',desc:'1 + 2 = 3. Acumulador = 3.',activeIdx:1,acc:3,console:['<span class="mf-console-out">acc=0 + x=1 → 1</span>','<span class="mf-console-out">acc=1 + x=2 → 3</span>']},
+            {line:2,title:'acc=3, x=3',desc:'3 + 3 = 6. Acumulador = 6.',activeIdx:2,acc:6,console:['<span class="mf-console-out">acc=0 + x=1 → 1</span>','<span class="mf-console-out">acc=1 + x=2 → 3</span>','<span class="mf-console-out">acc=3 + x=3 → 6</span>']},
+            {line:2,title:'acc=6, x=4',desc:'6 + 4 = 10. Acumulador final = 10.',activeIdx:3,acc:10,console:['<span class="mf-console-out">acc=0 + x=1 → 1</span>','<span class="mf-console-out">acc=1 + x=2 → 3</span>','<span class="mf-console-out">acc=3 + x=3 → 6</span>','<span class="mf-console-out">acc=6 + x=4 → 10</span>']},
+            {line:5,title:'Resultado final',desc:'soma = 10. reduce reduz [1,2,3,4] a um único número somando todos os elementos.',activeIdx:-1,acc:10,console:['<span class="mf-console-out">soma = 10</span>']}
+        ]}
+    ];
+
+    var curTab=0;
+    var tabSteps=[0,0,0];
+    var mfTimer=null;
+
+    function initTabCode(t){
+        var tab=TABS[t];
+        $('mfCode'+t).innerHTML=tab.lines.map(function(l,i){return '<div class="mf-line" id="mf'+t+'L'+i+'"><span class="mf-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+        $('mfInput'+t).innerHTML=tab.input.map(function(v,i){return '<span class="mf-arr-cell" id="mf'+t+'I'+i+'">'+v+'</span>';}).join('');
+    }
+    for(var t=0;t<3;t++) initTabCode(t);
+
+    function mfRender(){
+        var tab=TABS[curTab];
+        var s=tabSteps[curTab];
+        var st=tab.steps[s];
+
+        tab.lines.forEach(function(_,i){
+            var el=$('mf'+curTab+'L'+i);
+            el.className='mf-line'+(i===st.line?' mf-active':(st.line>=0&&i<st.line?' mf-done':''));
+        });
+
+        tab.input.forEach(function(_,i){
+            var el=$('mf'+curTab+'I'+i);
+            var cls='mf-arr-cell';
+            if(i===st.activeIdx) cls+=' mf-active';
+            else if(st.activeIdx>=0&&i<st.activeIdx) cls+=' mf-done';
+            if(curTab===1&&st.pass){
+                if(st.pass[i]===true) cls+=' mf-pass';
+                else if(st.pass[i]===false) cls+=' mf-fail';
+            }
+            el.className=cls;
+        });
+
+        if(curTab===0){
+            $('mfOutput0').innerHTML=st.output.map(function(v){return '<span class="mf-result-cell">'+v+'</span>';}).join('');
+        }else if(curTab===1){
+            $('mfOutput1').innerHTML=st.output.map(function(v){return '<span class="mf-result-cell">'+v+'</span>';}).join('');
+        }else if(curTab===2){
+            $('mfAccVal2').textContent=st.acc;
+        }
+
+        $('mfConsole'+curTab).innerHTML=st.console.map(function(c){return '<div class="mf-console-line">'+c+'</div>';}).join('');
+        $('mfTitle').textContent=st.title;
+        $('mfDescText').textContent=st.desc;
+        $('mfPrev').disabled=s===0;
+        $('mfNext').disabled=s===tab.steps.length-1;
+        $('mfPos').textContent='Etapa '+(s+1)+' / '+tab.steps.length;
+    }
+
+    window.mfSwitchTab=function(t){
+        if(mfTimer){clearInterval(mfTimer);mfTimer=null;$('mfPlayBtn').textContent='▶ Auto';}
+        curTab=t;
+        for(var i=0;i<3;i++){
+            document.querySelectorAll('.mf-tab')[i].className='mf-tab'+(i===t?' mf-tab-on':'');
+            $('mfPanel'+i).className='mf-tab-panel'+(i===t?' mf-tab-visible':'');
+        }
+        mfRender();
+    };
+    window.mfNext=function(){tabSteps[curTab]=Math.min(TABS[curTab].steps.length-1,tabSteps[curTab]+1);mfRender();if(tabSteps[curTab]===TABS[curTab].steps.length-1&&mfTimer){clearInterval(mfTimer);mfTimer=null;$('mfPlayBtn').textContent='▶ Auto';}};
+    window.mfPrev=function(){tabSteps[curTab]=Math.max(0,tabSteps[curTab]-1);mfRender();};
+    window.mfReset=function(){if(mfTimer){clearInterval(mfTimer);mfTimer=null;$('mfPlayBtn').textContent='▶ Auto';}tabSteps[curTab]=0;mfRender();};
+    window.mfToggleAuto=function(){if(mfTimer){clearInterval(mfTimer);mfTimer=null;$('mfPlayBtn').textContent='▶ Auto';return;}if(tabSteps[curTab]>=TABS[curTab].steps.length-1)tabSteps[curTab]=0;$('mfPlayBtn').textContent='⏸ Pausar';mfTimer=setInterval(function(){window.mfNext();},2200);};
+    window.mfGetCurrentStep=function(){return tabSteps[curTab];};
+    window.mfGetCurrentTotal=function(){return TABS[curTab].steps.length;};
+    window.mfAdvance=window.mfNext;
+    window.mfRetreat=window.mfPrev;
+    mfRender();
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: CHAINING + DESTRUCTURING (ch)                           -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+    var CH_LINES=[
+        [' 1','<span style="color:#ff8ab4">const</span> alunos = ['],
+        [' 2','  { nome: <span style="color:#c0e65b">"Ana"</span>, nota: <span style="color:#ae81ff">9</span> },'],
+        [' 3','  { nome: <span style="color:#c0e65b">"Beto"</span>, nota: <span style="color:#ae81ff">5</span> },'],
+        [' 4','  { nome: <span style="color:#c0e65b">"Carla"</span>, nota: <span style="color:#ae81ff">8</span> },'],
+        [' 5','];'],
+        [' 6','<span style="color:#6c7086">// Pipeline: filter → map</span>'],
+        [' 7','<span style="color:#ff8ab4">const</span> aprovados = alunos'],
+        [' 8','  .<span style="color:#89b4fa">filter</span>(a =&gt; a.nota &gt;= <span style="color:#ae81ff">7</span>)'],
+        [' 9','  .<span style="color:#89b4fa">map</span>(a =&gt; a.nome);'],
+        ['10','<span style="color:#6c7086">// Desestruturação de objeto</span>'],
+        ['11','<span style="color:#ff8ab4">const</span> { nome, nota } = alunos[<span style="color:#ae81ff">0</span>];'],
+        ['12','<span style="color:#6c7086">// Spread operator</span>'],
+        ['13','<span style="color:#ff8ab4">const</span> novo = { ...alunos[<span style="color:#ae81ff">0</span>], turma: <span style="color:#c0e65b">"A"</span> };']
+    ];
+    $('chCode').innerHTML=CH_LINES.map(function(l,i){return '<div class="sim-line" id="chL'+i+'"><span class="sim-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+
+    var CH_STEPS=[
+        {line:-1,phase:0,title:'Estado inicial',desc:'Vamos encadear filter e map para criar pipelines de dados, e usar desestruturação para extrair valores.',pipe:[],data:'',console:[]},
+        {line:0,phase:0,title:'Array de alunos',desc:'Três objetos com nome e nota.',pipe:[{text:'alunos',active:true}],data:'[{nome:"Ana",nota:9}, {nome:"Beto",nota:5}, {nome:"Carla",nota:8}]',console:[]},
+        {line:7,phase:0,title:'.filter(a => a.nota >= 7)',desc:'filter testa cada aluno: Ana(9)✓, Beto(5)✗, Carla(8)✓.',pipe:[{text:'alunos',done:true},{text:'.filter()',active:true}],data:'[{nome:"Ana",nota:9}, {nome:"Carla",nota:8}]',console:['<span class="ch-console-out">filtrados: Ana(9), Carla(8)</span>']},
+        {line:8,phase:0,title:'.map(a => a.nome)',desc:'map extrai só o nome de cada aluno aprovado.',pipe:[{text:'alunos',done:true},{text:'.filter()',done:true},{text:'.map()',active:true}],data:'["Ana", "Carla"]',console:['<span class="ch-console-out">filtrados: Ana(9), Carla(8)</span>','<span class="ch-console-out">aprovados = ["Ana","Carla"]</span>']},
+        {line:-1,phase:0,title:'Pipeline completo',desc:'alunos.filter(…).map(…) — cada método retorna um novo array que alimenta o próximo. Leitura fluida, sem variáveis intermediárias.',pipe:[{text:'alunos',done:true},{text:'.filter()',done:true},{text:'.map()',done:true},{text:'resultado',active:true}],data:'["Ana", "Carla"]',console:['<span class="ch-console-out">filtrados: Ana(9), Carla(8)</span>','<span class="ch-console-out">aprovados = ["Ana","Carla"]</span>']},
+        {line:10,phase:1,title:'Desestruturação de objeto',desc:'const { nome, nota } = alunos[0] — extrai as propriedades nome e nota do primeiro aluno diretamente em variáveis.',pipe:[],data:'{nome:"Ana",nota:9} → nome="Ana", nota=9',console:['<span class="ch-console-out">filtrados: Ana(9), Carla(8)</span>','<span class="ch-console-out">aprovados = ["Ana","Carla"]</span>','<span class="ch-console-out">nome = "Ana"</span>','<span class="ch-console-out">nota = 9</span>']},
+        {line:-1,phase:1,title:'Array destructuring',desc:'Funciona com arrays também: const [a, b, ...rest] = [1, 2, 3, 4] → a=1, b=2, rest=[3,4]. Os três pontos (...rest) capturam o restante.',pipe:[],data:'[1,2,3,4] → a=1, b=2, rest=[3,4]',console:['<span class="ch-console-out">filtrados: Ana(9), Carla(8)</span>','<span class="ch-console-out">aprovados = ["Ana","Carla"]</span>','<span class="ch-console-out">nome = "Ana"</span>','<span class="ch-console-out">nota = 9</span>','<span class="ch-console-out">a=1, b=2, rest=[3,4]</span>']},
+        {line:12,phase:2,title:'Spread operator',desc:'...alunos[0] "espalha" todas as propriedades do objeto. Podemos adicionar ou sobrescrever propriedades.',pipe:[],data:'{nome:"Ana", nota:9, turma:"A"}',console:['<span class="ch-console-out">filtrados: Ana(9), Carla(8)</span>','<span class="ch-console-out">aprovados = ["Ana","Carla"]</span>','<span class="ch-console-out">nome = "Ana"</span>','<span class="ch-console-out">nota = 9</span>','<span class="ch-console-out">a=1, b=2, rest=[3,4]</span>','<span class="ch-console-out">novo = {nome:"Ana",nota:9,turma:"A"}</span>']},
+        {line:-1,phase:2,title:'Rest parameters',desc:'Em funções, ...args captura argumentos extras: function soma(...nums) { return nums.reduce((a,b) => a+b, 0); }. Spread = "espalhar". Rest = "coletar o resto".',pipe:[],data:'soma(1,2,3) → nums=[1,2,3] → 6',console:['<span class="ch-console-out">filtrados: Ana(9), Carla(8)</span>','<span class="ch-console-out">aprovados = ["Ana","Carla"]</span>','<span class="ch-console-out">nome = "Ana"</span>','<span class="ch-console-out">nota = 9</span>','<span class="ch-console-out">a=1, b=2, rest=[3,4]</span>','<span class="ch-console-out">novo = {nome:"Ana",nota:9,turma:"A"}</span>','<span class="ch-console-out">soma(1,2,3) = 6</span>']},
+        {line:-1,phase:2,title:'Resumo',desc:'Pipeline: .filter().map().reduce() encadeados. Desestruturação: extrair valores com { } ou [ ]. Spread: espalhar com ... . Rest: coletar restante com ... em parâmetros.',pipe:[],data:'',console:['<span class="ch-console-out">filtrados: Ana(9), Carla(8)</span>','<span class="ch-console-out">aprovados = ["Ana","Carla"]</span>','<span class="ch-console-out">nome = "Ana"</span>','<span class="ch-console-out">nota = 9</span>','<span class="ch-console-out">a=1, b=2, rest=[3,4]</span>','<span class="ch-console-out">novo = {nome:"Ana",nota:9,turma:"A"}</span>','<span class="ch-console-out">soma(1,2,3) = 6</span>']}
+    ];
+    var CH_TOTAL=CH_STEPS.length;
+    window.chStep=0;
+    var chTimer=null;
+
+    function chRender(s){
+        var st=CH_STEPS[s];
+        CH_LINES.forEach(function(_,i){var el=$('chL'+i);el.className='sim-line'+(i===st.line?' active':(st.line>=0&&i<st.line?' done':''));});
+        for(var p=0;p<3;p++){$('chPhase'+p).className='sim-phase'+(p===st.phase?' sim-phase-on':'');}
+        $('chTitle').textContent=st.title;
+        $('chDesc').textContent=st.desc;
+        $('chPipe').innerHTML=st.pipe.map(function(p,i){var cls='ch-pipe-stage';if(p.active)cls+=' ch-active';if(p.done)cls+=' ch-done';return (i>0?'<span class="ch-pipe-arrow">→</span>':'')+' <span class="'+cls+'">'+p.text+'</span>';}).join('');
+        if(st.data){$('chDataView').style.display='';$('chDataView').innerHTML='<div class="ch-data-label">Dados</div><div class="ch-obj">'+st.data+'</div>';}else{$('chDataView').style.display='none';}
+        $('chConsole').innerHTML=st.console.map(function(c){return '<div class="ch-console-line">'+c+'</div>';}).join('');
+        $('chPrev').disabled=s===0;
+        $('chNext').disabled=s===CH_TOTAL-1;
+        $('chPos').textContent='Etapa '+(s+1)+' / '+CH_TOTAL;
+    }
+
+    window.chGo=function(n){window.chStep=Math.max(0,Math.min(CH_TOTAL-1,n));chRender(window.chStep);if(window.chStep===CH_TOTAL-1&&chTimer){clearInterval(chTimer);chTimer=null;$('chPlay').textContent='▶ Auto';}};
+    window.chToggleAuto=function(){if(chTimer){clearInterval(chTimer);chTimer=null;$('chPlay').textContent='▶ Auto';return;}if(window.chStep>=CH_TOTAL-1)window.chGo(0);$('chPlay').textContent='⏸ Pausar';chTimer=setInterval(function(){window.chGo(window.chStep+1);},2500);};
+    chRender(0);
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: JSON/MAP/SET (jm)                                       -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+    var JM_LINES=[
+        [' 1','<span style="color:#ff8ab4">const</span> aluno = { nome: <span style="color:#c0e65b">"Ana"</span>, nota: <span style="color:#ae81ff">9</span> };'],
+        [' 2','<span style="color:#ff8ab4">const</span> json = JSON.<span style="color:#89b4fa">stringify</span>(aluno);'],
+        [' 3','<span style="color:#ff8ab4">const</span> obj = JSON.<span style="color:#89b4fa">parse</span>(json);'],
+        [' 4','<span style="color:#ff8ab4">const</span> mapa = <span style="color:#ff8ab4">new</span> <span style="color:#89b4fa">Map</span>();'],
+        [' 5','mapa.<span style="color:#89b4fa">set</span>(<span style="color:#c0e65b">"nome"</span>, <span style="color:#c0e65b">"Ana"</span>);'],
+        [' 6','mapa.<span style="color:#89b4fa">set</span>(<span style="color:#c0e65b">"nota"</span>, <span style="color:#ae81ff">9</span>);'],
+        [' 7','mapa.<span style="color:#89b4fa">get</span>(<span style="color:#c0e65b">"nome"</span>);'],
+        [' 8','<span style="color:#ff8ab4">const</span> s = <span style="color:#ff8ab4">new</span> <span style="color:#89b4fa">Set</span>([<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">1</span>]);'],
+        [' 9','s.<span style="color:#89b4fa">add</span>(<span style="color:#ae81ff">4</span>);'],
+        ['10','s.<span style="color:#89b4fa">has</span>(<span style="color:#ae81ff">2</span>);']
+    ];
+    $('jmCode').innerHTML=JM_LINES.map(function(l,i){return '<div class="sim-line" id="jmL'+i+'"><span class="sim-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+
+    var JM_STEPS=[
+        {line:-1,phase:0,title:'Estado inicial',desc:'JSON é o formato padrão para trocar dados. Map e Set são estruturas especializadas.',visual:'',console:[]},
+        {line:0,phase:0,title:'Objeto JavaScript',desc:'Um objeto comum com nome e nota.',visual:'<div class="jm-box jm-active"><div class="jm-box-title" style="color:#2e7d32;">Objeto JS</div><div class="jm-entry jm-show"><span class="jm-key">nome</span> <span class="jm-val-text">"Ana"</span></div><div class="jm-entry jm-show"><span class="jm-key">nota</span> <span class="jm-val-text">9</span></div></div>',console:[]},
+        {line:1,phase:0,title:'JSON.stringify(aluno)',desc:'Converte o objeto em uma string JSON. Útil para enviar dados a um servidor ou salvar no localStorage.',visual:'<div class="jm-box"><div class="jm-box-title" style="color:#2e7d32;">Objeto JS</div><div class="jm-entry jm-show"><span class="jm-key">nome</span> <span class="jm-val-text">"Ana"</span></div><div class="jm-entry jm-show"><span class="jm-key">nota</span> <span class="jm-val-text">9</span></div></div><div style="text-align:center;font-size:1.2em;color:#2e7d32;margin:6px 0;">↓ stringify</div><div class="jm-json-str">{"nome":"Ana","nota":9}</div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>']},
+        {line:2,phase:0,title:'JSON.parse(json)',desc:'Converte a string JSON de volta em um objeto JavaScript. É o inverso do stringify.',visual:'<div class="jm-json-str">{"nome":"Ana","nota":9}</div><div style="text-align:center;font-size:1.2em;color:var(--accent-blue);margin:6px 0;">↓ parse</div><div class="jm-box jm-active"><div class="jm-box-title" style="color:var(--accent-blue);">Novo Objeto JS</div><div class="jm-entry jm-show"><span class="jm-key">nome</span> <span class="jm-val-text">"Ana"</span></div><div class="jm-entry jm-show"><span class="jm-key">nota</span> <span class="jm-val-text">9</span></div></div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>','<span class="jm-console-out">{nome: "Ana", nota: 9}</span>']},
+        {line:3,phase:1,title:'new Map()',desc:'Map é como um objeto, mas aceita QUALQUER tipo como chave (não só strings). Mantém a ordem de inserção.',visual:'<div class="jm-box jm-active"><div class="jm-box-title" style="color:var(--accent-blue);">Map (vazio)</div><div style="color:#888;font-size:0.85em;">size: 0</div></div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>','<span class="jm-console-out">{nome: "Ana", nota: 9}</span>']},
+        {line:4,phase:1,title:'mapa.set("nome", "Ana")',desc:'.set(chave, valor) adiciona uma entrada ao Map.',visual:'<div class="jm-box jm-active"><div class="jm-box-title" style="color:var(--accent-blue);">Map</div><div class="jm-entry jm-show"><span class="jm-key">nome</span> <span class="jm-val-text">"Ana"</span></div><div style="color:#888;font-size:0.85em;margin-top:4px;">size: 1</div></div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>','<span class="jm-console-out">{nome: "Ana", nota: 9}</span>']},
+        {line:5,phase:1,title:'mapa.set("nota", 9)',desc:'Mais uma entrada. Map preserva a ordem de inserção.',visual:'<div class="jm-box jm-active"><div class="jm-box-title" style="color:var(--accent-blue);">Map</div><div class="jm-entry jm-show"><span class="jm-key">nome</span> <span class="jm-val-text">"Ana"</span></div><div class="jm-entry jm-show"><span class="jm-key">nota</span> <span class="jm-val-text">9</span></div><div style="color:#888;font-size:0.85em;margin-top:4px;">size: 2</div></div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>','<span class="jm-console-out">{nome: "Ana", nota: 9}</span>']},
+        {line:6,phase:1,title:'mapa.get("nome")',desc:'.get(chave) retorna o valor. Map tem também .has(), .delete() e .size.',visual:'<div class="jm-box jm-active"><div class="jm-box-title" style="color:var(--accent-blue);">Map</div><div class="jm-entry jm-show" style="background:#e4f6ec;border-radius:4px;padding:2px 6px;"><span class="jm-key">nome</span> <span class="jm-val-text">"Ana" ← get</span></div><div class="jm-entry jm-show"><span class="jm-key">nota</span> <span class="jm-val-text">9</span></div><div style="color:#888;font-size:0.85em;margin-top:4px;">size: 2</div></div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>','<span class="jm-console-out">{nome: "Ana", nota: 9}</span>','<span class="jm-console-out">"Ana"</span>']},
+        {line:7,phase:2,title:'new Set([1,2,3,2,1])',desc:'Set armazena valores ÚNICOS. Duplicatas são ignoradas automaticamente. [1,2,3,2,1] → Set{1,2,3}.',visual:'<div class="jm-box jm-active"><div class="jm-box-title" style="color:var(--web-purple);">Set</div><div class="jm-set-items"><span class="jm-set-item">1</span><span class="jm-set-item">2</span><span class="jm-set-item">3</span><span class="jm-set-item jm-dup">2</span><span class="jm-set-item jm-dup">1</span></div><div style="color:#888;font-size:0.85em;margin-top:4px;">size: 3 (duplicatas ignoradas)</div></div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>','<span class="jm-console-out">{nome: "Ana", nota: 9}</span>','<span class="jm-console-out">"Ana"</span>','<span class="jm-console-out">Set {1, 2, 3}</span>']},
+        {line:8,phase:2,title:'s.add(4)',desc:'.add() adiciona um valor. Se já existir, nada acontece.',visual:'<div class="jm-box jm-active"><div class="jm-box-title" style="color:var(--web-purple);">Set</div><div class="jm-set-items"><span class="jm-set-item">1</span><span class="jm-set-item">2</span><span class="jm-set-item">3</span><span class="jm-set-item" style="border-color:var(--accent-gold);background:#fdf1dc;">4 ✨</span></div><div style="color:#888;font-size:0.85em;margin-top:4px;">size: 4</div></div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>','<span class="jm-console-out">{nome: "Ana", nota: 9}</span>','<span class="jm-console-out">"Ana"</span>','<span class="jm-console-out">Set {1, 2, 3}</span>']},
+        {line:9,phase:2,title:'s.has(2)',desc:'.has() verifica se o valor existe no Set. Retorna true ou false. Muito mais rápido que array.includes() para muitos dados.',visual:'<div class="jm-box jm-active"><div class="jm-box-title" style="color:var(--web-purple);">Set</div><div class="jm-set-items"><span class="jm-set-item">1</span><span class="jm-set-item" style="border-color:#2e7d32;background:#e4f6ec;">2 ✓</span><span class="jm-set-item">3</span><span class="jm-set-item">4</span></div><div style="color:#888;font-size:0.85em;margin-top:4px;">size: 4</div></div>',console:['<span class="jm-console-out">\'{"nome":"Ana","nota":9}\'</span>','<span class="jm-console-out">{nome: "Ana", nota: 9}</span>','<span class="jm-console-out">"Ana"</span>','<span class="jm-console-out">Set {1, 2, 3}</span>','<span class="jm-console-out">true</span>']}
+    ];
+    var JM_TOTAL=JM_STEPS.length;
+    window.jmStep=0;
+    var jmTimer=null;
+
+    function jmRender(s){
+        var st=JM_STEPS[s];
+        JM_LINES.forEach(function(_,i){var el=$('jmL'+i);el.className='sim-line'+(i===st.line?' active':(st.line>=0&&i<st.line?' done':''));});
+        for(var p=0;p<3;p++){$('jmPhase'+p).className='sim-phase'+(p===st.phase?' sim-phase-on':'');}
+        $('jmTitle').textContent=st.title;
+        $('jmDesc').textContent=st.desc;
+        $('jmVisual').innerHTML=st.visual;
+        $('jmConsole').innerHTML=st.console.map(function(c){return '<div class="jm-console-line">'+c+'</div>';}).join('');
+        $('jmPrev').disabled=s===0;
+        $('jmNext').disabled=s===JM_TOTAL-1;
+        $('jmPos').textContent='Etapa '+(s+1)+' / '+JM_TOTAL;
+    }
+
+    window.jmGo=function(n){window.jmStep=Math.max(0,Math.min(JM_TOTAL-1,n));jmRender(window.jmStep);if(window.jmStep===JM_TOTAL-1&&jmTimer){clearInterval(jmTimer);jmTimer=null;$('jmPlay').textContent='▶ Auto';}};
+    window.jmToggleAuto=function(){if(jmTimer){clearInterval(jmTimer);jmTimer=null;$('jmPlay').textContent='▶ Auto';return;}if(window.jmStep>=JM_TOTAL-1)window.jmGo(0);$('jmPlay').textContent='⏸ Pausar';jmTimer=setInterval(function(){window.jmGo(window.jmStep+1);},2500);};
+    jmRender(0);
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: DOM (dm)                                                -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+    var DM_LINES=[
+        [' 1','<span style="color:#6c7086">// Selecionar elementos</span>'],
+        [' 2','<span style="color:#ff8ab4">const</span> h1 = document.<span style="color:#89b4fa">querySelector</span>(<span style="color:#c0e65b">"h1"</span>);'],
+        [' 3','<span style="color:#ff8ab4">const</span> btn = document.<span style="color:#89b4fa">querySelector</span>(<span style="color:#c0e65b">"#dmBtn"</span>);'],
+        [' 4','<span style="color:#ff8ab4">const</span> items = document.<span style="color:#89b4fa">querySelectorAll</span>(<span style="color:#c0e65b">"li"</span>);'],
+        [' 5','<span style="color:#6c7086">// Alterar conteúdo</span>'],
+        [' 6','h1.<span style="color:#89b4fa">textContent</span> = <span style="color:#c0e65b">"Novo Título"</span>;'],
+        [' 7','<span style="color:#6c7086">// Classes CSS</span>'],
+        [' 8','h1.<span style="color:#89b4fa">classList</span>.<span style="color:#89b4fa">add</span>(<span style="color:#c0e65b">"destaque"</span>);'],
+        [' 9','<span style="color:#6c7086">// Estilo inline</span>'],
+        ['10','h1.<span style="color:#89b4fa">style</span>.color = <span style="color:#c0e65b">"#2e7d32"</span>;'],
+        ['11','<span style="color:#6c7086">// Criar e adicionar elemento</span>'],
+        ['12','<span style="color:#ff8ab4">const</span> p = document.<span style="color:#89b4fa">createElement</span>(<span style="color:#c0e65b">"p"</span>);'],
+        ['13','p.<span style="color:#89b4fa">textContent</span> = <span style="color:#c0e65b">"Parágrafo novo!"</span>;'],
+        ['14','document.body.<span style="color:#89b4fa">appendChild</span>(p);']
+    ];
+    $('dmCode').innerHTML=DM_LINES.map(function(l,i){return '<div class="sim-line" id="dmL'+i+'"><span class="sim-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+
+    var dmOrigH1='Minha Página';
+    var dmOrigP1='Parágrafo de exemplo';
+
+    var DM_STEPS=[
+        {line:-1,phase:0,title:'Estado inicial',desc:'O DOM (Document Object Model) é a interface que permite ao JavaScript acessar e modificar a página HTML.',refs:[],highlight:'',h1:dmOrigH1,h1Style:'',h1Class:'',p1:dmOrigP1,newP:false,console:[]},
+        {line:1,phase:0,title:'querySelector("h1")',desc:'Seleciona o PRIMEIRO elemento <h1> da página. Retorna uma referência ao objeto DOM.',refs:['h1 → &lt;h1&gt;'],highlight:'dmH1',h1:dmOrigH1,h1Style:'',h1Class:'',p1:dmOrigP1,newP:false,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>']},
+        {line:2,phase:0,title:'querySelector("#dmBtn")',desc:'Seleciona pelo ID com o seletor CSS #id. Mesmo seletor que você usaria no CSS.',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;'],highlight:'dmBtn',h1:dmOrigH1,h1Style:'',h1Class:'',p1:dmOrigP1,newP:false,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>']},
+        {line:3,phase:0,title:'querySelectorAll("li")',desc:'Seleciona TODOS os elementos <li>. Retorna um NodeList (parecido com array). Aceita qualquer seletor CSS.',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;','items → NodeList[2]'],highlight:'',h1:dmOrigH1,h1Style:'',h1Class:'',p1:dmOrigP1,newP:false,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>']},
+        {line:5,phase:1,title:'h1.textContent = "Novo Título"',desc:'textContent altera o texto de um elemento. É seguro (não interpreta HTML). A mudança aparece imediatamente na página.',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;','items → NodeList[2]'],highlight:'dmH1',h1:'Novo Título',h1Style:'',h1Class:'',p1:dmOrigP1,newP:false,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>']},
+        {line:7,phase:2,title:'classList.add("destaque")',desc:'Adiciona a classe CSS "destaque" ao <h1>. classList tem: .add(), .remove(), .toggle(), .contains().',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;','items → NodeList[2]'],highlight:'dmH1',h1:'Novo Título',h1Style:'',h1Class:'destaque',p1:dmOrigP1,newP:false,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>','<span class="dm-console-out">class="destaque" adicionada</span>']},
+        {line:9,phase:2,title:'style.color = "#2e7d32"',desc:'Altera o estilo inline do elemento. Equivale a style="color:#2e7d32" no HTML.',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;','items → NodeList[2]'],highlight:'dmH1',h1:'Novo Título',h1Style:'color:#2e7d32',h1Class:'destaque',p1:dmOrigP1,newP:false,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>','<span class="dm-console-out">class="destaque" adicionada</span>']},
+        {line:11,phase:3,title:'createElement("p")',desc:'Cria um novo elemento <p> na memória. Ainda não aparece na página — precisa ser adicionado.',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;','items → NodeList[2]','p → &lt;p&gt; (novo)'],highlight:'',h1:'Novo Título',h1Style:'color:#2e7d32',h1Class:'destaque',p1:dmOrigP1,newP:false,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>','<span class="dm-console-out">class="destaque" adicionada</span>']},
+        {line:12,phase:3,title:'p.textContent = "Parágrafo novo!"',desc:'Define o texto do elemento criado.',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;','items → NodeList[2]','p → &lt;p&gt;Parágrafo novo!'],highlight:'',h1:'Novo Título',h1Style:'color:#2e7d32',h1Class:'destaque',p1:dmOrigP1,newP:false,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>','<span class="dm-console-out">class="destaque" adicionada</span>']},
+        {line:13,phase:3,title:'appendChild(p)',desc:'Adiciona o <p> como último filho do body. Agora o elemento aparece na página!',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;','items → NodeList[2]','p → &lt;p&gt;Parágrafo novo!'],highlight:'',h1:'Novo Título',h1Style:'color:#2e7d32',h1Class:'destaque',p1:dmOrigP1,newP:true,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>','<span class="dm-console-out">class="destaque" adicionada</span>','<span class="dm-console-out">&lt;p&gt; adicionado ao DOM</span>']},
+        {line:-1,phase:3,title:'addEventListener',desc:'Para reagir a interações: btn.addEventListener("click", function(event) { ... }). O callback executa quando o evento ocorre. event.target é o elemento clicado.',refs:['h1 → &lt;h1&gt;','btn → &lt;button&gt;','items → NodeList[2]','p → &lt;p&gt;Parágrafo novo!'],highlight:'',h1:'Novo Título',h1Style:'color:#2e7d32',h1Class:'destaque',p1:dmOrigP1,newP:true,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>','<span class="dm-console-out">class="destaque" adicionada</span>','<span class="dm-console-out">&lt;p&gt; adicionado ao DOM</span>']},
+        {line:-1,phase:3,title:'Resumo DOM',desc:'querySelector/querySelectorAll: selecionar. textContent/innerHTML: conteúdo. classList: classes CSS. style: estilo inline. createElement + appendChild: criar. addEventListener: eventos.',refs:[],highlight:'',h1:'Novo Título',h1Style:'color:#2e7d32',h1Class:'destaque',p1:dmOrigP1,newP:true,console:['<span class="dm-console-out">&lt;h1&gt;Minha Página&lt;/h1&gt;</span>','<span class="dm-console-out">&lt;button&gt;Clique aqui&lt;/button&gt;</span>','<span class="dm-console-out">NodeList [li, li]</span>','<span class="dm-console-out">class="destaque" adicionada</span>','<span class="dm-console-out">&lt;p&gt; adicionado ao DOM</span>']}
+    ];
+    var DM_TOTAL=DM_STEPS.length;
+    window.dmStep=0;
+    var dmTimer=null;
+
+    function dmRender(s){
+        var st=DM_STEPS[s];
+        DM_LINES.forEach(function(_,i){var el=$('dmL'+i);el.className='sim-line'+(i===st.line?' active':(st.line>=0&&i<st.line?' done':''));});
+        for(var p=0;p<4;p++){$('dmPhase'+p).className='sim-phase'+(p===st.phase?' sim-phase-on':'');}
+        $('dmTitle').textContent=st.title;
+        $('dmDesc').textContent=st.desc;
+
+        var h1El=$('dmH1');
+        h1El.textContent=st.h1;
+        h1El.style.cssText=st.h1Style;
+        if(st.h1Class){h1El.className=st.h1Class;}else{h1El.className='';}
+        if(st.highlight){var hlEl=$(st.highlight);if(hlEl)hlEl.classList.add('dm-active-el');}
+        if(!st.highlight){$('dmH1').classList.remove('dm-active-el');$('dmBtn').classList.remove('dm-active-el');}
+
+        var existingNewP=$('dmNewP');
+        if(st.newP){
+            if(!existingNewP){var np=document.createElement('p');np.id='dmNewP';np.textContent='Parágrafo novo!';np.style.cssText='color:#2e7d32;font-weight:700;animation:simAppear .3s ease both;';$('dmPage').appendChild(np);}
+        }else{
+            if(existingNewP)existingNewP.remove();
+        }
+
+        $('dmRefs').innerHTML=st.refs.map(function(r){return '<span class="dm-ref dm-show">'+r+'</span>';}).join('');
+        $('dmConsole').innerHTML=st.console.map(function(c){return '<div class="dm-console-line">'+c+'</div>';}).join('');
+        $('dmPrev').disabled=s===0;
+        $('dmNext').disabled=s===DM_TOTAL-1;
+        $('dmPos').textContent='Etapa '+(s+1)+' / '+DM_TOTAL;
+    }
+
+    window.dmGo=function(n){window.dmStep=Math.max(0,Math.min(DM_TOTAL-1,n));dmRender(window.dmStep);if(window.dmStep===DM_TOTAL-1&&dmTimer){clearInterval(dmTimer);dmTimer=null;$('dmPlay').textContent='▶ Auto';}};
+    window.dmToggleAuto=function(){if(dmTimer){clearInterval(dmTimer);dmTimer=null;$('dmPlay').textContent='▶ Auto';return;}if(window.dmStep>=DM_TOTAL-1)window.dmGo(0);$('dmPlay').textContent='⏸ Pausar';dmTimer=setInterval(function(){window.dmGo(window.dmStep+1);},2500);};
+    dmRender(0);
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- SIMULAÇÃO: APLICAÇÃO INTEGRADORA (ig)                              -->
+<!-- ================================================================== -->
+<script>
+(function(){
+    var $=function(id){return document.getElementById(id);};
+    var IG_LINES=[
+        [' 1','<span style="color:#ff8ab4">const</span> alunos = ['],
+        [' 2','  { nome: <span style="color:#c0e65b">"Ana"</span>, nota: <span style="color:#ae81ff">9</span> },'],
+        [' 3','  { nome: <span style="color:#c0e65b">"Beto"</span>, nota: <span style="color:#ae81ff">5</span> },'],
+        [' 4','  { nome: <span style="color:#c0e65b">"Carla"</span>, nota: <span style="color:#ae81ff">8</span> },'],
+        [' 5','  { nome: <span style="color:#c0e65b">"Davi"</span>, nota: <span style="color:#ae81ff">3</span> },'],
+        [' 6','];'],
+        [' 7','<span style="color:#ff8ab4">const</span> btn = document.<span style="color:#89b4fa">querySelector</span>(<span style="color:#c0e65b">"#filtrar"</span>);'],
+        [' 8','<span style="color:#ff8ab4">const</span> output = document.<span style="color:#89b4fa">querySelector</span>(<span style="color:#c0e65b">"#resultado"</span>);'],
+        [' 9','btn.<span style="color:#89b4fa">addEventListener</span>(<span style="color:#c0e65b">"click"</span>, <span style="color:#ff8ab4">function</span>() {'],
+        ['10','  <span style="color:#ff8ab4">const</span> aprovados = alunos'],
+        ['11','    .<span style="color:#89b4fa">filter</span>(a =&gt; a.nota &gt;= <span style="color:#ae81ff">7</span>)'],
+        ['12','    .<span style="color:#89b4fa">map</span>(a =&gt; a.nome);'],
+        ['13','  output.<span style="color:#89b4fa">innerHTML</span> = aprovados'],
+        ['14','    .<span style="color:#89b4fa">map</span>(n =&gt; <span style="color:#c0e65b">`&lt;li&gt;${n}&lt;/li&gt;`</span>)'],
+        ['15','    .<span style="color:#89b4fa">join</span>(<span style="color:#c0e65b">""</span>);'],
+        ['16','});']
+    ];
+    $('igCode').innerHTML=IG_LINES.map(function(l,i){return '<div class="sim-line" id="igL'+i+'"><span class="sim-num">'+l[0]+'</span>'+l[1]+'</div>';}).join('');
+
+    var ALUNOS=[{nome:'Ana',nota:9},{nome:'Beto',nota:5},{nome:'Carla',nota:8},{nome:'Davi',nota:3}];
+
+    var IG_STEPS=[
+        {line:-1,phase:0,title:'Estado inicial',desc:'Vamos combinar tudo: array de objetos, filter, map, DOM e addEventListener.',cards:'',showBtn:false,output:'',console:[]},
+        {line:0,phase:0,title:'Array de alunos',desc:'Quatro alunos com nome e nota. Dados que serão processados.',cards:ALUNOS.map(function(a){return '<div class="ig-card" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">'+a.nome+': '+a.nota+'</div>';}).join(''),showBtn:false,output:'',console:[]},
+        {line:6,phase:2,title:'Selecionando elementos',desc:'querySelector seleciona o botão e o div de saída.',cards:ALUNOS.map(function(a){return '<div class="ig-card" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">'+a.nome+': '+a.nota+'</div>';}).join(''),showBtn:true,output:'',console:['<span class="ig-console-out">btn e output selecionados</span>']},
+        {line:8,phase:3,title:'Registrando o evento',desc:'addEventListener("click", ...) registra o callback. A função NÃO executa agora — executa quando o botão for clicado.',cards:ALUNOS.map(function(a){return '<div class="ig-card" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">'+a.nome+': '+a.nota+'</div>';}).join(''),showBtn:true,output:'',console:['<span class="ig-console-out">btn e output selecionados</span>','<span class="ig-console-out">listener "click" registrado</span>']},
+        {line:8,phase:3,title:'👆 Usuário clica no botão',desc:'O evento click dispara! O callback entra na Call Stack.',cards:ALUNOS.map(function(a){return '<div class="ig-card" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">'+a.nome+': '+a.nota+'</div>';}).join(''),showBtn:true,output:'',console:['<span class="ig-console-out">btn e output selecionados</span>','<span class="ig-console-out">listener "click" registrado</span>','<span class="ig-console-out">🖱 click!</span>']},
+        {line:10,phase:1,title:'.filter(a => a.nota >= 7)',desc:'Filtra alunos com nota >= 7: Ana(9)✓, Beto(5)✗, Carla(8)✓, Davi(3)✗.',cards:ALUNOS.map(function(a){var ok=a.nota>=7;return '<div class="ig-card'+(ok?' ig-active':' ig-done')+'" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">'+a.nome+': '+a.nota+(ok?' ✓':' ✗')+'</div>';}).join(''),showBtn:true,output:'',console:['<span class="ig-console-out">btn e output selecionados</span>','<span class="ig-console-out">listener "click" registrado</span>','<span class="ig-console-out">🖱 click!</span>','<span class="ig-console-out">filter: Ana(9)✓ Carla(8)✓</span>']},
+        {line:11,phase:1,title:'.map(a => a.nome)',desc:'Extrai os nomes dos aprovados: ["Ana", "Carla"].',cards:'<div class="ig-card ig-active" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">Ana</div><div class="ig-card ig-active" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">Carla</div>',showBtn:true,output:'',console:['<span class="ig-console-out">btn e output selecionados</span>','<span class="ig-console-out">listener "click" registrado</span>','<span class="ig-console-out">🖱 click!</span>','<span class="ig-console-out">filter: Ana(9)✓ Carla(8)✓</span>','<span class="ig-console-out">map: ["Ana","Carla"]</span>']},
+        {line:12,phase:2,title:'Renderizando no DOM',desc:'.map(n => `<li>${n}</li>`).join("") gera HTML. innerHTML insere na página.',cards:'<div class="ig-card ig-active" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">Ana</div><div class="ig-card ig-active" style="display:inline-block;margin:3px;padding:4px 10px;font-family:monospace;font-size:0.85em;">Carla</div>',showBtn:true,output:'<ul style="margin:6px 0;padding-left:20px;"><li style="color:#2e7d32;font-weight:700;">Ana</li><li style="color:#2e7d32;font-weight:700;">Carla</li></ul>',console:['<span class="ig-console-out">btn e output selecionados</span>','<span class="ig-console-out">listener "click" registrado</span>','<span class="ig-console-out">🖱 click!</span>','<span class="ig-console-out">filter: Ana(9)✓ Carla(8)✓</span>','<span class="ig-console-out">map: ["Ana","Carla"]</span>','<span class="ig-console-out">DOM atualizado!</span>']},
+        {line:15,phase:3,title:'Callback retorna',desc:'A função callback termina. O listener continua registrado — clicar de novo executa tudo outra vez.',cards:'',showBtn:true,output:'<ul style="margin:6px 0;padding-left:20px;"><li style="color:#2e7d32;font-weight:700;">Ana</li><li style="color:#2e7d32;font-weight:700;">Carla</li></ul>',console:['<span class="ig-console-out">btn e output selecionados</span>','<span class="ig-console-out">listener "click" registrado</span>','<span class="ig-console-out">🖱 click!</span>','<span class="ig-console-out">filter: Ana(9)✓ Carla(8)✓</span>','<span class="ig-console-out">map: ["Ana","Carla"]</span>','<span class="ig-console-out">DOM atualizado!</span>']},
+        {line:-1,phase:3,title:'Resumo: tudo conectado',desc:'Dados (array de objetos) → Processamento (filter + map) → Apresentação (innerHTML no DOM) → Interação (addEventListener). Este é o padrão fundamental de aplicações web.',cards:'',showBtn:true,output:'<ul style="margin:6px 0;padding-left:20px;"><li style="color:#2e7d32;font-weight:700;">Ana</li><li style="color:#2e7d32;font-weight:700;">Carla</li></ul>',console:['<span class="ig-console-out">btn e output selecionados</span>','<span class="ig-console-out">listener "click" registrado</span>','<span class="ig-console-out">🖱 click!</span>','<span class="ig-console-out">filter: Ana(9)✓ Carla(8)✓</span>','<span class="ig-console-out">map: ["Ana","Carla"]</span>','<span class="ig-console-out">DOM atualizado!</span>']}
+    ];
+    var IG_TOTAL=IG_STEPS.length;
+    window.igStep=0;
+    var igTimer=null;
+
+    function igRender(s){
+        var st=IG_STEPS[s];
+        IG_LINES.forEach(function(_,i){var el=$('igL'+i);el.className='sim-line'+(i===st.line?' active':(st.line>=0&&i<st.line?' done':''));});
+        for(var p=0;p<4;p++){$('igPhase'+p).className='sim-phase'+(p===st.phase?' sim-phase-on':'');}
+        $('igTitle').textContent=st.title;
+        $('igDesc').textContent=st.desc;
+        $('igCards').innerHTML=st.cards;
+        $('igBtn').style.display=st.showBtn?'':'none';
+        $('igOutput').innerHTML=st.output;
+        $('igConsole').innerHTML=st.console.map(function(c){return '<div class="ig-console-line">'+c+'</div>';}).join('');
+        $('igPrev').disabled=s===0;
+        $('igNext').disabled=s===IG_TOTAL-1;
+        $('igPos').textContent='Etapa '+(s+1)+' / '+IG_TOTAL;
+    }
+
+    window.igGo=function(n){window.igStep=Math.max(0,Math.min(IG_TOTAL-1,n));igRender(window.igStep);if(window.igStep===IG_TOTAL-1&&igTimer){clearInterval(igTimer);igTimer=null;$('igPlay').textContent='▶ Auto';}};
+    window.igToggleAuto=function(){if(igTimer){clearInterval(igTimer);igTimer=null;$('igPlay').textContent='▶ Auto';return;}if(window.igStep>=IG_TOTAL-1)window.igGo(0);$('igPlay').textContent='⏸ Pausar';igTimer=setInterval(function(){window.igGo(window.igStep+1);},2500);};
+    igRender(0);
+})();
+</script>
+
+<!-- ================================================================== -->
+<!-- REVEAL.JS INIT + UNIFIED KEYBOARD HANDLER                          -->
+<!-- ================================================================== -->
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        controlsTutorial: false,
+        transition: 'fade',
+        center: false,
+        width: 1100,
+        height: 800,
+        margin: 0.02,
+        minScale: 0.2,
+        maxScale: 1.5,
+        plugins: []
+    });
+
+    (function(){
+        var FN_TOTAL=12, CL_TOTAL=10, ST_TOTAL=11, AM_TOTAL=12, CH_TOTAL=10, JM_TOTAL=11, DM_TOTAL=12, IG_TOTAL=10;
+
+        Reveal.addKeyBinding({ keyCode: 39, key: 'ArrowRight', description: 'Sim next' }, function(){
+            var cur = Reveal.getCurrentSlide();
+            if(!cur){ Reveal.next(); return; }
+            if(cur.id === 'slide-funcoes'){
+                if(window.fnStep < FN_TOTAL - 1){ window.fnGo(window.fnStep + 1); }
+                else { Reveal.next(); }
+            } else if(cur.id === 'slide-closures'){
+                if(window.clStep < CL_TOTAL - 1){ window.clGo(window.clStep + 1); }
+                else { Reveal.next(); }
+            } else if(cur.id === 'slide-strings'){
+                if(window.stStep < ST_TOTAL - 1){ window.stGo(window.stStep + 1); }
+                else { Reveal.next(); }
+            } else if(cur.id === 'slide-arraymethods'){
+                if(window.amStep < AM_TOTAL - 1){ window.amGo(window.amStep + 1); }
+                else { Reveal.next(); }
+            } else if(cur.id === 'slide-mapfilterreduce'){
+                var mfCur = window.mfGetCurrentStep ? window.mfGetCurrentStep() : 0;
+                var mfMax = window.mfGetCurrentTotal ? window.mfGetCurrentTotal() : 1;
+                if(mfCur < mfMax - 1){ window.mfAdvance(); }
+                else { Reveal.next(); }
+            } else if(cur.id === 'slide-chaining'){
+                if(window.chStep < CH_TOTAL - 1){ window.chGo(window.chStep + 1); }
+                else { Reveal.next(); }
+            } else if(cur.id === 'slide-jsonmapset'){
+                if(window.jmStep < JM_TOTAL - 1){ window.jmGo(window.jmStep + 1); }
+                else { Reveal.next(); }
+            } else if(cur.id === 'slide-dom'){
+                if(window.dmStep < DM_TOTAL - 1){ window.dmGo(window.dmStep + 1); }
+                else { Reveal.next(); }
+            } else if(cur.id === 'slide-integradora'){
+                if(window.igStep < IG_TOTAL - 1){ window.igGo(window.igStep + 1); }
+                else { Reveal.next(); }
+            } else { Reveal.next(); }
+        });
+
+        Reveal.addKeyBinding({ keyCode: 37, key: 'ArrowLeft', description: 'Sim prev' }, function(){
+            var cur = Reveal.getCurrentSlide();
+            if(!cur){ Reveal.prev(); return; }
+            if(cur.id === 'slide-funcoes'){
+                if(window.fnStep > 0){ window.fnGo(window.fnStep - 1); }
+                else { Reveal.prev(); }
+            } else if(cur.id === 'slide-closures'){
+                if(window.clStep > 0){ window.clGo(window.clStep - 1); }
+                else { Reveal.prev(); }
+            } else if(cur.id === 'slide-strings'){
+                if(window.stStep > 0){ window.stGo(window.stStep - 1); }
+                else { Reveal.prev(); }
+            } else if(cur.id === 'slide-arraymethods'){
+                if(window.amStep > 0){ window.amGo(window.amStep - 1); }
+                else { Reveal.prev(); }
+            } else if(cur.id === 'slide-mapfilterreduce'){
+                var mfCurP = window.mfGetCurrentStep ? window.mfGetCurrentStep() : 0;
+                if(mfCurP > 0){ window.mfRetreat(); }
+                else { Reveal.prev(); }
+            } else if(cur.id === 'slide-chaining'){
+                if(window.chStep > 0){ window.chGo(window.chStep - 1); }
+                else { Reveal.prev(); }
+            } else if(cur.id === 'slide-jsonmapset'){
+                if(window.jmStep > 0){ window.jmGo(window.jmStep - 1); }
+                else { Reveal.prev(); }
+            } else if(cur.id === 'slide-dom'){
+                if(window.dmStep > 0){ window.dmGo(window.dmStep - 1); }
+                else { Reveal.prev(); }
+            } else if(cur.id === 'slide-integradora'){
+                if(window.igStep > 0){ window.igGo(window.igStep - 1); }
+                else { Reveal.prev(); }
+            } else { Reveal.prev(); }
+        });
+    })();
+</script>
+</body>
+</html>
