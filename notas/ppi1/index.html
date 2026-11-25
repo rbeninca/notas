@@ -1,22 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WEB 1  - Programação para Internet I</title>
+    <title>PPI1 — Programação para Internet I</title>
+    <style>
+        :root {
+            --ink: #1f2a24;
+            --accent: #2e7d32;
+            --accent-dark: #1b5e20;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f6f7f6; color: var(--ink);
+        }
+        header {
+            background: linear-gradient(135deg, #12321c, var(--accent-dark));
+            color: #fff; padding: 48px 24px 36px; text-align: center;
+        }
+        header .eyebrow { font-size: 0.8em; letter-spacing: 2px; text-transform: uppercase; opacity: 0.85; }
+        header h1 { margin: 8px 0 0; font-size: 2em; }
+        header p { margin: 8px 0 0; opacity: 0.8; font-size: 0.95em; }
+        .back { display: inline-block; margin: 20px 24px 0; font-size: 0.9em; color: var(--accent); text-decoration: none; }
+        .back:hover { text-decoration: underline; }
+        main { max-width: 760px; margin: 0 auto; padding: 16px 24px 60px; }
+        h2 { font-size: 1.15em; color: var(--accent-dark); margin: 32px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #d6e5d9; }
+        ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+        li a {
+            display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit;
+            background: #fff; border: 1px solid #e2e8e3; border-radius: 12px; padding: 16px 18px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform .12s, box-shadow .12s, border-color .12s;
+        }
+        li a:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.09); border-color: var(--accent); }
+        .ic { font-size: 1.5em; flex-shrink: 0; }
+        .meta { display: flex; flex-direction: column; }
+        .ttl { font-weight: 700; font-size: 1em; }
+        .sub { font-size: 0.82em; color: #647569; margin-top: 2px; }
+        footer { text-align: center; font-size: 0.8em; color: #8a988e; padding: 24px; }
+    </style>
 </head>
 <body>
-    <h1>WEB 1  - Programação para Internet I</h1>
-    <h2>Conteúdo</h2>
+
+<header>
+    <div class="eyebrow">IFSC — ADS 2026/2</div>
+    <h1>Programação para Internet I</h1>
+    <p>Slides, exemplos e exercícios</p>
+</header>
+
+<a class="back" href="../index.html">&larr; Voltar ao índice</a>
+
+<main>
+
+    <h2>Slides das Aulas</h2>
     <ul>
-        <li><a href="aula1.html">Aula 1 - Introdução à Programação para Internet</a>
-            <dl>
-                <dt>Plano de Ensino</dt>
-                <dd> <a href="../../view-planejamento.html?p"></a></dd>
-            </dl>
-        
-        </li>
-        <li><a href="aula2.html">Aula 2 - HTML Básico</a></li>
-        <li><a href="aula3.html">Aula 3 - CSS Básico</a></li>            
+        <li><a href="slide-ppi1-aula1.html">
+            <span class="ic">📑</span>
+            <span class="meta"><span class="ttl">Aula 1 — Fundamentos da Web</span><span class="sub">Internet, cliente-servidor, HTTP, HTML5</span></span>
+        </a></li>
+        <li><a href="slide-ppi1-aula9-js-fundamentos.html">
+            <span class="ic">📑</span>
+            <span class="meta"><span class="ttl">Aula 9 — Fundamentos de JavaScript I</span><span class="sub">História, sandbox, Event Loop, tipos, variáveis, arrays, objetos</span></span>
+        </a></li>
+    </ul>
+
+    <h2>Exemplos e Demonstrações</h2>
+    <ul>
+        <li><a href="aula01-fundamentos-web.html">
+            <span class="ic">🌐</span>
+            <span class="meta"><span class="ttl">Fundamentos da Web</span><span class="sub">Página de apoio — Módulo 1</span></span>
+        </a></li>
+        <li><a href="aula5-positions.html">
+            <span class="ic">📐</span>
+            <span class="meta"><span class="ttl">CSS Position</span><span class="sub">Exemplos de static, relative, absolute, fixed, sticky</span></span>
+        </a></li>
+        <li><a href="aula6-positions-transforms.html">
+            <span class="ic">🔄</span>
+            <span class="meta"><span class="ttl">Position + Transforms</span><span class="sub">Combinação de posicionamento e transformações CSS</span></span>
+        </a></li>
+        <li><a href="aula6-transforms.html">
+            <span class="ic">🧊</span>
+            <span class="meta"><span class="ttl">Cena 3D, Face e Cubo</span><span class="sub">Transforms 3D com CSS</span></span>
+        </a></li>
+        <li><a href="aula6-animate3d.html">
+            <span class="ic">🧊</span>
+            <span class="meta"><span class="ttl">Cubo 3D Animado</span><span class="sub">Animação CSS com perspectiva 3D</span></span>
+        </a></li>
+        <li><a href="aula6-animate3d2.html">
+            <span class="ic">🧊</span>
+            <span class="meta"><span class="ttl">Cubo 3D com Plano XYZ</span><span class="sub">Cubo 3D com eixos de referência</span></span>
+        </a></li>
+        <li><a href="aula6-animate.html">
+            <span class="ic">🚀</span>
+            <span class="meta"><span class="ttl">Animações CSS</span><span class="sub">Keyframes e transições</span></span>
+        </a></li>
+        <li><a href="aula6-animate-rocket.html">
+            <span class="ic">🚀</span>
+            <span class="meta"><span class="ttl">Animação Foguete</span><span class="sub">Animação CSS com foguete</span></span>
+        </a></li>
+        <li><a href="aula11-localstorage-indexeddb.html">
+            <span class="ic">💾</span>
+            <span class="meta"><span class="ttl">LocalStorage e IndexedDB</span><span class="sub">Armazenamento no navegador</span></span>
+        </a></li>
+        <li><a href="aula12-fetch-async-await.html">
+            <span class="ic">🔗</span>
+            <span class="meta"><span class="ttl">Fetch, Async e Await</span><span class="sub">Consumo de APIs e assincronismo</span></span>
+        </a></li>
+        <li><a href="aula12-apichuck.html">
+            <span class="ic">😂</span>
+            <span class="meta"><span class="ttl">API Chuck Norris</span><span class="sub">Exemplo prático de Fetch API</span></span>
+        </a></li>
+    </ul>
+
+    <h2>Exercícios</h2>
+    <ul>
+        <li><a href="ListaJS.html">
+            <span class="ic">📝</span>
+            <span class="meta"><span class="ttl">Lista de Exercícios — JavaScript Fundamentos</span><span class="sub">14 exercícios práticos cobrindo variáveis, tipos, DOM, Event Loop e mais</span></span>
+        </a></li>
+    </ul>
+
+</main>
+
+<footer>Professor: Romulo de Aguiar Beninca</footer>
+
 </body>
 </html>
