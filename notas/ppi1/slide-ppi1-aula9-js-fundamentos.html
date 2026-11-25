@@ -444,6 +444,7 @@
         @keyframes quizSuccess { 0% { box-shadow: 0 0 0 0 rgba(46,125,50,.45); } 100% { box-shadow: 0 0 0 14px rgba(46,125,50,0); } }
         .quiz-number { color:var(--ifsc-green); font-size:.58em; font-weight:800; letter-spacing:.7px; text-transform:uppercase; }
         .quiz-prompt { min-height:48px; margin:4px 0 8px !important; font-size:.68em; line-height:1.28; font-weight:700; color:#263548; }
+        .quiz-prompt code { background:#282a26; color:#e5e5e5; padding:3px 8px; border-radius:5px; font-size:0.95em; display:inline-block; margin:3px 0; line-height:1.6; }
         .quiz-options { display:grid; gap:6px; }
         .quiz-option { display:block; width:100%; text-align:left; background:#fff; border:1.5px solid #d4dbe5;
             border-radius:7px; padding:7px 10px; font-size:.62em; cursor:pointer; transition:.18s; font-weight:600; color:#344254; }
@@ -495,7 +496,7 @@
         /* ===================== Selection Flow Sim ===================== */
         .sf-layout { display:grid; grid-template-columns:44% 56%; gap:10px; font-size:0.78em; height:100%; }
         .sf-code { background:#282a26; color:#e5e5e5; border-radius:8px; padding:8px 0; font:0.92em/1.65 'Courier New',monospace; overflow-y:auto; max-height:340px; }
-        .sf-line { white-space:pre; padding:0 8px; border-left:4px solid transparent; opacity:.35; transition:all .2s; }
+        .sf-line { white-space:pre; padding:0 8px; border-left:4px solid transparent; opacity:.55; transition:all .2s; }
         .sf-line.sf-done { opacity:1; }
         .sf-line.sf-active { opacity:1; background:#45523a; border-color:#e9c34c; }
         .sf-line.sf-skip { opacity:.55; background:#3a2828; border-color:#c0392b55; }
@@ -2284,7 +2285,7 @@ const msg = `Olá, ${nome}!`;
             <div class="quiz" data-quiz-id="aula9-quiz">
                 <div class="quiz-question" data-question-id="q1">
                     <div class="quiz-number">Questão 1</div>
-                    <div class="quiz-prompt">Qual a saída de:<br><code>console.log(typeof null)</code>?</div>
+                    <div class="quiz-prompt">Qual a saída de:<br><code>console.<span style="color:#89b4fa;">log</span>(<span style="color:#ff8ab4;">typeof</span> <span style="color:#ae81ff;">null</span>)</code>?</div>
                     <div class="quiz-options">
                         <button class="quiz-option" data-option-id="a" data-feedback="null não é undefined. São tipos distintos.">undefined</button>
                         <button class="quiz-option" data-option-id="b" data-correct="true">"object"</button>
@@ -2295,7 +2296,7 @@ const msg = `Olá, ${nome}!`;
 
                 <div class="quiz-question" data-question-id="q2">
                     <div class="quiz-number">Questão 2</div>
-                    <div class="quiz-prompt">Qual a saída?<br><code>"5" + 3</code></div>
+                    <div class="quiz-prompt">Qual a saída?<br><code><span style="color:#c0e65b;">"5"</span> + <span style="color:#ae81ff;">3</span></code></div>
                     <div class="quiz-options">
                         <button class="quiz-option" data-option-id="a" data-feedback="O operador + com string faz concatenação, não soma.">8</button>
                         <button class="quiz-option" data-option-id="b" data-correct="true">"53"</button>
@@ -2306,7 +2307,7 @@ const msg = `Olá, ${nome}!`;
 
                 <div class="quiz-question" data-question-id="q3">
                     <div class="quiz-number">Questão 3</div>
-                    <div class="quiz-prompt">Qual será a ordem impressa?<br><code>console.log("A");<br>setTimeout(()=>console.log("B"),0);<br>console.log("C");</code></div>
+                    <div class="quiz-prompt">Qual será a ordem impressa?<br><code>console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"A"</span>);<br><span style="color:#89b4fa;">setTimeout</span>(()=&gt;console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"B"</span>),<span style="color:#ae81ff;">0</span>);<br>console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"C"</span>);</code></div>
                     <div class="quiz-options">
                         <button class="quiz-option" data-option-id="a" data-feedback="setTimeout é assíncrono — mesmo com 0ms, o callback vai para a fila.">A, B, C</button>
                         <button class="quiz-option" data-option-id="b" data-correct="true">A, C, B</button>
@@ -2317,7 +2318,7 @@ const msg = `Olá, ${nome}!`;
 
                 <div class="quiz-question" data-question-id="q4">
                     <div class="quiz-number">Questão 4</div>
-                    <div class="quiz-prompt">O que acontece?<br><code>const x = 10;<br>x = 20;</code></div>
+                    <div class="quiz-prompt">O que acontece?<br><code><span style="color:#ff8ab4;">const</span> x = <span style="color:#ae81ff;">10</span>;<br>x = <span style="color:#ae81ff;">20</span>;</code></div>
                     <div class="quiz-options">
                         <button class="quiz-option" data-option-id="a" data-feedback="const impede reatribuição. Use let se precisar reatribuir.">x vale 20</button>
                         <button class="quiz-option" data-option-id="b" data-correct="true">TypeError</button>
@@ -2328,7 +2329,7 @@ const msg = `Olá, ${nome}!`;
 
                 <div class="quiz-question" data-question-id="q5">
                     <div class="quiz-number">Questão 5</div>
-                    <div class="quiz-prompt"><code>"5" === 5</code> retorna:</div>
+                    <div class="quiz-prompt"><code><span style="color:#c0e65b;">"5"</span> <span style="color:#ff8ab4;">===</span> <span style="color:#ae81ff;">5</span></code> retorna:</div>
                     <div class="quiz-options">
                         <button class="quiz-option" data-option-id="a" data-feedback="=== (estrita) não converte tipos. String e number são tipos diferentes.">true</button>
                         <button class="quiz-option" data-option-id="b" data-correct="true">false</button>
@@ -4473,16 +4474,16 @@ const msg = `Olá, ${nome}!`;
 
         /* ============ IF / ELSE IF / ELSE ============ */
         var IF_CODE = [
-            '<span class="kw">const</span> nota = <span class="str">N</span>;',
+            '<span style="color:#ff8ab4;">const</span> nota = <span style="color:#ae81ff;">N</span>;',
             '',
-            '<span class="kw">if</span> (nota >= <span class="str">9</span>) {',
-            '    console.log(<span class="str">"A"</span>);',
-            '} <span class="kw">else if</span> (nota >= <span class="str">7</span>) {',
-            '    console.log(<span class="str">"B"</span>);',
-            '} <span class="kw">else if</span> (nota >= <span class="str">5</span>) {',
-            '    console.log(<span class="str">"C"</span>);',
-            '} <span class="kw">else</span> {',
-            '    console.log(<span class="str">"D"</span>);',
+            '<span style="color:#ff8ab4;">if</span> (nota >= <span style="color:#ae81ff;">9</span>) {',
+            '    console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"A"</span>);',
+            '} <span style="color:#ff8ab4;">else if</span> (nota >= <span style="color:#ae81ff;">7</span>) {',
+            '    console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"B"</span>);',
+            '} <span style="color:#ff8ab4;">else if</span> (nota >= <span style="color:#ae81ff;">5</span>) {',
+            '    console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"C"</span>);',
+            '} <span style="color:#ff8ab4;">else</span> {',
+            '    console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"D"</span>);',
             '}'
         ];
         var IF_PHASES = ['Declaração','if (>=9)','else if (>=7)','else if (>=5)','else','Resultado'];
@@ -4616,22 +4617,22 @@ const msg = `Olá, ${nome}!`;
 
         /* ============ SWITCH ============ */
         var SW_CODE = [
-            '<span class="kw">const</span> dia = <span class="str">"D"</span>;',
+            '<span style="color:#ff8ab4;">const</span> dia = <span style="color:#c0e65b;">"D"</span>;',
             '',
-            '<span class="kw">switch</span> (dia) {',
-            '    <span class="kw">case</span> <span class="str">"seg"</span>:',
-            '    <span class="kw">case</span> <span class="str">"ter"</span>:',
-            '    <span class="kw">case</span> <span class="str">"qua"</span>:',
-            '    <span class="kw">case</span> <span class="str">"qui"</span>:',
-            '    <span class="kw">case</span> <span class="str">"sex"</span>:',
-            '        console.log(<span class="str">"Dia útil"</span>);',
-            '        <span class="kw">break</span>;',
-            '    <span class="kw">case</span> <span class="str">"sab"</span>:',
-            '    <span class="kw">case</span> <span class="str">"dom"</span>:',
-            '        console.log(<span class="str">"Fim de semana"</span>);',
-            '        <span class="kw">break</span>;',
-            '    <span class="kw">default</span>:',
-            '        console.log(<span class="str">"Inválido"</span>);',
+            '<span style="color:#ff8ab4;">switch</span> (dia) {',
+            '    <span style="color:#ff8ab4;">case</span> <span style="color:#c0e65b;">"seg"</span>:',
+            '    <span style="color:#ff8ab4;">case</span> <span style="color:#c0e65b;">"ter"</span>:',
+            '    <span style="color:#ff8ab4;">case</span> <span style="color:#c0e65b;">"qua"</span>:',
+            '    <span style="color:#ff8ab4;">case</span> <span style="color:#c0e65b;">"qui"</span>:',
+            '    <span style="color:#ff8ab4;">case</span> <span style="color:#c0e65b;">"sex"</span>:',
+            '        console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"Dia útil"</span>);',
+            '        <span style="color:#ff8ab4;">break</span>;',
+            '    <span style="color:#ff8ab4;">case</span> <span style="color:#c0e65b;">"sab"</span>:',
+            '    <span style="color:#ff8ab4;">case</span> <span style="color:#c0e65b;">"dom"</span>:',
+            '        console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"Fim de semana"</span>);',
+            '        <span style="color:#ff8ab4;">break</span>;',
+            '    <span style="color:#ff8ab4;">default</span>:',
+            '        console.<span style="color:#89b4fa;">log</span>(<span style="color:#c0e65b;">"Inválido"</span>);',
             '}'
         ];
         var SW_PHASES = ['Declaração','switch()','Matching','Execução','break/fim'];
@@ -4721,13 +4722,13 @@ const msg = `Olá, ${nome}!`;
 
         /* ============ TERNÁRIO ============ */
         var TN_CODE = [
-            '<span class="kw">const</span> nota = <span class="str">N</span>;',
+            '<span style="color:#ff8ab4;">const</span> nota = <span style="color:#ae81ff;">N</span>;',
             '',
-            '<span class="kw">const</span> status = nota >= <span class="str">7</span>',
-            '    ? <span class="str">"Aprovado"</span>',
-            '    : <span class="str">"Reprovado"</span>;',
+            '<span style="color:#ff8ab4;">const</span> status = nota >= <span style="color:#ae81ff;">7</span>',
+            '    ? <span style="color:#c0e65b;">"Aprovado"</span>',
+            '    : <span style="color:#c0e65b;">"Reprovado"</span>;',
             '',
-            'console.log(status);'
+            'console.<span style="color:#89b4fa;">log</span>(status);'
         ];
         var TN_PHASES = ['Declaração','Condição','Valor','Resultado'];
 
